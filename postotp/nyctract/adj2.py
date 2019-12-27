@@ -143,6 +143,8 @@ adjlist=['36047000301','36047000700','36047001500','36047001800','36047002200','
          '36047116000','36047116200','36047116400','36047116800','36047117201','36047117601','36047117800','36047118202',
          '36047118600','36047119000','36047119200','36047119800','36047120800','36047121000','36047121400','36047150200']
 
+adjlist=[]
+
 #adjlist=['36061001200','36061001501','36061001502','36061002500','36061002700','36061002900','36061003300','36061003601',
 #         '36061003900','36061004500','36061004700','36061004900','36061005200','36061005900','36061006000','36061006100',
 #         '36061006800','36061006900','36061007500','36061007900','36061008200','36061008400','36061008602','36061008603',
@@ -295,12 +297,12 @@ if __name__=='__main__':
     location['id']=['ADJRES'+str(x).zfill(11) for x in location['censustract']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
     destination=location.loc[0:max(location.count())-1,['id','latlong']]
-#    for i in destination.index:
-#        df=parallelize(arrivaltime,restravelshed)
-#        df['TTMEDIAN']=df.median(skipna=True,axis=1)
-#        df=df['TTMEDIAN'].sort_index()
-#        df.name=destination.loc[i,'id']
-#        df.to_csv(path+'nyctract/res3/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
+    for i in destination.index:
+        df=parallelize(arrivaltime,restravelshed)
+        df['TTMEDIAN']=df.median(skipna=True,axis=1)
+        df=df['TTMEDIAN'].sort_index()
+        df.name=destination.loc[i,'id']
+        df.to_csv(path+'nyctract/res3/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
     # Join travelsheds to block shapefile
     wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
     wtbk.crs={'init': 'epsg:4326'}
