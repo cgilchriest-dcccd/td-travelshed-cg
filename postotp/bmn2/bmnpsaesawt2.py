@@ -99,7 +99,7 @@ while arrivaltimeincrement<=arrivaltimeend:
 maxTransfers=3 # 4 boardings
 
 # Set maximum walking distance
-#maxWalkDistance=805 # in meters
+maxWalkDistance=805 # in meters
 
 # Set cut off points between 0-120 mins
 cutoffinterval=2 # in minutes
