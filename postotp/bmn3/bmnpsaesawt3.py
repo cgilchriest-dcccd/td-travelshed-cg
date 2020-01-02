@@ -30,7 +30,7 @@ doserver='http://localhost:8801/'
 
 
 # Site location
-site=pd.read_excel(path+'bmn2/input.xlsx',sheet_name='input',dtype=str)
+site=pd.read_excel(path+'bmn3/input.xlsx',sheet_name='input',dtype=str)
 site=gpd.GeoDataFrame(site,crs={'init': 'epsg:4326'},
                       geometry=[shapely.geometry.Point(xy) for xy in zip(pd.to_numeric(site['long']), pd.to_numeric(site['lat']))])
 sitegeom=site['geometry']
@@ -72,7 +72,7 @@ for i in site.index:
     else:
         site.loc[i,'walktime']=js['plan']['itineraries'][0]['legs'][0]['duration']
     time.sleep(0.1)
-site.to_excel(path+'bmn2/input.xlsx',sheet_name='input',index=False)
+site.to_excel(path+'bmn3/input.xlsx',sheet_name='input',index=False)
 
 
 
@@ -225,7 +225,7 @@ def add_basemap(ax, zoom, url='http://tile.stamen.com/terrain/tileZ/tileX/tileY.
 
 # Multiprocessing travelshed function for sites
 if __name__=='__main__':
-    location=pd.read_excel(path+'bmn2/input.xlsx',sheet_name='input',dtype=str)
+    location=pd.read_excel(path+'bmn3/input.xlsx',sheet_name='input',dtype=str)
     location['id']=location['siteid']
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['intlat'],location['intlong'])]
     destination=location.loc[0:max(location.count())-1,['id','direction','name','latlong']]
@@ -235,18 +235,18 @@ if __name__=='__main__':
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
         df.name=destination.loc[i,'id']
-        df.to_csv(path+'bmn2/'+destination.loc[i,'id']+'psaesawt.csv',index=True,header=True,na_rep=999)
+        df.to_csv(path+'bmn3/'+destination.loc[i,'id']+'psaesawt.csv',index=True,header=True,na_rep=999)
     # Join travelsheds to block shapefile
     wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
     wtbk.crs={'init': 'epsg:4326'}
     wtbk=wtbk[['blockid','geometry']]    
     for i in destination.index:
-        tp=pd.read_csv(path+'bmn2/'+destination.loc[i,'id']+'psaesawt.csv',dtype=str)
+        tp=pd.read_csv(path+'bmn3/'+destination.loc[i,'id']+'psaesawt.csv',dtype=str)
         tp.iloc[:,1]=pd.to_numeric(tp.iloc[:,1])
         wtbk=wtbk.merge(tp,on='blockid')
-    wtbk.to_file(path+'bmn2/psaesawtbk.shp')
+    wtbk.to_file(path+'bmn3/psaesawtbk.shp')
     wtbk=wtbk.drop('geometry',axis=1)
-    wtbk.to_csv(path+'bmn2/psaesawtbk.csv',index=False)
+    wtbk.to_csv(path+'bmn3/psaesawtbk.csv',index=False)
     # Join travelsheds to tract shapefile
     wtbk=wtbk.replace(999,np.nan)
     loclist=wtbk.columns[1:]
@@ -258,13 +258,13 @@ if __name__=='__main__':
     wtct.crs={'init': 'epsg:4326'}
     wtct=wtct[['tractid','geometry']]
     wtct=wtct.merge(wtbk,on='tractid')
-    wtct.to_file(path+'bmn2/psaesawtct.shp')
+    wtct.to_file(path+'bmn3/psaesawtct.shp')
     wtct=wtct.drop('geometry',axis=1)
-    wtct.to_csv(path+'bmn2/psaesawtct.csv',index=False)
+    wtct.to_csv(path+'bmn3/psaesawtct.csv',index=False)
     # Create map for each site
-    wtbk=gpd.read_file(path+'bmn2/psaesawtbk.shp')
+    wtbk=gpd.read_file(path+'bmn3/psaesawtbk.shp')
     wtbk.crs={'init': 'epsg:4326'}
-    wtct=gpd.read_file(path+'bmn2/psaesawtct.shp')
+    wtct=gpd.read_file(path+'bmn3/psaesawtct.shp')
     wtct.crs={'init': 'epsg:4326'}
     for i in destination.index:
         # Create block level map
@@ -285,7 +285,7 @@ if __name__=='__main__':
         cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
         cbar=fig.colorbar(sm,cax=cax)
         fig.tight_layout()
-        fig.savefig(path+'bmn2/'+destination.loc[i,'id']+'psaesawtbk.jpg', dpi=300)
+        fig.savefig(path+'bmn3/'+destination.loc[i,'id']+'psaesawtbk.jpg', dpi=300)
         # Create tract level map
         wtctmap=wtct.loc[wtct[destination.loc[i,'id']]<=90,[destination.loc[i,'id'],'geometry']]
         wtctmap=wtctmap.to_crs(epsg=3857)
@@ -304,5 +304,5 @@ if __name__=='__main__':
         cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
         cbar=fig.colorbar(sm,cax=cax)
         fig.tight_layout()
-        fig.savefig(path+'bmn2/'+destination.loc[i,'id']+'psaesawtct.jpg', dpi=300)
+        fig.savefig(path+'bmn3/'+destination.loc[i,'id']+'psaesawtct.jpg', dpi=300)
     print(datetime.datetime.now()-start)
