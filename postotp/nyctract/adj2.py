@@ -369,8 +369,8 @@ def worktravelshed(arrt):
 
 # Define parallel multiprocessing function
 def parallelize(data, func):
-    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-7)))
-    pool=mp.Pool(mp.cpu_count()-7)
+    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-1)))
+    pool=mp.Pool(mp.cpu_count()-1)
     dt=pd.DataFrame()
     for i in data_split:
         ds=pd.concat(pool.map(func,i),axis=1)
