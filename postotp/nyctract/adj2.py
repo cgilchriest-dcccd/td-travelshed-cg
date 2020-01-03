@@ -172,7 +172,9 @@ def add_basemap(ax, zoom, url='http://tile.stamen.com/terrain/tileZ/tileX/tileY.
 #         '36061014402','36061014700','36061016100','36061018700','36061023502','36061023802','36061024000','36061025500',
 #         '36061026900','36061031704']
 
-adjlist=['36061013600']
+adjlist=['36081000100','36081000200','36081000400','36081000600','36081000700','36081000800','36081001600','36081002600',
+         '36081003000','36081003300','36081003400','36081003600','36081004401','36081005100','36081005300','36081006100',
+         ]
 
 #adjlist=['36085001800','36085002001','36085003900','36085004000','36085005900','36085007700','36085009602','36085011201',
 #         '36085011401','36085011402','36085012805','36085013800','36085014604','36085014606','36085014607','36085014700',
@@ -352,8 +354,8 @@ def worktravelshed(arrt):
 
 # Define parallel multiprocessing function
 def parallelize(data, func):
-    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-1)))
-    pool=mp.Pool(mp.cpu_count()-1)
+    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-7)))
+    pool=mp.Pool(mp.cpu_count()-7)
     dt=pd.DataFrame()
     for i in data_split:
         ds=pd.concat(pool.map(func,i),axis=1)
