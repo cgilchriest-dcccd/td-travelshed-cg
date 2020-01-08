@@ -191,13 +191,13 @@ if __name__=='__main__':
     location['id']=location['siteid']
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['intlat'],location['intlong'])]
     destination=location.loc[0:max(location.count())-1,['id','direction','name','latlong']]
-#    # Create travel time table for each site
-#    for i in destination.index:
-#        df=parallelize(arrivaltime,travelshedpr)
-#        df['TTMEDIAN']=df.min(skipna=True,axis=1)
-#        df=df['TTMEDIAN'].sort_index()
-#        df.name=destination.loc[i,'id']
-#        df.to_csv(path+'bmn3/'+destination.loc[i,'id']+'ssypr.csv',index=True,header=True,na_rep=999)
+    # Create travel time table for each site
+    for i in destination.index:
+        df=parallelize(arrivaltime,travelshedpr)
+        df['TTMEDIAN']=df.min(skipna=True,axis=1)
+        df=df['TTMEDIAN'].sort_index()
+        df.name=destination.loc[i,'id']
+        df.to_csv(path+'bmn3/'+destination.loc[i,'id']+'ssypr.csv',index=True,header=True,na_rep=999)
     # Join park and ride travelsheds to block shapefiles
     prbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
     prbk.crs={'init': 'epsg:4326'}
