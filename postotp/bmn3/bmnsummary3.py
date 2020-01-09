@@ -31,139 +31,139 @@ doserver='http://localhost:8801/'
 
 
 
-# Block level summary
-bmnbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
-bmnbk.crs={'init': 'epsg:4326'}
-bmnbk=bmnbk[['blockid','geometry']]    
-bmnbk=bmnbk.set_index('blockid')
-
-exwtbk=pd.read_csv(path+'bmn3/exwtbk.csv',dtype=float,converters={'blockid':str})
-exwtbk=exwtbk.set_index('blockid')
-exwtbk.columns=[str(x).replace('BMN','')+'EXWT' for x in exwtbk.columns]
-bmnbk=pd.concat([bmnbk,exwtbk],axis=1)
-
-exprbk=pd.read_csv(path+'bmn3/exprbk.csv',dtype=float,converters={'blockid':str})
-exprbk=exprbk.set_index('blockid')
-exprbk.columns=[str(x).replace('BMN','')+'EXPR' for x in exprbk.columns]
-bmnbk=pd.concat([bmnbk,exprbk],axis=1)
-
-exwtprbk=pd.read_csv(path+'bmn3/exwtprbk.csv',dtype=float,converters={'blockid':str})
-exwtprbk=exwtprbk.set_index('blockid')
-exwtprbk.columns=[str(x).replace('BMN','')+'EXWTPR' for x in exwtprbk.columns]
-bmnbk=pd.concat([bmnbk,exwtprbk],axis=1)
-
-psaesawtbk=pd.read_csv(path+'bmn3/psaesawtbk.csv',dtype=float,converters={'blockid':str})
-psaesawtbk=psaesawtbk.set_index('blockid')
-psaesawtbk.columns=[str(x).replace('BMN','')+'PSAWT' for x in psaesawtbk.columns]
-bmnbk=pd.concat([bmnbk,psaesawtbk],axis=1)
-
-psaesaprbk=pd.read_csv(path+'bmn3/psaesaprbk.csv',dtype=float,converters={'blockid':str})
-psaesaprbk=psaesaprbk.set_index('blockid')
-psaesaprbk.columns=[str(x).replace('BMN','')+'PSAPR' for x in psaesaprbk.columns]
-bmnbk=pd.concat([bmnbk,psaesaprbk],axis=1)
-
-psaesawtprbk=pd.read_csv(path+'bmn3/psaesawtprbk.csv',dtype=float,converters={'blockid':str})
-psaesawtprbk=psaesawtprbk.set_index('blockid')
-psaesawtprbk.columns=[str(x).replace('BMN','')+'PSAWTPR' for x in psaesawtprbk.columns]
-bmnbk=pd.concat([bmnbk,psaesawtprbk],axis=1)
-
-ssywtbk=pd.read_csv(path+'bmn3/ssywtbk.csv',dtype=float,converters={'blockid':str})
-ssywtbk=ssywtbk.set_index('blockid')
-ssywtbk.columns=[str(x).replace('BMN','')+'SSYWT' for x in ssywtbk.columns]
-bmnbk=pd.concat([bmnbk,ssywtbk],axis=1)
-
-ssyprbk=pd.read_csv(path+'bmn3/ssyprbk.csv',dtype=float,converters={'blockid':str})
-ssyprbk=ssyprbk.set_index('blockid')
-ssyprbk.columns=[str(x).replace('BMN','')+'SSYPR' for x in ssyprbk.columns]
-bmnbk=pd.concat([bmnbk,ssyprbk],axis=1)
-
-ssywtprbk=pd.read_csv(path+'bmn3/ssywtprbk.csv',dtype=float,converters={'blockid':str})
-ssywtprbk=ssywtprbk.set_index('blockid')
-ssywtprbk.columns=[str(x).replace('BMN','')+'SSYWTPR' for x in ssywtprbk.columns]
-bmnbk=pd.concat([bmnbk,ssywtprbk],axis=1)
-
-bmnbk=bmnbk.reset_index()
-bmnbk.columns=['blockid']+list(bmnbk.columns[1:])
-loclist=[str(x).replace('EXWT','') for x in bmnbk.columns[2:10]]
-for i in loclist:
-    bmnbk[i+'PSAWTD']=np.where(bmnbk[i+'EXWT']==999,999,np.where(bmnbk[i+'PSAWT']==999,999,bmnbk[i+'EXWT']-bmnbk[i+'PSAWT']))
-for i in loclist:
-    bmnbk[i+'PSAWPD']=np.where(bmnbk[i+'EXWTPR']==999,999,np.where(bmnbk[i+'PSAWTPR']==999,999,bmnbk[i+'EXWTPR']-bmnbk[i+'PSAWTPR']))
-for i in loclist:
-    bmnbk[i+'SSYWTD']=np.where(bmnbk[i+'EXWT']==999,999,np.where(bmnbk[i+'SSYWT']==999,999,bmnbk[i+'EXWT']-bmnbk[i+'SSYWT']))
-for i in loclist:
-    bmnbk[i+'SSYWPD']=np.where(bmnbk[i+'EXWTPR']==999,999,np.where(bmnbk[i+'SSYWTPR']==999,999,bmnbk[i+'EXWTPR']-bmnbk[i+'SSYWTPR']))
-bmnbk.to_file(path+'bmn3/bmnbk3.shp')
-bmnbk=bmnbk.drop('geometry',axis=1)
-bmnbk.to_csv(path+'bmn3/bmnbk3.csv',index=False)
+## Block level summary
+#bmnbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
+#bmnbk.crs={'init': 'epsg:4326'}
+#bmnbk=bmnbk[['blockid','geometry']]    
+#bmnbk=bmnbk.set_index('blockid')
 #
+#exwtbk=pd.read_csv(path+'bmn3/exwtbk.csv',dtype=float,converters={'blockid':str})
+#exwtbk=exwtbk.set_index('blockid')
+#exwtbk.columns=[str(x).replace('BMN','')+'EXWT' for x in exwtbk.columns]
+#bmnbk=pd.concat([bmnbk,exwtbk],axis=1)
 #
+#exprbk=pd.read_csv(path+'bmn3/exprbk.csv',dtype=float,converters={'blockid':str})
+#exprbk=exprbk.set_index('blockid')
+#exprbk.columns=[str(x).replace('BMN','')+'EXPR' for x in exprbk.columns]
+#bmnbk=pd.concat([bmnbk,exprbk],axis=1)
 #
-## Tract level summary
-#bmnct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-#bmnct.crs={'init': 'epsg:4326'}
-#bmnct=bmnct[['tractid','geometry']]    
-#bmnct=bmnct.set_index('tractid')
+#exwtprbk=pd.read_csv(path+'bmn3/exwtprbk.csv',dtype=float,converters={'blockid':str})
+#exwtprbk=exwtprbk.set_index('blockid')
+#exwtprbk.columns=[str(x).replace('BMN','')+'EXWTPR' for x in exwtprbk.columns]
+#bmnbk=pd.concat([bmnbk,exwtprbk],axis=1)
 #
-#exwtct=pd.read_csv(path+'bmn2/exwtct.csv',dtype=float,converters={'tractid':str})
-#exwtct=exwtct.set_index('tractid')
-#exwtct.columns=[str(x).replace('BMN','')+'EXWT' for x in exwtct.columns]
-#bmnct=pd.concat([bmnct,exwtct],axis=1)
+#psaesawtbk=pd.read_csv(path+'bmn3/psaesawtbk.csv',dtype=float,converters={'blockid':str})
+#psaesawtbk=psaesawtbk.set_index('blockid')
+#psaesawtbk.columns=[str(x).replace('BMN','')+'PSAWT' for x in psaesawtbk.columns]
+#bmnbk=pd.concat([bmnbk,psaesawtbk],axis=1)
 #
-#exprct=pd.read_csv(path+'bmn2/exprct.csv',dtype=float,converters={'tractid':str})
-#exprct=exprct.set_index('tractid')
-#exprct.columns=[str(x).replace('BMN','')+'EXPR' for x in exprct.columns]
-#bmnct=pd.concat([bmnct,exprct],axis=1)
+#psaesaprbk=pd.read_csv(path+'bmn3/psaesaprbk.csv',dtype=float,converters={'blockid':str})
+#psaesaprbk=psaesaprbk.set_index('blockid')
+#psaesaprbk.columns=[str(x).replace('BMN','')+'PSAPR' for x in psaesaprbk.columns]
+#bmnbk=pd.concat([bmnbk,psaesaprbk],axis=1)
 #
-#exwtprct=pd.read_csv(path+'bmn2/exwtprct.csv',dtype=float,converters={'tractid':str})
-#exwtprct=exwtprct.set_index('tractid')
-#exwtprct.columns=[str(x).replace('BMN','')+'EXWTPR' for x in exwtprct.columns]
-#bmnct=pd.concat([bmnct,exwtprct],axis=1)
+#psaesawtprbk=pd.read_csv(path+'bmn3/psaesawtprbk.csv',dtype=float,converters={'blockid':str})
+#psaesawtprbk=psaesawtprbk.set_index('blockid')
+#psaesawtprbk.columns=[str(x).replace('BMN','')+'PSAWTPR' for x in psaesawtprbk.columns]
+#bmnbk=pd.concat([bmnbk,psaesawtprbk],axis=1)
 #
-#psaesawtct=pd.read_csv(path+'bmn2/psaesawtct.csv',dtype=float,converters={'tractid':str})
-#psaesawtct=psaesawtct.set_index('tractid')
-#psaesawtct.columns=[str(x).replace('BMN','')+'PSAWT' for x in psaesawtct.columns]
-#bmnct=pd.concat([bmnct,psaesawtct],axis=1)
+#ssywtbk=pd.read_csv(path+'bmn3/ssywtbk.csv',dtype=float,converters={'blockid':str})
+#ssywtbk=ssywtbk.set_index('blockid')
+#ssywtbk.columns=[str(x).replace('BMN','')+'SSYWT' for x in ssywtbk.columns]
+#bmnbk=pd.concat([bmnbk,ssywtbk],axis=1)
 #
-#psaesaprct=pd.read_csv(path+'bmn2/psaesaprct.csv',dtype=float,converters={'tractid':str})
-#psaesaprct=psaesaprct.set_index('tractid')
-#psaesaprct.columns=[str(x).replace('BMN','')+'PSAPR' for x in psaesaprct.columns]
-#bmnct=pd.concat([bmnct,psaesaprct],axis=1)
+#ssyprbk=pd.read_csv(path+'bmn3/ssyprbk.csv',dtype=float,converters={'blockid':str})
+#ssyprbk=ssyprbk.set_index('blockid')
+#ssyprbk.columns=[str(x).replace('BMN','')+'SSYPR' for x in ssyprbk.columns]
+#bmnbk=pd.concat([bmnbk,ssyprbk],axis=1)
 #
-#psaesawtprct=pd.read_csv(path+'bmn2/psaesawtprct.csv',dtype=float,converters={'tractid':str})
-#psaesawtprct=psaesawtprct.set_index('tractid')
-#psaesawtprct.columns=[str(x).replace('BMN','')+'PSAWTPR' for x in psaesawtprct.columns]
-#bmnct=pd.concat([bmnct,psaesawtprct],axis=1)
+#ssywtprbk=pd.read_csv(path+'bmn3/ssywtprbk.csv',dtype=float,converters={'blockid':str})
+#ssywtprbk=ssywtprbk.set_index('blockid')
+#ssywtprbk.columns=[str(x).replace('BMN','')+'SSYWTPR' for x in ssywtprbk.columns]
+#bmnbk=pd.concat([bmnbk,ssywtprbk],axis=1)
 #
-#ssywtct=pd.read_csv(path+'bmn2/ssywtct.csv',dtype=float,converters={'tractid':str})
-#ssywtct=ssywtct.set_index('tractid')
-#ssywtct.columns=[str(x).replace('BMN','')+'SSYWT' for x in ssywtct.columns]
-#bmnct=pd.concat([bmnct,ssywtct],axis=1)
-#
-#ssyprct=pd.read_csv(path+'bmn2/ssyprct.csv',dtype=float,converters={'tractid':str})
-#ssyprct=ssyprct.set_index('tractid')
-#ssyprct.columns=[str(x).replace('BMN','')+'SSYPR' for x in ssyprct.columns]
-#bmnct=pd.concat([bmnct,ssyprct],axis=1)
-#
-#ssywtprct=pd.read_csv(path+'bmn2/ssywtprct.csv',dtype=float,converters={'tractid':str})
-#ssywtprct=ssywtprct.set_index('tractid')
-#ssywtprct.columns=[str(x).replace('BMN','')+'SSYWTPR' for x in ssywtprct.columns]
-#bmnct=pd.concat([bmnct,ssywtprct],axis=1)
-#
-#bmnct=bmnct.reset_index()
-#bmnct.columns=['tractid']+list(bmnct.columns[1:])
-#loclist=[str(x).replace('EXWT','') for x in bmnct.columns[2:10]]
+#bmnbk=bmnbk.reset_index()
+#bmnbk.columns=['blockid']+list(bmnbk.columns[1:])
+#loclist=[str(x).replace('EXWT','') for x in bmnbk.columns[2:10]]
 #for i in loclist:
-#    bmnct[i+'PSAWTD']=np.where(bmnct[i+'EXWT']==999,999,np.where(bmnct[i+'PSAWT']==999,999,bmnct[i+'EXWT']-bmnct[i+'PSAWT']))
+#    bmnbk[i+'PSAWTD']=np.where(bmnbk[i+'EXWT']==999,999,np.where(bmnbk[i+'PSAWT']==999,999,bmnbk[i+'EXWT']-bmnbk[i+'PSAWT']))
 #for i in loclist:
-#    bmnct[i+'PSAWPD']=np.where(bmnct[i+'EXWTPR']==999,999,np.where(bmnct[i+'PSAWTPR']==999,999,bmnct[i+'EXWTPR']-bmnct[i+'PSAWTPR']))
+#    bmnbk[i+'PSAWPD']=np.where(bmnbk[i+'EXWTPR']==999,999,np.where(bmnbk[i+'PSAWTPR']==999,999,bmnbk[i+'EXWTPR']-bmnbk[i+'PSAWTPR']))
 #for i in loclist:
-#    bmnct[i+'SSYWTD']=np.where(bmnct[i+'EXWT']==999,999,np.where(bmnct[i+'SSYWT']==999,999,bmnct[i+'EXWT']-bmnct[i+'SSYWT']))
+#    bmnbk[i+'SSYWTD']=np.where(bmnbk[i+'EXWT']==999,999,np.where(bmnbk[i+'SSYWT']==999,999,bmnbk[i+'EXWT']-bmnbk[i+'SSYWT']))
 #for i in loclist:
-#    bmnct[i+'SSYWPD']=np.where(bmnct[i+'EXWTPR']==999,999,np.where(bmnct[i+'SSYWTPR']==999,999,bmnct[i+'EXWTPR']-bmnct[i+'SSYWTPR']))
-#bmnct.to_file(path+'bmn2/bmnct2.shp')
-#bmnct=bmnct.drop('geometry',axis=1)
-#bmnct.to_csv(path+'bmn2/bmnct2.csv',index=False)
+#    bmnbk[i+'SSYWPD']=np.where(bmnbk[i+'EXWTPR']==999,999,np.where(bmnbk[i+'SSYWTPR']==999,999,bmnbk[i+'EXWTPR']-bmnbk[i+'SSYWTPR']))
+#bmnbk.to_file(path+'bmn3/bmnbk3.shp')
+#bmnbk=bmnbk.drop('geometry',axis=1)
+#bmnbk.to_csv(path+'bmn3/bmnbk3.csv',index=False)
+
+
+
+# Tract level summary
+bmnct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+bmnct.crs={'init': 'epsg:4326'}
+bmnct=bmnct[['tractid','geometry']]    
+bmnct=bmnct.set_index('tractid')
+
+exwtct=pd.read_csv(path+'bmn3/exwtct.csv',dtype=float,converters={'tractid':str})
+exwtct=exwtct.set_index('tractid')
+exwtct.columns=[str(x).replace('BMN','')+'EXWT' for x in exwtct.columns]
+bmnct=pd.concat([bmnct,exwtct],axis=1)
+
+exprct=pd.read_csv(path+'bmn3/exprct.csv',dtype=float,converters={'tractid':str})
+exprct=exprct.set_index('tractid')
+exprct.columns=[str(x).replace('BMN','')+'EXPR' for x in exprct.columns]
+bmnct=pd.concat([bmnct,exprct],axis=1)
+
+exwtprct=pd.read_csv(path+'bmn3/exwtprct.csv',dtype=float,converters={'tractid':str})
+exwtprct=exwtprct.set_index('tractid')
+exwtprct.columns=[str(x).replace('BMN','')+'EXWTPR' for x in exwtprct.columns]
+bmnct=pd.concat([bmnct,exwtprct],axis=1)
+
+psaesawtct=pd.read_csv(path+'bmn3/psaesawtct.csv',dtype=float,converters={'tractid':str})
+psaesawtct=psaesawtct.set_index('tractid')
+psaesawtct.columns=[str(x).replace('BMN','')+'PSAWT' for x in psaesawtct.columns]
+bmnct=pd.concat([bmnct,psaesawtct],axis=1)
+
+psaesaprct=pd.read_csv(path+'bmn3/psaesaprct.csv',dtype=float,converters={'tractid':str})
+psaesaprct=psaesaprct.set_index('tractid')
+psaesaprct.columns=[str(x).replace('BMN','')+'PSAPR' for x in psaesaprct.columns]
+bmnct=pd.concat([bmnct,psaesaprct],axis=1)
+
+psaesawtprct=pd.read_csv(path+'bmn3/psaesawtprct.csv',dtype=float,converters={'tractid':str})
+psaesawtprct=psaesawtprct.set_index('tractid')
+psaesawtprct.columns=[str(x).replace('BMN','')+'PSAWTPR' for x in psaesawtprct.columns]
+bmnct=pd.concat([bmnct,psaesawtprct],axis=1)
+
+ssywtct=pd.read_csv(path+'bmn3/ssywtct.csv',dtype=float,converters={'tractid':str})
+ssywtct=ssywtct.set_index('tractid')
+ssywtct.columns=[str(x).replace('BMN','')+'SSYWT' for x in ssywtct.columns]
+bmnct=pd.concat([bmnct,ssywtct],axis=1)
+
+ssyprct=pd.read_csv(path+'bmn3/ssyprct.csv',dtype=float,converters={'tractid':str})
+ssyprct=ssyprct.set_index('tractid')
+ssyprct.columns=[str(x).replace('BMN','')+'SSYPR' for x in ssyprct.columns]
+bmnct=pd.concat([bmnct,ssyprct],axis=1)
+
+ssywtprct=pd.read_csv(path+'bmn3/ssywtprct.csv',dtype=float,converters={'tractid':str})
+ssywtprct=ssywtprct.set_index('tractid')
+ssywtprct.columns=[str(x).replace('BMN','')+'SSYWTPR' for x in ssywtprct.columns]
+bmnct=pd.concat([bmnct,ssywtprct],axis=1)
+
+bmnct=bmnct.reset_index()
+bmnct.columns=['tractid']+list(bmnct.columns[1:])
+loclist=[str(x).replace('EXWT','') for x in bmnct.columns[2:10]]
+for i in loclist:
+    bmnct[i+'PSAWTD']=np.where(bmnct[i+'EXWT']==999,999,np.where(bmnct[i+'PSAWT']==999,999,bmnct[i+'EXWT']-bmnct[i+'PSAWT']))
+for i in loclist:
+    bmnct[i+'PSAWPD']=np.where(bmnct[i+'EXWTPR']==999,999,np.where(bmnct[i+'PSAWTPR']==999,999,bmnct[i+'EXWTPR']-bmnct[i+'PSAWTPR']))
+for i in loclist:
+    bmnct[i+'SSYWTD']=np.where(bmnct[i+'EXWT']==999,999,np.where(bmnct[i+'SSYWT']==999,999,bmnct[i+'EXWT']-bmnct[i+'SSYWT']))
+for i in loclist:
+    bmnct[i+'SSYWPD']=np.where(bmnct[i+'EXWTPR']==999,999,np.where(bmnct[i+'SSYWTPR']==999,999,bmnct[i+'EXWTPR']-bmnct[i+'SSYWTPR']))
+bmnct.to_file(path+'bmn3/bmnct3.shp')
+bmnct=bmnct.drop('geometry',axis=1)
+bmnct.to_csv(path+'bmn3/bmnct3.csv',index=False)
 
 
 
