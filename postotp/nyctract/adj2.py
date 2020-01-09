@@ -218,7 +218,6 @@ adjlist=['36081000100','36081000200','36081000400','36081000600','36081000700','
 #adjlist=['36085004000','36085005900','36085011201','36085011401','36085018100']
 
 
-
 #adjlist=['36005000200','36005000400','36005002400','36005003300','36005003500','36005003700','36005003800','36005003900',
 #         '36005004001','36005004100','36005004300','36005004400','36005005100','36005005300','36005006500','36005006700',
 #         '36005007400','36005007500','36005007800','36005007900','36005008500','36005009000','36005013100','36005013300',
@@ -308,6 +307,19 @@ adjlist=['36081000100','36081000200','36081000400','36081000600','36081000700','
 #         '36085015100','36085015601','36085017007','36085017009','36085017010','36085017700','36085018100','36085018702',
 #         '36085020803','36085022600','36085032300']
 
+# Work Adj
+#adjlist=['36005000200','36005000400','36005002400','36005003300','36005003500','36005003700','36005003800','36005003900',
+#         '36005004001','36005004100','36005004300','36005004400','36005005100','36005005300','36005006500','36005006700',
+#         '36005007400','36005007500','36005007800','36005007900','36005008500','36005009000','36005013100','36005013300',
+#         '36005015300','36005016500','36005018302','36005020400','36005021002','36005021602','36005022403','36005022404',
+#         '36005022702','36005022800','36005022902','36005023200','36005024600','36005024700','36005025600','36005026400',
+#         '36005027402','36005027700','36005028100','36005028800','36005030900','36005031400','36005031600','36005031800',
+#         '36005032400','36005032600','36005032800','36005033000','36005033202','36005034000','36005034200','36005034400',
+#         '36005034500','36005034800','36005035100','36005035600','36005035800','36005035900','36005036000','36005036400',
+#         '36005036700','36005037200','36005037600','36005038000','36005038302','36005038500','36005038700','36005038800',
+#         '36005039000','36005039100','36005039300','36005039400','36005039600','36005039800','36005040400','36005040600',
+#         '36005040800','36005041800','36005042000','36005042200','36005042400','36005042800','36005043000','36005043100',
+#         '36005043500','36005044200','36005045600','36005046202','36005048400','36005050400']
 
 
 # Load quadstate blokc point shapefile
@@ -434,7 +446,7 @@ def parallelize(data, func):
     pool.join()
     return dt
 
-
+# Res
 if __name__=='__main__':
     location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycrestractptadjfinal',dtype=str)
     location=location[np.isin(location['censustract'],adjlist)].reset_index(drop=True)
@@ -485,7 +497,56 @@ if __name__=='__main__':
         fig.savefig(path+'nyctract/res3/'+destination.loc[i,'id']+'ct.jpg', dpi=300)
     print(datetime.datetime.now()-start)
 
-
+## Work
+#if __name__=='__main__':
+#    location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycworktractptadjfinal',dtype=str)
+#    location=location[np.isin(location['censustract'],adjlist)].reset_index(drop=True)
+#    location['id']=['ADJRES'+str(x).zfill(11) for x in location['censustract']]
+#    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlatfinal'],location['workintlongfinal'])]
+#    destination=location.loc[0:max(location.count())-1,['id','latlong']]
+#    for i in destination.index:
+#        df=parallelize(arrivaltime,worktravelshed)
+#        df['TTMEDIAN']=df.median(skipna=True,axis=1)
+#        df=df['TTMEDIAN'].sort_index()
+#        df.name=destination.loc[i,'id']
+#        df.to_csv(path+'nyctract/work3/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
+#    # Join travelsheds to block shapefile
+#    wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
+#    wtbk.crs={'init': 'epsg:4326'}
+#    wtbk=wtbk[['blockid','geometry']]    
+#    for i in destination.index:
+#        tp=pd.read_csv(path+'nyctract/work3/'+destination.loc[i,'id']+'.csv',dtype=str)
+#        tp.iloc[:,1]=pd.to_numeric(tp.iloc[:,1])
+#        wtbk=wtbk.merge(tp,on='blockid')
+#    # Join travelsheds to tract shapefile
+#    wtbk=wtbk.replace(999,np.nan)
+#    loclist=wtbk.columns[1:]
+#    wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
+#    wtbk=wtbk.groupby(['tractid'])[loclist].median(skipna=True)
+#    wtbk=wtbk.replace(np.nan,999)
+#    wtbk=wtbk.reset_index()
+#    wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+#    wtct.crs={'init': 'epsg:4326'}
+#    wtct=wtct[['tractid','geometry']]
+#    wtct=wtct.merge(wtbk,on='tractid')
+#    for i in destination.index:
+#        # Create tract level map
+#        wtctmap=wtct.loc[wtct[destination.loc[i,'id']]<=120,[destination.loc[i,'id'],'geometry']]
+#        wtctmap=wtctmap.to_crs(epsg=3857)
+#        fig,ax=plt.subplots(1,figsize=(11,8.5))
+#        plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
+#        ax=wtctmap.plot(figsize=(11,8.5),edgecolor=None,column=destination.loc[i,'id'],cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
+#        add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
+#        ax.set_axis_off()
+#        ax.set_title('AM Peak Transit Travel Time (Minutes) to '+destination.loc[i,'id'],fontdict={'fontsize':'16','fontweight':'10'})
+#        sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=120))
+#        sm._A=[]
+#        divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
+#        cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
+#        cbar=fig.colorbar(sm,cax=cax)
+#        fig.tight_layout()
+#        fig.savefig(path+'nyctract/work3/'+destination.loc[i,'id']+'ct.jpg', dpi=300)
+#    print(datetime.datetime.now()-start)
 
 
 
