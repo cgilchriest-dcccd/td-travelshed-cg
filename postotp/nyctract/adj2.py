@@ -219,7 +219,9 @@ adjlist=['36081006501','36081009500','36081009700','36081010100','36081011300','
          '36081080301','36081091602','36081094203','36081096400','36081097300','36081099705','36081099802','36081099900',
          '36081100801','36081101001','36081101002','36081101700','36081102900','36081103202','36081105900','36081108500',
          '36081109900','36081111300','36081112300','36081112900','36081113300','36081114700','36081115100','36081115500',
-         '36081115900','36081117500','36081118100','36081124100','36081126700','36081127700','36081129103',]
+         '36081115900','36081117500','36081118100','36081124100','36081126700','36081127700','36081129103','36081137700',
+         '36081144700','36081146300','36081146700','36081147900','36081148300','36081150701','36081150702','36081155101',
+         '36081157901','36081162100']
 
 #adjlist=['36085001800','36085002001','36085003900','36085004000','36085005900','36085007700','36085009602','36085011201',
 #         '36085011401','36085011402','36085012805','36085013800','36085014604','36085014606','36085014607','36085014700',
@@ -453,12 +455,12 @@ if __name__=='__main__':
     location['id']=['ADJRES'+str(x).zfill(11) for x in location['censustract']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
     destination=location.loc[0:max(location.count())-1,['id','latlong']]
-#    for i in destination.index:
-#        df=parallelize(arrivaltime,restravelshed)
-#        df['TTMEDIAN']=df.median(skipna=True,axis=1)
-#        df=df['TTMEDIAN'].sort_index()
-#        df.name=destination.loc[i,'id']
-#        df.to_csv(path+'nyctract/res3/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
+    for i in destination.index:
+        df=parallelize(arrivaltime,restravelshed)
+        df['TTMEDIAN']=df.median(skipna=True,axis=1)
+        df=df['TTMEDIAN'].sort_index()
+        df.name=destination.loc[i,'id']
+        df.to_csv(path+'nyctract/res3/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
     # Join travelsheds to block shapefile
     wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
     wtbk.crs={'init': 'epsg:4326'}
