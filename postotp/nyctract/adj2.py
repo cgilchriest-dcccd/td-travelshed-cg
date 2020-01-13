@@ -702,39 +702,6 @@ for i in resloclist:
                 np.where(resbkwac[i]<=115,112.5,
                 np.where(resbkwac[i]<=120,117.5,
                 np.nan))))))))))))))))))))))))
-adjresbkgravity=pd.DataFrame(index=adjresloclist,columns=['WAC1-10','WAC11-20','WAC21-30','WAC31-40','WAC41-50','WAC51-60',
-                                                          'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
-                                                          'GRAVITYWAC'])
-for i in adjresloclist:
-    tp=sum(adjresbkwac.loc[adjresbkwac[i]==5,'wac'])
-    adjresbkgravity.loc[i,'WAC1-10']=tp
-    tp=sum(adjresbkwac.loc[adjresbkwac[i]==15,'wac'])
-    adjresbkgravity.loc[i,'WAC11-20']=tp
-    tp=sum(adjresbkwac.loc[adjresbkwac[i]==25,'wac'])
-    adjresbkgravity.loc[i,'WAC21-30']=tp
-    tp=sum(adjresbkwac.loc[adjresbkwac[i]==35,'wac'])
-    adjresbkgravity.loc[i,'WAC31-40']=tp
-    tp=sum(adjresbkwac.loc[adjresbkwac[i]==45,'wac'])
-    adjresbkgravity.loc[i,'WAC41-50']=tp
-    tp=sum(adjresbkwac.loc[adjresbkwac[i]==55,'wac'])
-    adjresbkgravity.loc[i,'WAC51-60']=tp
-    adjresbkgravity.loc[i,'GWAC1-10']=(adjresbkgravity.loc[i,'WAC1-10'])/(5**2)
-    adjresbkgravity.loc[i,'GWAC11-20']=(adjresbkgravity.loc[i,'WAC11-20'])/(15**2)
-    adjresbkgravity.loc[i,'GWAC21-30']=(adjresbkgravity.loc[i,'WAC21-30'])/(25**2)
-    adjresbkgravity.loc[i,'GWAC31-40']=(adjresbkgravity.loc[i,'WAC31-40'])/(35**2)
-    adjresbkgravity.loc[i,'GWAC41-50']=(adjresbkgravity.loc[i,'WAC41-50'])/(45**2)
-    adjresbkgravity.loc[i,'GWAC51-60']=(adjresbkgravity.loc[i,'WAC51-60'])/(55**2)
-    adjresbkgravity.loc[i,'GRAVITYWAC']=adjresbkgravity.loc[i,'GWAC1-10']+adjresbkgravity.loc[i,'GWAC11-20']+adjresbkgravity.loc[i,'GWAC21-30']+adjresbkgravity.loc[i,'GWAC31-40']+adjresbkgravity.loc[i,'GWAC41-50']+adjresbkgravity.loc[i,'GWAC51-60']
-resbkgravity=pd.read_csv(path+'nyctract/resbkgravity.csv',dtype=str)
-resbkgravity=resbkgravity.set_index('Unnamed: 0')
-for i in resbkgravity.columns:
-    resbkgravity[i]=pd.to_numeric(resbkgravity[i])
-for i in adjlist:
-    resbkgravity.loc['RES'+i,:]=adjresbkgravity.loc['ADJRES'+i,:]
-resbkgravity.to_csv(path+'nyctract/resbkgravity2.csv',index=True)
-
-
-
 resbkgravity=pd.DataFrame(index=resloclist,columns=['WAC1-5','WAC6-10','WAC11-15','WAC16-20','WAC21-25','WAC26-30',
                                                     'WAC31-35','WAC36-40','WAC41-45','WAC46-50','WAC51-55','WAC56-60',
                                                     'WAC61-65','WAC66-70','WAC71-75','WAC76-80','WAC81-85','WAC86-90',
@@ -742,26 +709,38 @@ resbkgravity=pd.DataFrame(index=resloclist,columns=['WAC1-5','WAC6-10','WAC11-15
                                                     'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
                                                     'GRAVITYWAC'])
 for i in resloclist:
-    tp=sum(resbkwac.loc[resbkwac[i]==5,'wac'])
-    resbkgravity.loc[i,'WAC1-10']=tp
-    tp=sum(resbkwac.loc[resbkwac[i]==15,'wac'])
-    resbkgravity.loc[i,'WAC11-20']=tp
-    tp=sum(resbkwac.loc[resbkwac[i]==25,'wac'])
-    resbkgravity.loc[i,'WAC21-30']=tp
-    tp=sum(resbkwac.loc[resbkwac[i]==35,'wac'])
-    resbkgravity.loc[i,'WAC31-40']=tp
-    tp=sum(resbkwac.loc[resbkwac[i]==45,'wac'])
-    resbkgravity.loc[i,'WAC41-50']=tp
-    tp=sum(resbkwac.loc[resbkwac[i]==55,'wac'])
-    resbkgravity.loc[i,'WAC51-60']=tp
-    resbkgravity.loc[i,'GWAC1-10']=(resbkgravity.loc[i,'WAC1-10'])/(5**2)
-    resbkgravity.loc[i,'GWAC11-20']=(resbkgravity.loc[i,'WAC11-20'])/(15**2)
-    resbkgravity.loc[i,'GWAC21-30']=(resbkgravity.loc[i,'WAC21-30'])/(25**2)
-    resbkgravity.loc[i,'GWAC31-40']=(resbkgravity.loc[i,'WAC31-40'])/(35**2)
-    resbkgravity.loc[i,'GWAC41-50']=(resbkgravity.loc[i,'WAC41-50'])/(45**2)
-    resbkgravity.loc[i,'GWAC51-60']=(resbkgravity.loc[i,'WAC51-60'])/(55**2)
+    resbkgravity.loc[i,'WAC1-5']=sum(resbkwac.loc[resbkwac[i]==2.5,'wac'])
+    resbkgravity.loc[i,'WAC6-10']=sum(resbkwac.loc[resbkwac[i]==7.5,'wac'])
+    resbkgravity.loc[i,'WAC11-15']=sum(resbkwac.loc[resbkwac[i]==12.5,'wac'])
+    resbkgravity.loc[i,'WAC16-20']=sum(resbkwac.loc[resbkwac[i]==17.5,'wac'])
+    resbkgravity.loc[i,'WAC21-25']=sum(resbkwac.loc[resbkwac[i]==22.5,'wac'])
+    resbkgravity.loc[i,'WAC26-30']=sum(resbkwac.loc[resbkwac[i]==27.5,'wac'])
+    resbkgravity.loc[i,'WAC31-35']=sum(resbkwac.loc[resbkwac[i]==32.5,'wac'])
+    resbkgravity.loc[i,'WAC36-40']=sum(resbkwac.loc[resbkwac[i]==37.5,'wac'])
+    resbkgravity.loc[i,'WAC41-45']=sum(resbkwac.loc[resbkwac[i]==42.5,'wac'])
+    resbkgravity.loc[i,'WAC46-50']=sum(resbkwac.loc[resbkwac[i]==47.5,'wac'])
+    resbkgravity.loc[i,'WAC51-55']=sum(resbkwac.loc[resbkwac[i]==52.5,'wac'])
+    resbkgravity.loc[i,'WAC56-60']=sum(resbkwac.loc[resbkwac[i]==57.5,'wac'])
+    resbkgravity.loc[i,'WAC61-65']=sum(resbkwac.loc[resbkwac[i]==62.5,'wac'])
+    resbkgravity.loc[i,'WAC66-70']=sum(resbkwac.loc[resbkwac[i]==67.5,'wac'])
+    resbkgravity.loc[i,'WAC71-75']=sum(resbkwac.loc[resbkwac[i]==72.5,'wac'])
+    resbkgravity.loc[i,'WAC76-80']=sum(resbkwac.loc[resbkwac[i]==77.5,'wac'])
+    resbkgravity.loc[i,'WAC81-85']=sum(resbkwac.loc[resbkwac[i]==82.5,'wac'])
+    resbkgravity.loc[i,'WAC86-90']=sum(resbkwac.loc[resbkwac[i]==87.5,'wac'])
+    resbkgravity.loc[i,'WAC91-95']=sum(resbkwac.loc[resbkwac[i]==92.5,'wac'])
+    resbkgravity.loc[i,'WAC96-100']=sum(resbkwac.loc[resbkwac[i]==97.5,'wac'])
+    resbkgravity.loc[i,'WAC101-105']=sum(resbkwac.loc[resbkwac[i]==102.5,'wac'])
+    resbkgravity.loc[i,'WAC106-110']=sum(resbkwac.loc[resbkwac[i]==107.5,'wac'])
+    resbkgravity.loc[i,'WAC111-115']=sum(resbkwac.loc[resbkwac[i]==112.5,'wac'])
+    resbkgravity.loc[i,'WAC116-120']=sum(resbkwac.loc[resbkwac[i]==117.5,'wac'])
+    resbkgravity.loc[i,'GWAC1-10']=(resbkgravity.loc[i,'WAC1-5']+resbkgravity.loc[i,'WAC6-10'])/(5**2)
+    resbkgravity.loc[i,'GWAC11-20']=(resbkgravity.loc[i,'WAC11-15']+resbkgravity.loc[i,'WAC16-20'])/(15**2)
+    resbkgravity.loc[i,'GWAC21-30']=(resbkgravity.loc[i,'WAC21-25']+resbkgravity.loc[i,'WAC26-30'])/(25**2)
+    resbkgravity.loc[i,'GWAC31-40']=(resbkgravity.loc[i,'WAC31-35']+resbkgravity.loc[i,'WAC36-40'])/(35**2)
+    resbkgravity.loc[i,'GWAC41-50']=(resbkgravity.loc[i,'WAC41-45']+resbkgravity.loc[i,'WAC46-50'])/(45**2)
+    resbkgravity.loc[i,'GWAC51-60']=(resbkgravity.loc[i,'WAC51-55']+resbkgravity.loc[i,'WAC56-60'])/(55**2)
     resbkgravity.loc[i,'GRAVITYWAC']=resbkgravity.loc[i,'GWAC1-10']+resbkgravity.loc[i,'GWAC11-20']+resbkgravity.loc[i,'GWAC21-30']+resbkgravity.loc[i,'GWAC31-40']+resbkgravity.loc[i,'GWAC41-50']+resbkgravity.loc[i,'GWAC51-60']
-resbkgravity.to_csv(path+'nyctract/resbkgravity.csv',index=True)
+resbkgravity.to_csv(path+'nyctract/resbkgravity3.csv',index=True)
 
 
 
