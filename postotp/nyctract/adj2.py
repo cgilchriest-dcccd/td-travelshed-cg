@@ -321,132 +321,140 @@ adjlist=['36005000200','36005000400','36005002400','36005003300','36005003500','
          '36085020803','36085022600','36085032300']
 
 # Work Adj
+adjlist=['36005000100','36005000400','36005001900','36005002400','36005003700','36005005001','36005005200','36005005300',
+         '36005006300','36005007500','36005007900','36005008500','36005009000','36005009800','36005011000','36005011502',
+         '36005011700','36005013300','36005015300','36005015700','36005016300','36005016500','36005020400','36005022902',
+         '36005023100','36005023200','36005024600','36005026400','36005027401','36005027402','36005028800','36005030900',
+         '36005031000','36005031600','36005032300','36005032400','36005035000','36005035100','36005036300','36005036700',
+         '36005037200','36005038500','36005039000','36005039100','36005039400','36005040400','36005040502','36005041500',
+         '36005043000','36005045600','36005046202']
+
+adjlist=['36047000200',]
 
 
+# Load quadstate blokc point shapefile
+bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
+bkpt.crs={'init': 'epsg:4326'}
 
-## Load quadstate blokc point shapefile
-#bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
-#bkpt.crs={'init': 'epsg:4326'}
-#
-## Set typical day
-#typicaldate='2018/06/06'
-#
-## Create arrival time list
-#arrivaltimeinterval=10 # in minutes
-#arrivaltimestart='07:00:00'
-#arrivaltimeend='10:00:00'
-#arrivaltimestart=datetime.datetime.strptime(arrivaltimestart,'%H:%M:%S')
-#arrivaltimeend=datetime.datetime.strptime(arrivaltimeend,'%H:%M:%S')
-#arrivaltimeincrement=arrivaltimestart
-#arrivaltime=[]
-#while arrivaltimeincrement<=arrivaltimeend:
-#    arrivaltime.append(datetime.datetime.strftime(arrivaltimeincrement,'%H:%M:%S'))
-#    arrivaltimeincrement+=datetime.timedelta(seconds=arrivaltimeinterval*60)
-#
-## Set maximum number of transfers
-#maxTransfers=3 # 4 boardings
-#
-## Set maximum walking distance
-#maxWalkDistance=1000 # in meters
-#
-## Set cut off points between 0-120 mins
-#cutoffinterval=2 # in minutes
-#cutoffstart=0
-#cutoffend=120
-#cutoffincrement=cutoffstart
-#cutoff=''
-#while cutoffincrement<cutoffend:
-#    cutoff+='&cutoffSec='+str((cutoffincrement+cutoffinterval)*60)
-#    cutoffincrement+=cutoffinterval
+# Set typical day
+typicaldate='2018/06/06'
 
-## Definie res travelshed function to generate isochrones and spatial join to Census Blocks
-#def restravelshed(arrt):
-#    bk=bkpt.copy()
-#    url='http://localhost:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
-#    url+='&fromPlace='+destination.loc[i,'latlong']
-#    url+='&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
-#    url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=0'+cutoff
-#    headers={'Accept':'application/json'}  
-#    req=requests.get(url=url,headers=headers)
-#    js=req.json()
-#    iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
-#    bk['T'+arrt[0:2]+arrt[3:5]]=999
-#    cut=range(cutoffend,cutoffstart,-cutoffinterval)
-#    bkiso=gpd.sjoin(bk,iso.loc[iso['time']==cut[0]*60],how='left',op='within')
-#    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-#    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[0]-cutoffinterval/2
-#    for k in range(0,(len(cut)-1)):
-#        if (iso.loc[iso['time']==cut[k+1]*60,'geometry'].notna()).bool():
-#            if len(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2])!=0:
-#                try:
-#                    bkiso=gpd.sjoin(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2],
-#                                    iso.loc[iso['time']==cut[k+1]*60],how='left',op='within')
-#                    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-#                    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[k+1]-cutoffinterval/2
-#                except ValueError:
-#                    print(destination.loc[i,'id']+' '+arrt+' '+
-#                          str(cut[k+1])+'-minute isochrone has no Census Block in it!')
-#            else:
-#                print(destination.loc[i,'id']+' '+arrt+' '+
-#                      str(cut[k])+'-minute isochrone has no Census Block in it!')
-#        else:
-#            print(destination.loc[i,'id']+' '+arrt+' '+
-#                  str(cut[k+1])+'-minute isochrone has no geometry!')
-#    bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
-#    bk=bk.drop(['lat','long','geometry'],axis=1)
-#    bk=bk.set_index('blockid')
-#    return bk
+# Create arrival time list
+arrivaltimeinterval=10 # in minutes
+arrivaltimestart='07:00:00'
+arrivaltimeend='10:00:00'
+arrivaltimestart=datetime.datetime.strptime(arrivaltimestart,'%H:%M:%S')
+arrivaltimeend=datetime.datetime.strptime(arrivaltimeend,'%H:%M:%S')
+arrivaltimeincrement=arrivaltimestart
+arrivaltime=[]
+while arrivaltimeincrement<=arrivaltimeend:
+    arrivaltime.append(datetime.datetime.strftime(arrivaltimeincrement,'%H:%M:%S'))
+    arrivaltimeincrement+=datetime.timedelta(seconds=arrivaltimeinterval*60)
 
-## Definie work travelshed function to generate isochrones and spatial join to Census Blocks
-#def worktravelshed(arrt):
-#    bk=bkpt.copy()
-#    url='http://localhost:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
-#    url+='&fromPlace='+destination.loc[i,'latlong']+'&toPlace='+destination.loc[i,'latlong']
-#    url+='&arriveBy=true&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
-#    url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=-1'+cutoff
-#    headers={'Accept':'application/json'}  
-#    req=requests.get(url=url,headers=headers)
-#    js=req.json()
-#    iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
-#    bk['T'+arrt[0:2]+arrt[3:5]]=999
-#    cut=range(cutoffend,cutoffstart,-cutoffinterval)
-#    bkiso=gpd.sjoin(bk,iso.loc[iso['time']==cut[0]*60],how='left',op='within')
-#    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-#    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[0]-cutoffinterval/2
-#    for k in range(0,(len(cut)-1)):
-#        if (iso.loc[iso['time']==cut[k+1]*60,'geometry'].notna()).bool():
-#            if len(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2])!=0:
-#                try:
-#                    bkiso=gpd.sjoin(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2],
-#                                    iso.loc[iso['time']==cut[k+1]*60],how='left',op='within')
-#                    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-#                    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[k+1]-cutoffinterval/2
-#                except ValueError:
-#                    print(destination.loc[i,'id']+' '+arrt+' '+
-#                          str(cut[k+1])+'-minute isochrone has no Census Block in it!')
-#            else:
-#                print(destination.loc[i,'id']+' '+arrt+' '+
-#                      str(cut[k])+'-minute isochrone has no Census Block in it!')
-#        else:
-#            print(destination.loc[i,'id']+' '+arrt+' '+
-#                  str(cut[k+1])+'-minute isochrone has no geometry!')
-#    bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
-#    bk=bk.drop(['lat','long','geometry'],axis=1)
-#    bk=bk.set_index('blockid')
-#    return bk
+# Set maximum number of transfers
+maxTransfers=3 # 4 boardings
+
+# Set maximum walking distance
+maxWalkDistance=1000 # in meters
+
+# Set cut off points between 0-120 mins
+cutoffinterval=2 # in minutes
+cutoffstart=0
+cutoffend=120
+cutoffincrement=cutoffstart
+cutoff=''
+while cutoffincrement<cutoffend:
+    cutoff+='&cutoffSec='+str((cutoffincrement+cutoffinterval)*60)
+    cutoffincrement+=cutoffinterval
+
+# Definie res travelshed function to generate isochrones and spatial join to Census Blocks
+def restravelshed(arrt):
+    bk=bkpt.copy()
+    url='http://localhost:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
+    url+='&fromPlace='+destination.loc[i,'latlong']
+    url+='&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
+    url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=0'+cutoff
+    headers={'Accept':'application/json'}  
+    req=requests.get(url=url,headers=headers)
+    js=req.json()
+    iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
+    bk['T'+arrt[0:2]+arrt[3:5]]=999
+    cut=range(cutoffend,cutoffstart,-cutoffinterval)
+    bkiso=gpd.sjoin(bk,iso.loc[iso['time']==cut[0]*60],how='left',op='within')
+    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
+    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[0]-cutoffinterval/2
+    for k in range(0,(len(cut)-1)):
+        if (iso.loc[iso['time']==cut[k+1]*60,'geometry'].notna()).bool():
+            if len(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2])!=0:
+                try:
+                    bkiso=gpd.sjoin(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2],
+                                    iso.loc[iso['time']==cut[k+1]*60],how='left',op='within')
+                    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
+                    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[k+1]-cutoffinterval/2
+                except ValueError:
+                    print(destination.loc[i,'id']+' '+arrt+' '+
+                          str(cut[k+1])+'-minute isochrone has no Census Block in it!')
+            else:
+                print(destination.loc[i,'id']+' '+arrt+' '+
+                      str(cut[k])+'-minute isochrone has no Census Block in it!')
+        else:
+            print(destination.loc[i,'id']+' '+arrt+' '+
+                  str(cut[k+1])+'-minute isochrone has no geometry!')
+    bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
+    bk=bk.drop(['lat','long','geometry'],axis=1)
+    bk=bk.set_index('blockid')
+    return bk
+
+# Definie work travelshed function to generate isochrones and spatial join to Census Blocks
+def worktravelshed(arrt):
+    bk=bkpt.copy()
+    url='http://localhost:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
+    url+='&fromPlace='+destination.loc[i,'latlong']+'&toPlace='+destination.loc[i,'latlong']
+    url+='&arriveBy=true&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
+    url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=-1'+cutoff
+    headers={'Accept':'application/json'}  
+    req=requests.get(url=url,headers=headers)
+    js=req.json()
+    iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
+    bk['T'+arrt[0:2]+arrt[3:5]]=999
+    cut=range(cutoffend,cutoffstart,-cutoffinterval)
+    bkiso=gpd.sjoin(bk,iso.loc[iso['time']==cut[0]*60],how='left',op='within')
+    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
+    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[0]-cutoffinterval/2
+    for k in range(0,(len(cut)-1)):
+        if (iso.loc[iso['time']==cut[k+1]*60,'geometry'].notna()).bool():
+            if len(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2])!=0:
+                try:
+                    bkiso=gpd.sjoin(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2],
+                                    iso.loc[iso['time']==cut[k+1]*60],how='left',op='within')
+                    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
+                    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[k+1]-cutoffinterval/2
+                except ValueError:
+                    print(destination.loc[i,'id']+' '+arrt+' '+
+                          str(cut[k+1])+'-minute isochrone has no Census Block in it!')
+            else:
+                print(destination.loc[i,'id']+' '+arrt+' '+
+                      str(cut[k])+'-minute isochrone has no Census Block in it!')
+        else:
+            print(destination.loc[i,'id']+' '+arrt+' '+
+                  str(cut[k+1])+'-minute isochrone has no geometry!')
+    bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
+    bk=bk.drop(['lat','long','geometry'],axis=1)
+    bk=bk.set_index('blockid')
+    return bk
 
 
-## Define parallel multiprocessing function
-#def parallelize(data, func):
-#    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-4)))
-#    pool=mp.Pool(mp.cpu_count()-4)
-#    dt=pd.DataFrame()
-#    for i in data_split:
-#        ds=pd.concat(pool.map(func,i),axis=1)
-#        dt=pd.concat([dt,ds],axis=1)
-#    pool.close()
-#    pool.join()
-#    return dt
+# Define parallel multiprocessing function
+def parallelize(data, func):
+    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-4)))
+    pool=mp.Pool(mp.cpu_count()-4)
+    dt=pd.DataFrame()
+    for i in data_split:
+        ds=pd.concat(pool.map(func,i),axis=1)
+        dt=pd.concat([dt,ds],axis=1)
+    pool.close()
+    pool.join()
+    return dt
 
 ## Res
 #if __name__=='__main__':
@@ -499,96 +507,96 @@ adjlist=['36005000200','36005000400','36005002400','36005003300','36005003500','
 #        fig.savefig(path+'nyctract/res3/'+destination.loc[i,'id']+'ct.jpg', dpi=300)
 #    print(datetime.datetime.now()-start)
 
-## Work
-#if __name__=='__main__':
-#    location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycworktractptadjfinal',dtype=str)
-#    location=location[np.isin(location['censustract'],adjlist)].reset_index(drop=True)
-#    location['id']=['ADJRES'+str(x).zfill(11) for x in location['censustract']]
-#    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlatfinal'],location['workintlongfinal'])]
-#    destination=location.loc[0:max(location.count())-1,['id','latlong']]
-#    for i in destination.index:
-#        df=parallelize(arrivaltime,worktravelshed)
-#        df['TTMEDIAN']=df.median(skipna=True,axis=1)
-#        df=df['TTMEDIAN'].sort_index()
-#        df.name=destination.loc[i,'id']
-#        df.to_csv(path+'nyctract/work3/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
-#    # Join travelsheds to block shapefile
-#    wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
-#    wtbk.crs={'init': 'epsg:4326'}
-#    wtbk=wtbk[['blockid','geometry']]    
-#    for i in destination.index:
-#        tp=pd.read_csv(path+'nyctract/work3/'+destination.loc[i,'id']+'.csv',dtype=str)
-#        tp.iloc[:,1]=pd.to_numeric(tp.iloc[:,1])
-#        wtbk=wtbk.merge(tp,on='blockid')
-#    # Join travelsheds to tract shapefile
-#    wtbk=wtbk.replace(999,np.nan)
-#    loclist=wtbk.columns[1:]
-#    wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
-#    wtbk=wtbk.groupby(['tractid'])[loclist].median(skipna=True)
-#    wtbk=wtbk.replace(np.nan,999)
-#    wtbk=wtbk.reset_index()
-#    wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-#    wtct.crs={'init': 'epsg:4326'}
-#    wtct=wtct[['tractid','geometry']]
-#    wtct=wtct.merge(wtbk,on='tractid')
-#    for i in destination.index:
-#        # Create tract level map
-#        wtctmap=wtct.loc[wtct[destination.loc[i,'id']]<=120,[destination.loc[i,'id'],'geometry']]
-#        wtctmap=wtctmap.to_crs(epsg=3857)
-#        fig,ax=plt.subplots(1,figsize=(11,8.5))
-#        plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
-#        ax=wtctmap.plot(figsize=(11,8.5),edgecolor=None,column=destination.loc[i,'id'],cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
-#        add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
-#        ax.set_axis_off()
-#        ax.set_title('AM Peak Transit Travel Time (Minutes) to '+destination.loc[i,'id'],fontdict={'fontsize':'16','fontweight':'10'})
-#        sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=120))
-#        sm._A=[]
-#        divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
-#        cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
-#        cbar=fig.colorbar(sm,cax=cax)
-#        fig.tight_layout()
-#        fig.savefig(path+'nyctract/work3/'+destination.loc[i,'id']+'ct.jpg', dpi=300)
-#    print(datetime.datetime.now()-start)
+# Work
+if __name__=='__main__':
+    location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycworktractptadjfinal',dtype=str)
+    location=location[np.isin(location['censustract'],adjlist)].reset_index(drop=True)
+    location['id']=['ADJWORK'+str(x).zfill(11) for x in location['censustract']]
+    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlatfinal'],location['workintlongfinal'])]
+    destination=location.loc[0:max(location.count())-1,['id','latlong']]
+    for i in destination.index:
+        df=parallelize(arrivaltime,worktravelshed)
+        df['TTMEDIAN']=df.median(skipna=True,axis=1)
+        df=df['TTMEDIAN'].sort_index()
+        df.name=destination.loc[i,'id']
+        df.to_csv(path+'nyctract/work3/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
+    # Join travelsheds to block shapefile
+    wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
+    wtbk.crs={'init': 'epsg:4326'}
+    wtbk=wtbk[['blockid','geometry']]    
+    for i in destination.index:
+        tp=pd.read_csv(path+'nyctract/work3/'+destination.loc[i,'id']+'.csv',dtype=str)
+        tp.iloc[:,1]=pd.to_numeric(tp.iloc[:,1])
+        wtbk=wtbk.merge(tp,on='blockid')
+    # Join travelsheds to tract shapefile
+    wtbk=wtbk.replace(999,np.nan)
+    loclist=wtbk.columns[1:]
+    wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
+    wtbk=wtbk.groupby(['tractid'])[loclist].median(skipna=True)
+    wtbk=wtbk.replace(np.nan,999)
+    wtbk=wtbk.reset_index()
+    wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+    wtct.crs={'init': 'epsg:4326'}
+    wtct=wtct[['tractid','geometry']]
+    wtct=wtct.merge(wtbk,on='tractid')
+    for i in destination.index:
+        # Create tract level map
+        wtctmap=wtct.loc[wtct[destination.loc[i,'id']]<=120,[destination.loc[i,'id'],'geometry']]
+        wtctmap=wtctmap.to_crs(epsg=3857)
+        fig,ax=plt.subplots(1,figsize=(11,8.5))
+        plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
+        ax=wtctmap.plot(figsize=(11,8.5),edgecolor=None,column=destination.loc[i,'id'],cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
+        add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
+        ax.set_axis_off()
+        ax.set_title('AM Peak Transit Travel Time (Minutes) to '+destination.loc[i,'id'],fontdict={'fontsize':'16','fontweight':'10'})
+        sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=120))
+        sm._A=[]
+        divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
+        cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
+        cbar=fig.colorbar(sm,cax=cax)
+        fig.tight_layout()
+        fig.savefig(path+'nyctract/work3/'+destination.loc[i,'id']+'ct.jpg', dpi=300)
+    print(datetime.datetime.now()-start)
 
 
 
-# Summarize travelshed outputs
-# NYC Res Censust Blocks
-adjres=pd.DataFrame()
-for i in adjlist:
-    tp=pd.read_csv(path+'nyctract/res3/ADJRES'+i+'.csv',dtype=str)
-    tp=tp.set_index('blockid')
-    adjres=pd.concat([adjres,tp],axis=1)
-resbk=pd.read_csv(path+'nyctract/resbk2.csv',dtype=str)
-resbk=resbk.set_index('blockid')
-resloclist=resbk.columns
-resbk=pd.concat([resbk,adjres],axis=1)
-for i in adjlist:
-    resbk['RES'+i]=resbk['ADJRES'+i]
-resbk=resbk[resloclist]
-resbk.to_csv(path+'nyctract/resbk3.csv',index=True)
-# NYC Res Censust Tracts
-adjresloclist=adjres.columns
-for i in adjres.columns:
-    adjres[i]=pd.to_numeric(adjres[i])
-adjres=adjres.replace(999,np.nan)
-adjres['tractid']=[str(x)[0:11] for x in adjres.index]
-adjres=adjres.groupby(['tractid'])[adjresloclist].median(skipna=True)
-resct=pd.read_csv(path+'nyctract/resct2.csv',dtype=str)
-resct=resct.set_index('tractid')
-resloclist=resct.columns
-for i in resct.columns:
-    resct[i]=pd.to_numeric(resct[i])
-resct=pd.concat([resct,adjres],axis=1)
-for i in adjlist:
-    resct['RES'+i]=resct['ADJRES'+i]
-resct=resct[resloclist]
-resct.to_csv(path+'nyctract/resct3.csv',index=True,na_rep='999')
+## Summarize travelshed outputs
+## NYC Res Censust Blocks
+#adjres=pd.DataFrame()
+#for i in adjlist:
+#    tp=pd.read_csv(path+'nyctract/res3/ADJRES'+i+'.csv',dtype=str)
+#    tp=tp.set_index('blockid')
+#    adjres=pd.concat([adjres,tp],axis=1)
+#resbk=pd.read_csv(path+'nyctract/resbk2.csv',dtype=str)
+#resbk=resbk.set_index('blockid')
+#resloclist=resbk.columns
+#resbk=pd.concat([resbk,adjres],axis=1)
+#for i in adjlist:
+#    resbk['RES'+i]=resbk['ADJRES'+i]
+#resbk=resbk[resloclist]
+#resbk.to_csv(path+'nyctract/resbk3.csv',index=True)
+## NYC Res Censust Tracts
+#adjresloclist=adjres.columns
+#for i in adjres.columns:
+#    adjres[i]=pd.to_numeric(adjres[i])
+#adjres=adjres.replace(999,np.nan)
+#adjres['tractid']=[str(x)[0:11] for x in adjres.index]
+#adjres=adjres.groupby(['tractid'])[adjresloclist].median(skipna=True)
+#resct=pd.read_csv(path+'nyctract/resct2.csv',dtype=str)
+#resct=resct.set_index('tractid')
+#resloclist=resct.columns
+#for i in resct.columns:
+#    resct[i]=pd.to_numeric(resct[i])
+#resct=pd.concat([resct,adjres],axis=1)
+#for i in adjlist:
+#    resct['RES'+i]=resct['ADJRES'+i]
+#resct=resct[resloclist]
+#resct.to_csv(path+'nyctract/resct3.csv',index=True,na_rep='999')
 
 
-#
-#
-#
+
+
+
 ## NYC Work Censust Blocks
 #adjwork=pd.DataFrame()
 #for i in adjlist:
@@ -620,90 +628,36 @@ resct.to_csv(path+'nyctract/resct3.csv',index=True,na_rep='999')
 #    workct['WORK'+i]=workct['ADJWORK'+i]
 #workct=workct[workloclist]
 #workct.to_csv(path+'nyctract/workct2.csv',index=True,na_rep='999')
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-## Map checks
-#
-## Define add basemap
-#def add_basemap(ax, zoom, url='http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'):
-#    xmin, xmax, ymin, ymax = ax.axis()
-#    basemap, extent = ctx.bounds2img(xmin, ymin, xmax, ymax, zoom=zoom, url=url)
-#    ax.imshow(basemap, extent=extent, interpolation='bilinear')
-#    ax.axis((xmin, xmax, ymin, ymax))
-#
-## Map adjusted walk and transit
-#ct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-#ct.crs={'init': 'epsg:4326'}
-#ct=ct[['tractid','geometry']]
-## Res
-#resct=pd.read_csv(path+'nyctract/resct2.csv',dtype=str)
-#for i in resct.columns[1:]:
-#    resct[i]=pd.to_numeric(resct[i])
-#resct=ct.merge(resct,on='tractid')
-#for i in ['RES'+x for x in adjlist]:
-#    resctmap=resct.loc[resct[i]<=120,[i,'geometry']]
-#    resctmap=resctmap.to_crs(epsg=3857)
-#    fig,ax=plt.subplots(1,figsize=(11,8.5))
-#    plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
-#    ax=resctmap.plot(figsize=(11,8.5),edgecolor=None,column=i,cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
-#    add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
-#    ax.set_axis_off()
-#    sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=90))
-#    sm._A=[]
-#    divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
-#    cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
-#    cbar=fig.colorbar(sm,cax=cax)
-#    fig.tight_layout()
-#    fig.savefig(path+'nyctract/res/ADJRES'+i+'ct.jpg', dpi=300)
-## Work
-#workct=pd.read_csv(path+'nyctract/workct2.csv',dtype=str)
-#for i in workct.columns[1:]:
-#    workct[i]=pd.to_numeric(workct[i])
-#workct=ct.merge(workct,on='tractid')
-#for i in ['WORK'+x for x in adjlist]:
-#    workctmap=workct.loc[workct[i]<=120,[i,'geometry']]
-#    workctmap=workctmap.to_crs(epsg=3857)
-#    fig,ax=plt.subplots(1,figsize=(11,8.5))
-#    plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
-#    ax=workctmap.plot(figsize=(11,8.5),edgecolor=None,column=i,cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
-#    add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
-#    ax.set_axis_off()
-#    sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=90))
-#    sm._A=[]
-#    divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
-#    cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
-#    cbar=fig.colorbar(sm,cax=cax)
-#    fig.tight_layout()
-#    fig.savefig(path+'nyctract/work/ADJWORK'+i+'ct.jpg', dpi=300)
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Block Level Gravity Model
 ## Res Gravity
 #adjresbkwac=pd.DataFrame()
