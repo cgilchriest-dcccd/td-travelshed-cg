@@ -333,7 +333,7 @@ adjlist=['36047000200','36047000301','36047000700','36047001800','36047002000','
          '36047003600','36047003700','36047005202','36047005400','36047005601','36047006300','36047006600','36047007000',
          '36047007200','36047007700','36047008600','36047009200','36047009600','36047010000','36047010200','36047010400',
          '36047010600','36047011000','36047011400','36047012200','36047012600','36047012801','36047013400','36047014700',
-         '36047016500',]
+         '36047016500','36047016600','36047016800','36047017100','36047017200',]
 
 
 # Load quadstate blokc point shapefile
@@ -599,8 +599,6 @@ if __name__=='__main__':
 
 
 
-
-
 ## NYC Work Censust Blocks
 #adjwork=pd.DataFrame()
 #for i in adjlist:
@@ -662,68 +660,83 @@ if __name__=='__main__':
 
 
 
-## Block Level Gravity Model
-## Res Gravity
-#adjresbkwac=pd.DataFrame()
-#for i in adjlist:
-#    tp=pd.read_csv(path+'nyctract/res/ADJRES'+i+'.csv',dtype=str)
-#    tp=tp.set_index('blockid')
-#    adjresbkwac=pd.concat([adjresbkwac,tp],axis=1)
-#adjresloclist=adjresbkwac.columns
-#wac=pd.DataFrame()
-#for i in ['ct','nj','ny','pa']:
-#    tp=pd.read_csv(path+'lehd/'+str(i)+'_wac_S000_JT03_2015.csv',dtype=str)
-#    tp=tp[['w_geocode','C000']]
-#    wac=pd.concat([wac,tp],axis=0)
-#wac.columns=['blockid','wac']
-#wac=wac.set_index('blockid')
-#adjresbkwac=pd.merge(adjresbkwac,wac,how='left',left_index=True,right_index=True)
-#adjresbkwac['wac']=adjresbkwac['wac'].replace(np.nan,'0')
-#for i in adjresbkwac.columns:
-#    adjresbkwac[i]=pd.to_numeric(adjresbkwac[i])
-#for i in adjresloclist:
-#    adjresbkwac[i]=np.where(adjresbkwac[i]<=10,5,
-#                   np.where(adjresbkwac[i]<=20,15,
-#                   np.where(adjresbkwac[i]<=30,25,
-#                   np.where(adjresbkwac[i]<=40,35,
-#                   np.where(adjresbkwac[i]<=50,45,
-#                   np.where(adjresbkwac[i]<=60,55,
-#                   np.nan))))))
-#adjresbkgravity=pd.DataFrame(index=adjresloclist,columns=['WAC1-10','WAC11-20','WAC21-30','WAC31-40','WAC41-50','WAC51-60',
-#                                                          'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
-#                                                          'GRAVITYWAC'])
-#for i in adjresloclist:
-#    tp=sum(adjresbkwac.loc[adjresbkwac[i]==5,'wac'])
-#    adjresbkgravity.loc[i,'WAC1-10']=tp
-#    tp=sum(adjresbkwac.loc[adjresbkwac[i]==15,'wac'])
-#    adjresbkgravity.loc[i,'WAC11-20']=tp
-#    tp=sum(adjresbkwac.loc[adjresbkwac[i]==25,'wac'])
-#    adjresbkgravity.loc[i,'WAC21-30']=tp
-#    tp=sum(adjresbkwac.loc[adjresbkwac[i]==35,'wac'])
-#    adjresbkgravity.loc[i,'WAC31-40']=tp
-#    tp=sum(adjresbkwac.loc[adjresbkwac[i]==45,'wac'])
-#    adjresbkgravity.loc[i,'WAC41-50']=tp
-#    tp=sum(adjresbkwac.loc[adjresbkwac[i]==55,'wac'])
-#    adjresbkgravity.loc[i,'WAC51-60']=tp
-#    adjresbkgravity.loc[i,'GWAC1-10']=(adjresbkgravity.loc[i,'WAC1-10'])/(5**2)
-#    adjresbkgravity.loc[i,'GWAC11-20']=(adjresbkgravity.loc[i,'WAC11-20'])/(15**2)
-#    adjresbkgravity.loc[i,'GWAC21-30']=(adjresbkgravity.loc[i,'WAC21-30'])/(25**2)
-#    adjresbkgravity.loc[i,'GWAC31-40']=(adjresbkgravity.loc[i,'WAC31-40'])/(35**2)
-#    adjresbkgravity.loc[i,'GWAC41-50']=(adjresbkgravity.loc[i,'WAC41-50'])/(45**2)
-#    adjresbkgravity.loc[i,'GWAC51-60']=(adjresbkgravity.loc[i,'WAC51-60'])/(55**2)
-#    adjresbkgravity.loc[i,'GRAVITYWAC']=adjresbkgravity.loc[i,'GWAC1-10']+adjresbkgravity.loc[i,'GWAC11-20']+adjresbkgravity.loc[i,'GWAC21-30']+adjresbkgravity.loc[i,'GWAC31-40']+adjresbkgravity.loc[i,'GWAC41-50']+adjresbkgravity.loc[i,'GWAC51-60']
-#resbkgravity=pd.read_csv(path+'nyctract/resbkgravity.csv',dtype=str)
-#resbkgravity=resbkgravity.set_index('Unnamed: 0')
-#for i in resbkgravity.columns:
-#    resbkgravity[i]=pd.to_numeric(resbkgravity[i])
-#for i in adjlist:
-#    resbkgravity.loc['RES'+i,:]=adjresbkgravity.loc['ADJRES'+i,:]
-#resbkgravity.to_csv(path+'nyctract/resbkgravity2.csv',index=True)
-#
-#
-#
-#
-#
+# Block Level Gravity Model
+# Res Gravity
+resbkwac=pd.read_csv(path+'nyctract/resbk3.csv',dtype=str)
+resbkwac=resbkwac.set_index('blockid')
+resloclist=sorted(resbkwac.columns)
+wac=pd.DataFrame()
+for i in ['ct','nj','ny','pa']:
+    tp=pd.read_csv(path+'lehd/'+str(i)+'_wac_S000_JT03_2017.csv',dtype=str)
+    tp=tp[['w_geocode','C000']]
+    wac=pd.concat([wac,tp],axis=0)
+wac.columns=['blockid','wac']
+wac=wac.set_index('blockid')
+resbkwac=pd.merge(resbkwac,wac,how='left',left_index=True,right_index=True)
+resbkwac['wac']=resbkwac['wac'].replace(np.nan,'0')
+for i in resbkwac.columns:
+    resbkwac[i]=pd.to_numeric(resbkwac[i])
+for i in resloclist:
+    resbkwac[i]=np.where(resbkwac[i]<=5,2.5,
+                np.where(resbkwac[i]<=10,7.5,
+                np.where(resbkwac[i]<=15,12.5,
+                np.where(resbkwac[i]<=20,17.5,
+                np.where(resbkwac[i]<=25,22.5,
+                np.where(resbkwac[i]<=30,27.5,
+                np.where(resbkwac[i]<=35,32.5,
+                np.where(resbkwac[i]<=40,37.5,
+                np.where(resbkwac[i]<=45,42.5,
+                np.where(resbkwac[i]<=50,47.5,
+                np.where(resbkwac[i]<=55,52.5,
+                np.where(resbkwac[i]<=60,57.5,
+                np.where(resbkwac[i]<=65,62.5,
+                np.where(resbkwac[i]<=70,67.5,
+                np.where(resbkwac[i]<=75,72.5,
+                np.where(resbkwac[i]<=80,77.5,
+                np.where(resbkwac[i]<=85,82.5,
+                np.where(resbkwac[i]<=90,87.5,
+                np.where(resbkwac[i]<=95,92.5,
+                np.where(resbkwac[i]<=100,97.5,
+                np.where(resbkwac[i]<=105,102.5,
+                np.where(resbkwac[i]<=110,107.5,
+                np.where(resbkwac[i]<=115,112.5,
+                np.where(resbkwac[i]<=120,117.5,
+                np.nan))))))))))))))))))))))))
+adjresbkgravity=pd.DataFrame(index=adjresloclist,columns=['WAC1-10','WAC11-20','WAC21-30','WAC31-40','WAC41-50','WAC51-60',
+                                                          'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
+                                                          'GRAVITYWAC'])
+for i in adjresloclist:
+    tp=sum(adjresbkwac.loc[adjresbkwac[i]==5,'wac'])
+    adjresbkgravity.loc[i,'WAC1-10']=tp
+    tp=sum(adjresbkwac.loc[adjresbkwac[i]==15,'wac'])
+    adjresbkgravity.loc[i,'WAC11-20']=tp
+    tp=sum(adjresbkwac.loc[adjresbkwac[i]==25,'wac'])
+    adjresbkgravity.loc[i,'WAC21-30']=tp
+    tp=sum(adjresbkwac.loc[adjresbkwac[i]==35,'wac'])
+    adjresbkgravity.loc[i,'WAC31-40']=tp
+    tp=sum(adjresbkwac.loc[adjresbkwac[i]==45,'wac'])
+    adjresbkgravity.loc[i,'WAC41-50']=tp
+    tp=sum(adjresbkwac.loc[adjresbkwac[i]==55,'wac'])
+    adjresbkgravity.loc[i,'WAC51-60']=tp
+    adjresbkgravity.loc[i,'GWAC1-10']=(adjresbkgravity.loc[i,'WAC1-10'])/(5**2)
+    adjresbkgravity.loc[i,'GWAC11-20']=(adjresbkgravity.loc[i,'WAC11-20'])/(15**2)
+    adjresbkgravity.loc[i,'GWAC21-30']=(adjresbkgravity.loc[i,'WAC21-30'])/(25**2)
+    adjresbkgravity.loc[i,'GWAC31-40']=(adjresbkgravity.loc[i,'WAC31-40'])/(35**2)
+    adjresbkgravity.loc[i,'GWAC41-50']=(adjresbkgravity.loc[i,'WAC41-50'])/(45**2)
+    adjresbkgravity.loc[i,'GWAC51-60']=(adjresbkgravity.loc[i,'WAC51-60'])/(55**2)
+    adjresbkgravity.loc[i,'GRAVITYWAC']=adjresbkgravity.loc[i,'GWAC1-10']+adjresbkgravity.loc[i,'GWAC11-20']+adjresbkgravity.loc[i,'GWAC21-30']+adjresbkgravity.loc[i,'GWAC31-40']+adjresbkgravity.loc[i,'GWAC41-50']+adjresbkgravity.loc[i,'GWAC51-60']
+resbkgravity=pd.read_csv(path+'nyctract/resbkgravity.csv',dtype=str)
+resbkgravity=resbkgravity.set_index('Unnamed: 0')
+for i in resbkgravity.columns:
+    resbkgravity[i]=pd.to_numeric(resbkgravity[i])
+for i in adjlist:
+    resbkgravity.loc['RES'+i,:]=adjresbkgravity.loc['ADJRES'+i,:]
+resbkgravity.to_csv(path+'nyctract/resbkgravity2.csv',index=True)
+
+
+
+
+
 ## Work Gravity
 #adjworkbkrac=pd.DataFrame()
 #for i in adjlist:
