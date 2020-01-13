@@ -735,6 +735,34 @@ resbkgravity.to_csv(path+'nyctract/resbkgravity2.csv',index=True)
 
 
 
+resbkgravity=pd.DataFrame(index=resloclist,columns=['WAC1-5','WAC6-10','WAC11-15','WAC16-20','WAC21-25','WAC26-30',
+                                                    'WAC31-35','WAC36-40','WAC41-45','WAC46-50','WAC51-55','WAC56-60',
+                                                    'WAC61-65','WAC66-70','WAC71-75','WAC76-80','WAC81-85','WAC86-90',
+                                                    'WAC91-95','WAC96-100','WAC101-105','WAC106-110','WAC111-115','WAC116-120',
+                                                    'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
+                                                    'GRAVITYWAC'])
+for i in resloclist:
+    tp=sum(resbkwac.loc[resbkwac[i]==5,'wac'])
+    resbkgravity.loc[i,'WAC1-10']=tp
+    tp=sum(resbkwac.loc[resbkwac[i]==15,'wac'])
+    resbkgravity.loc[i,'WAC11-20']=tp
+    tp=sum(resbkwac.loc[resbkwac[i]==25,'wac'])
+    resbkgravity.loc[i,'WAC21-30']=tp
+    tp=sum(resbkwac.loc[resbkwac[i]==35,'wac'])
+    resbkgravity.loc[i,'WAC31-40']=tp
+    tp=sum(resbkwac.loc[resbkwac[i]==45,'wac'])
+    resbkgravity.loc[i,'WAC41-50']=tp
+    tp=sum(resbkwac.loc[resbkwac[i]==55,'wac'])
+    resbkgravity.loc[i,'WAC51-60']=tp
+    resbkgravity.loc[i,'GWAC1-10']=(resbkgravity.loc[i,'WAC1-10'])/(5**2)
+    resbkgravity.loc[i,'GWAC11-20']=(resbkgravity.loc[i,'WAC11-20'])/(15**2)
+    resbkgravity.loc[i,'GWAC21-30']=(resbkgravity.loc[i,'WAC21-30'])/(25**2)
+    resbkgravity.loc[i,'GWAC31-40']=(resbkgravity.loc[i,'WAC31-40'])/(35**2)
+    resbkgravity.loc[i,'GWAC41-50']=(resbkgravity.loc[i,'WAC41-50'])/(45**2)
+    resbkgravity.loc[i,'GWAC51-60']=(resbkgravity.loc[i,'WAC51-60'])/(55**2)
+    resbkgravity.loc[i,'GRAVITYWAC']=resbkgravity.loc[i,'GWAC1-10']+resbkgravity.loc[i,'GWAC11-20']+resbkgravity.loc[i,'GWAC21-30']+resbkgravity.loc[i,'GWAC31-40']+resbkgravity.loc[i,'GWAC41-50']+resbkgravity.loc[i,'GWAC51-60']
+resbkgravity.to_csv(path+'nyctract/resbkgravity.csv',index=True)
+
 
 
 ## Work Gravity
