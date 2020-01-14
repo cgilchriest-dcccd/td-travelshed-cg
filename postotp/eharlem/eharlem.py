@@ -35,3 +35,5 @@ rescdgravity=resbkgravity.groupby('BoroCD',as_index=True).apply(lambda x:np.aver
 rescdgravity.columns=['BoroCD','GRAVITYWAC']
 rescdgravity=pd.merge(cd,rescdgravity,how='left',on='BoroCD')
 rescdgravity.to_file(path+'eharlem/rescdgravity.shp')
+rescdgravity=rescdgravity.drop('geometry',axis=1).reset_index(drop=True)
+rescdgravity.to_csv(path+'eharlem/rescdgravity.csv',index=False)
