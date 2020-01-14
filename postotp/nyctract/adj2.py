@@ -46,6 +46,7 @@ def add_basemap(ax, zoom, url='http://tile.stamen.com/terrain/tileZ/tileX/tileY.
 #ct=gpd.read_file(path+'shp/quadstatectclipped.shp')
 #ct.crs={'init': 'epsg:4326'}
 #ct=ct[['tractid','geometry']]
+
 ## Res
 #resct=pd.read_csv(path+'nyctract/resct2.csv',dtype=float,converters={'tractid':str})
 #resloclist=resct.columns[1:]
@@ -66,6 +67,7 @@ def add_basemap(ax, zoom, url='http://tile.stamen.com/terrain/tileZ/tileX/tileY.
 #    cbar=fig.colorbar(sm,cax=cax)
 #    fig.tight_layout()
 #    fig.savefig(path+'nyctract/res3/'+i+'ct.jpg', dpi=300)
+
 ## Work
 #workct=pd.read_csv(path+'nyctract/workct2.csv',dtype=float,converters={'tractid':str})
 #workloclist=workct.columns[1:]
@@ -78,6 +80,7 @@ def add_basemap(ax, zoom, url='http://tile.stamen.com/terrain/tileZ/tileX/tileY.
 #    ax=workctmap.plot(figsize=(11,8.5),edgecolor=None,column=i,cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
 #    add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
 #    ax.set_axis_off()
+#    ax.set_title('AM Peak Transit Travel Time (Minutes) to '+i,fontdict={'fontsize':'16','fontweight':'10'})
 #    sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=120))
 #    sm._A=[]
 #    divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
@@ -343,7 +346,10 @@ adjlist=['36047000200','36047000301','36047000700','36047001800','36047002000','
          '36047030200','36047030300','36047030500','36047030700','36047031701','36047032300','36047032500','36047032700',
          '36047032900','36047033300','36047034100','36047034300','36047034500','36047034900','36047035500','36047035700',
          '36047036300','36047036501','36047036502','36047036900','36047037100','36047037401','36047038100','36047038800',
-         '36047039000','36047039100','36047039500',]
+         '36047039000','36047039100','36047039500','36047039900','36047040600','36047040800','36047041600','36047041900',
+         '36047042000','36047042500','36047043100','36047043500','36047043700','36047044900','36047045200','36047045400',
+         '36047046000','36047046800','36047047600','36047047800','36047048200','36047048800','36047049000','36047049200',
+         '36047049400','36047050600',]
 
 
 # Load quadstate blokc point shapefile
