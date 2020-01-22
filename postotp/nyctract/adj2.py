@@ -666,7 +666,7 @@ if __name__=='__main__':
     location['id']=['ADJWORK'+str(x).zfill(11) for x in location['censustract']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlatfinal'],location['workintlongfinal'])]
     destination=location.loc[0:max(location.count())-1,['id','latlong']]
-    for i in destination.index:
+    for i in destination.index[55:]:
         df=parallelize(arrivaltime,worktravelshed)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
