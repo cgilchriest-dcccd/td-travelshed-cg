@@ -598,8 +598,8 @@ def worktravelshed(arrt):
 
 # Define parallel multiprocessing function
 def parallelize(data, func):
-    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-4)))
-    pool=mp.Pool(mp.cpu_count()-4)
+    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-6)))
+    pool=mp.Pool(mp.cpu_count()-6)
     dt=pd.DataFrame()
     for i in data_split:
         ds=pd.concat(pool.map(func,i),axis=1)
@@ -666,7 +666,7 @@ if __name__=='__main__':
     location['id']=['ADJWORK'+str(x).zfill(11) for x in location['censustract']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlatfinal'],location['workintlongfinal'])]
     destination=location.loc[0:max(location.count())-1,['id','latlong']]
-    for i in destination.index[55:]:
+    for i in destination.index[60:]:
         df=parallelize(arrivaltime,worktravelshed)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
