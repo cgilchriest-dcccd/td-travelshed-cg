@@ -755,17 +755,17 @@ if __name__=='__main__':
 ## NYC Work Censust Blocks
 #adjwork=pd.DataFrame()
 #for i in adjlist:
-#    tp=pd.read_csv(path+'nyctract/work/ADJWORK'+i+'.csv',dtype=str)
+#    tp=pd.read_csv(path+'nyctract/work3/ADJWORK'+i+'.csv',dtype=str)
 #    tp=tp.set_index('blockid')
 #    adjwork=pd.concat([adjwork,tp],axis=1)
-#workbk=pd.read_csv(path+'nyctract/workbk.csv',dtype=str)
+#workbk=pd.read_csv(path+'nyctract/workbk2.csv',dtype=str)
 #workbk=workbk.set_index('blockid')
 #workloclist=workbk.columns
 #workbk=pd.concat([workbk,adjwork],axis=1)
 #for i in adjlist:
 #    workbk['WORK'+i]=workbk['ADJWORK'+i]
 #workbk=workbk[workloclist]
-#workbk.to_csv(path+'nyctract/workbk2.csv',index=True)
+#workbk.to_csv(path+'nyctract/workbk3.csv',index=True)
 ## NYC Work Censust Tracts
 #adjworkloclist=adjwork.columns
 #for i in adjwork.columns:
@@ -773,7 +773,7 @@ if __name__=='__main__':
 #adjwork=adjwork.replace(999,np.nan)
 #adjwork['tractid']=[str(x)[0:11] for x in adjwork.index]
 #adjwork=adjwork.groupby(['tractid'])[adjworkloclist].median(skipna=True)
-#workct=pd.read_csv(path+'nyctract/workct.csv',dtype=str)
+#workct=pd.read_csv(path+'nyctract/workct2.csv',dtype=str)
 #workct=workct.set_index('tractid')
 #workloclist=workct.columns
 #for i in workct.columns:
@@ -782,7 +782,7 @@ if __name__=='__main__':
 #for i in adjlist:
 #    workct['WORK'+i]=workct['ADJWORK'+i]
 #workct=workct[workloclist]
-#workct.to_csv(path+'nyctract/workct2.csv',index=True,na_rep='999')
+#workct.to_csv(path+'nyctract/workct3.csv',index=True,na_rep='999')
 
 
 
