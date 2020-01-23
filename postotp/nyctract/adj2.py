@@ -400,6 +400,8 @@ adjlist=['36081000600','36081001600','36081003400','36081003600','36081004200','
          '36081121500','36081126700','36081129102','36081129103','36081138502','36081147100','36081147900','36081148300',
          '36081155101','36081155102','36081157101','36081157901','36081157902','36081990100']
 
+adjlist=[]
+
 #adjlist=['36085000300','36085000600','36085001100','36085001700','36085002001','36085002002','36085003300','36085003600',
 #         '36085003900','36085004000','36085004700','36085005000','36085005900','36085007400','36085009602','36085009700',
 #         '36085011201','36085011202','36085011401','36085011402','36085012100','36085012200','36085012804','36085012805',
@@ -598,8 +600,8 @@ def worktravelshed(arrt):
 
 # Define parallel multiprocessing function
 def parallelize(data, func):
-    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-6)))
-    pool=mp.Pool(mp.cpu_count()-6)
+    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-4)))
+    pool=mp.Pool(mp.cpu_count()-4)
     dt=pd.DataFrame()
     for i in data_split:
         ds=pd.concat(pool.map(func,i),axis=1)
@@ -666,7 +668,7 @@ if __name__=='__main__':
     location['id']=['ADJWORK'+str(x).zfill(11) for x in location['censustract']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlatfinal'],location['workintlongfinal'])]
     destination=location.loc[0:max(location.count())-1,['id','latlong']]
-    for i in destination.index[60:]:
+    for i in destination.index:
         df=parallelize(arrivaltime,worktravelshed)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
