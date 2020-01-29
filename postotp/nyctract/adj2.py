@@ -492,126 +492,126 @@ adjlist=['36005000100','36005000400','36005001900','36005002400','36005003700','
 ## Load quadstate blokc point shapefile
 #bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
 #bkpt.crs={'init': 'epsg:4326'}
-
-# Set typical day
-typicaldate='2018/06/06'
-
-# Create arrival time list
-arrivaltimeinterval=10 # in minutes
-arrivaltimestart='07:00:00'
-arrivaltimeend='10:00:00'
-arrivaltimestart=datetime.datetime.strptime(arrivaltimestart,'%H:%M:%S')
-arrivaltimeend=datetime.datetime.strptime(arrivaltimeend,'%H:%M:%S')
-arrivaltimeincrement=arrivaltimestart
-arrivaltime=[]
-while arrivaltimeincrement<=arrivaltimeend:
-    arrivaltime.append(datetime.datetime.strftime(arrivaltimeincrement,'%H:%M:%S'))
-    arrivaltimeincrement+=datetime.timedelta(seconds=arrivaltimeinterval*60)
-
-# Set maximum number of transfers
-maxTransfers=3 # 4 boardings
-
-# Set maximum walking distance
-maxWalkDistance=1000 # in meters
-
-# Set cut off points between 0-120 mins
-cutoffinterval=2 # in minutes
-cutoffstart=0
-cutoffend=120
-cutoffincrement=cutoffstart
-cutoff=''
-while cutoffincrement<cutoffend:
-    cutoff+='&cutoffSec='+str((cutoffincrement+cutoffinterval)*60)
-    cutoffincrement+=cutoffinterval
-
-# Definie res travelshed function to generate isochrones and spatial join to Census Blocks
-def restravelshed(arrt):
-    bk=bkpt.copy()
-    url='http://localhost:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
-    url+='&fromPlace='+destination.loc[i,'latlong']
-    url+='&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
-    url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=0'+cutoff
-    headers={'Accept':'application/json'}  
-    req=requests.get(url=url,headers=headers)
-    js=req.json()
-    iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
-    bk['T'+arrt[0:2]+arrt[3:5]]=999
-    cut=range(cutoffend,cutoffstart,-cutoffinterval)
-    bkiso=gpd.sjoin(bk,iso.loc[iso['time']==cut[0]*60],how='left',op='within')
-    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[0]-cutoffinterval/2
-    for k in range(0,(len(cut)-1)):
-        if (iso.loc[iso['time']==cut[k+1]*60,'geometry'].notna()).bool():
-            if len(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2])!=0:
-                try:
-                    bkiso=gpd.sjoin(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2],
-                                    iso.loc[iso['time']==cut[k+1]*60],how='left',op='within')
-                    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-                    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[k+1]-cutoffinterval/2
-                except ValueError:
-                    print(destination.loc[i,'id']+' '+arrt+' '+
-                          str(cut[k+1])+'-minute isochrone has no Census Block in it!')
-            else:
-                print(destination.loc[i,'id']+' '+arrt+' '+
-                      str(cut[k])+'-minute isochrone has no Census Block in it!')
-        else:
-            print(destination.loc[i,'id']+' '+arrt+' '+
-                  str(cut[k+1])+'-minute isochrone has no geometry!')
-    bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
-    bk=bk.drop(['lat','long','geometry'],axis=1)
-    bk=bk.set_index('blockid')
-    return bk
-
-# Definie work travelshed function to generate isochrones and spatial join to Census Blocks
-def worktravelshed(arrt):
-    bk=bkpt.copy()
-    url='http://localhost:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
-    url+='&fromPlace='+destination.loc[i,'latlong']+'&toPlace='+destination.loc[i,'latlong']
-    url+='&arriveBy=true&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
-    url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=-1'+cutoff
-    headers={'Accept':'application/json'}  
-    req=requests.get(url=url,headers=headers)
-    js=req.json()
-    iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
-    bk['T'+arrt[0:2]+arrt[3:5]]=999
-    cut=range(cutoffend,cutoffstart,-cutoffinterval)
-    bkiso=gpd.sjoin(bk,iso.loc[iso['time']==cut[0]*60],how='left',op='within')
-    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[0]-cutoffinterval/2
-    for k in range(0,(len(cut)-1)):
-        if (iso.loc[iso['time']==cut[k+1]*60,'geometry'].notna()).bool():
-            if len(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2])!=0:
-                try:
-                    bkiso=gpd.sjoin(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2],
-                                    iso.loc[iso['time']==cut[k+1]*60],how='left',op='within')
-                    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-                    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[k+1]-cutoffinterval/2
-                except ValueError:
-                    print(destination.loc[i,'id']+' '+arrt+' '+
-                          str(cut[k+1])+'-minute isochrone has no Census Block in it!')
-            else:
-                print(destination.loc[i,'id']+' '+arrt+' '+
-                      str(cut[k])+'-minute isochrone has no Census Block in it!')
-        else:
-            print(destination.loc[i,'id']+' '+arrt+' '+
-                  str(cut[k+1])+'-minute isochrone has no geometry!')
-    bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
-    bk=bk.drop(['lat','long','geometry'],axis=1)
-    bk=bk.set_index('blockid')
-    return bk
-
-
-# Define parallel multiprocessing function
-def parallelize(data, func):
-    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-4)))
-    pool=mp.Pool(mp.cpu_count()-4)
-    dt=pd.DataFrame()
-    for i in data_split:
-        ds=pd.concat(pool.map(func,i),axis=1)
-        dt=pd.concat([dt,ds],axis=1)
-    pool.close()
-    pool.join()
-    return dt
+#
+## Set typical day
+#typicaldate='2018/06/06'
+#
+## Create arrival time list
+#arrivaltimeinterval=10 # in minutes
+#arrivaltimestart='07:00:00'
+#arrivaltimeend='10:00:00'
+#arrivaltimestart=datetime.datetime.strptime(arrivaltimestart,'%H:%M:%S')
+#arrivaltimeend=datetime.datetime.strptime(arrivaltimeend,'%H:%M:%S')
+#arrivaltimeincrement=arrivaltimestart
+#arrivaltime=[]
+#while arrivaltimeincrement<=arrivaltimeend:
+#    arrivaltime.append(datetime.datetime.strftime(arrivaltimeincrement,'%H:%M:%S'))
+#    arrivaltimeincrement+=datetime.timedelta(seconds=arrivaltimeinterval*60)
+#
+## Set maximum number of transfers
+#maxTransfers=3 # 4 boardings
+#
+## Set maximum walking distance
+#maxWalkDistance=1000 # in meters
+#
+## Set cut off points between 0-120 mins
+#cutoffinterval=2 # in minutes
+#cutoffstart=0
+#cutoffend=120
+#cutoffincrement=cutoffstart
+#cutoff=''
+#while cutoffincrement<cutoffend:
+#    cutoff+='&cutoffSec='+str((cutoffincrement+cutoffinterval)*60)
+#    cutoffincrement+=cutoffinterval
+#
+## Definie res travelshed function to generate isochrones and spatial join to Census Blocks
+#def restravelshed(arrt):
+#    bk=bkpt.copy()
+#    url='http://localhost:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
+#    url+='&fromPlace='+destination.loc[i,'latlong']
+#    url+='&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
+#    url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=0'+cutoff
+#    headers={'Accept':'application/json'}  
+#    req=requests.get(url=url,headers=headers)
+#    js=req.json()
+#    iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
+#    bk['T'+arrt[0:2]+arrt[3:5]]=999
+#    cut=range(cutoffend,cutoffstart,-cutoffinterval)
+#    bkiso=gpd.sjoin(bk,iso.loc[iso['time']==cut[0]*60],how='left',op='within')
+#    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
+#    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[0]-cutoffinterval/2
+#    for k in range(0,(len(cut)-1)):
+#        if (iso.loc[iso['time']==cut[k+1]*60,'geometry'].notna()).bool():
+#            if len(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2])!=0:
+#                try:
+#                    bkiso=gpd.sjoin(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2],
+#                                    iso.loc[iso['time']==cut[k+1]*60],how='left',op='within')
+#                    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
+#                    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[k+1]-cutoffinterval/2
+#                except ValueError:
+#                    print(destination.loc[i,'id']+' '+arrt+' '+
+#                          str(cut[k+1])+'-minute isochrone has no Census Block in it!')
+#            else:
+#                print(destination.loc[i,'id']+' '+arrt+' '+
+#                      str(cut[k])+'-minute isochrone has no Census Block in it!')
+#        else:
+#            print(destination.loc[i,'id']+' '+arrt+' '+
+#                  str(cut[k+1])+'-minute isochrone has no geometry!')
+#    bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
+#    bk=bk.drop(['lat','long','geometry'],axis=1)
+#    bk=bk.set_index('blockid')
+#    return bk
+#
+## Definie work travelshed function to generate isochrones and spatial join to Census Blocks
+#def worktravelshed(arrt):
+#    bk=bkpt.copy()
+#    url='http://localhost:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
+#    url+='&fromPlace='+destination.loc[i,'latlong']+'&toPlace='+destination.loc[i,'latlong']
+#    url+='&arriveBy=true&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
+#    url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=-1'+cutoff
+#    headers={'Accept':'application/json'}  
+#    req=requests.get(url=url,headers=headers)
+#    js=req.json()
+#    iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
+#    bk['T'+arrt[0:2]+arrt[3:5]]=999
+#    cut=range(cutoffend,cutoffstart,-cutoffinterval)
+#    bkiso=gpd.sjoin(bk,iso.loc[iso['time']==cut[0]*60],how='left',op='within')
+#    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
+#    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[0]-cutoffinterval/2
+#    for k in range(0,(len(cut)-1)):
+#        if (iso.loc[iso['time']==cut[k+1]*60,'geometry'].notna()).bool():
+#            if len(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2])!=0:
+#                try:
+#                    bkiso=gpd.sjoin(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2],
+#                                    iso.loc[iso['time']==cut[k+1]*60],how='left',op='within')
+#                    bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
+#                    bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[k+1]-cutoffinterval/2
+#                except ValueError:
+#                    print(destination.loc[i,'id']+' '+arrt+' '+
+#                          str(cut[k+1])+'-minute isochrone has no Census Block in it!')
+#            else:
+#                print(destination.loc[i,'id']+' '+arrt+' '+
+#                      str(cut[k])+'-minute isochrone has no Census Block in it!')
+#        else:
+#            print(destination.loc[i,'id']+' '+arrt+' '+
+#                  str(cut[k+1])+'-minute isochrone has no geometry!')
+#    bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
+#    bk=bk.drop(['lat','long','geometry'],axis=1)
+#    bk=bk.set_index('blockid')
+#    return bk
+#
+#
+## Define parallel multiprocessing function
+#def parallelize(data, func):
+#    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-4)))
+#    pool=mp.Pool(mp.cpu_count()-4)
+#    dt=pd.DataFrame()
+#    for i in data_split:
+#        ds=pd.concat(pool.map(func,i),axis=1)
+#        dt=pd.concat([dt,ds],axis=1)
+#    pool.close()
+#    pool.join()
+#    return dt
 
 ## Res
 #if __name__=='__main__':
@@ -732,6 +732,7 @@ def parallelize(data, func):
 #    resbk['RES'+i]=resbk['ADJRES'+i]
 #resbk=resbk[resloclist]
 #resbk.to_csv(path+'nyctract/resbk3.csv',index=True)
+
 ## NYC Res Censust Tracts
 #adjresloclist=adjres.columns
 #for i in adjres.columns:
@@ -752,37 +753,38 @@ def parallelize(data, func):
 
 
 
-# NYC Work Censust Blocks
-adjwork=pd.DataFrame()
-for i in adjlist:
-    tp=pd.read_csv(path+'nyctract/work3/ADJWORK'+i+'.csv',dtype=str)
-    tp=tp.set_index('blockid')
-    adjwork=pd.concat([adjwork,tp],axis=1)
-workbk=pd.read_csv(path+'nyctract/workbk2.csv',dtype=str)
-workbk=workbk.set_index('blockid')
-workloclist=workbk.columns
-workbk=pd.concat([workbk,adjwork],axis=1)
-for i in adjlist:
-    workbk['WORK'+i]=workbk['ADJWORK'+i]
-workbk=workbk[workloclist]
-workbk.to_csv(path+'nyctract/workbk3.csv',index=True)
-# NYC Work Censust Tracts
-adjworkloclist=adjwork.columns
-for i in adjwork.columns:
-    adjwork[i]=pd.to_numeric(adjwork[i])
-adjwork=adjwork.replace(999,np.nan)
-adjwork['tractid']=[str(x)[0:11] for x in adjwork.index]
-adjwork=adjwork.groupby(['tractid'])[adjworkloclist].median(skipna=True)
-workct=pd.read_csv(path+'nyctract/workct2.csv',dtype=str)
-workct=workct.set_index('tractid')
-workloclist=workct.columns
-for i in workct.columns:
-    workct[i]=pd.to_numeric(workct[i])
-workct=pd.concat([workct,adjwork],axis=1)
-for i in adjlist:
-    workct['WORK'+i]=workct['ADJWORK'+i]
-workct=workct[workloclist]
-workct.to_csv(path+'nyctract/workct3.csv',index=True,na_rep='999')
+## NYC Work Censust Blocks
+#adjwork=pd.DataFrame()
+#for i in adjlist:
+#    tp=pd.read_csv(path+'nyctract/work3/ADJWORK'+i+'.csv',dtype=str)
+#    tp=tp.set_index('blockid')
+#    adjwork=pd.concat([adjwork,tp],axis=1)
+#workbk=pd.read_csv(path+'nyctract/workbk2.csv',dtype=str)
+#workbk=workbk.set_index('blockid')
+#workloclist=workbk.columns
+#workbk=pd.concat([workbk,adjwork],axis=1)
+#for i in adjlist:
+#    workbk['WORK'+i]=workbk['ADJWORK'+i]
+#workbk=workbk[workloclist]
+#workbk.to_csv(path+'nyctract/workbk3.csv',index=True)
+
+## NYC Work Censust Tracts
+#adjworkloclist=adjwork.columns
+#for i in adjwork.columns:
+#    adjwork[i]=pd.to_numeric(adjwork[i])
+#adjwork=adjwork.replace(999,np.nan)
+#adjwork['tractid']=[str(x)[0:11] for x in adjwork.index]
+#adjwork=adjwork.groupby(['tractid'])[adjworkloclist].median(skipna=True)
+#workct=pd.read_csv(path+'nyctract/workct2.csv',dtype=str)
+#workct=workct.set_index('tractid')
+#workloclist=workct.columns
+#for i in workct.columns:
+#    workct[i]=pd.to_numeric(workct[i])
+#workct=pd.concat([workct,adjwork],axis=1)
+#for i in adjlist:
+#    workct['WORK'+i]=workct['ADJWORK'+i]
+#workct=workct[workloclist]
+#workct.to_csv(path+'nyctract/workct3.csv',index=True,na_rep='999')
 
 
 
@@ -960,150 +962,177 @@ workct.to_csv(path+'nyctract/workct3.csv',index=True,na_rep='999')
 
 
 
-## Tract Level Gravity Model
-## Res Gravity
-#resctwac=pd.read_csv(path+'nyctract/resct3.csv',dtype=str)
-#resctwac=resctwac.set_index('tractid')
-#resloclist=sorted(resctwac.columns)
-#wac=pd.DataFrame()
-#for i in ['ct','nj','ny','pa']:
-#    tp=pd.read_csv(path+'lehd/'+str(i)+'_wac_S000_JT03_2017.csv',dtype=str)
-#    tp=tp[['w_geocode','C000']]
-#    wac=pd.concat([wac,tp],axis=0)
-#wac.columns=['blockid','wac']
-#wac['tractid']=[str(x)[0:11] for x in wac['blockid']]
-#wac['wac']=pd.to_numeric(wac['wac'])
-#wac=pd.DataFrame(wac.groupby('tractid')['wac'].sum())
-#resctwac=pd.merge(resctwac,wac,how='left',left_index=True,right_index=True)
-#resctwac['wac']=resctwac['wac'].replace(np.nan,'0')
-#for i in resctwac.columns:
-#    resctwac[i]=pd.to_numeric(resctwac[i])
-#for i in resloclist:
-#    resctwac[i]=np.where(resctwac[i]<=5,2.5,
-#                np.where(resctwac[i]<=10,7.5,
-#                np.where(resctwac[i]<=15,12.5,
-#                np.where(resctwac[i]<=20,17.5,
-#                np.where(resctwac[i]<=25,22.5,
-#                np.where(resctwac[i]<=30,27.5,
-#                np.where(resctwac[i]<=35,32.5,
-#                np.where(resctwac[i]<=40,37.5,
-#                np.where(resctwac[i]<=45,42.5,
-#                np.where(resctwac[i]<=50,47.5,
-#                np.where(resctwac[i]<=55,52.5,
-#                np.where(resctwac[i]<=60,57.5,
-#                np.where(resctwac[i]<=65,62.5,
-#                np.where(resctwac[i]<=70,67.5,
-#                np.where(resctwac[i]<=75,72.5,
-#                np.where(resctwac[i]<=80,77.5,
-#                np.where(resctwac[i]<=85,82.5,
-#                np.where(resctwac[i]<=90,87.5,
-#                np.where(resctwac[i]<=95,92.5,
-#                np.where(resctwac[i]<=100,97.5,
-#                np.where(resctwac[i]<=105,102.5,
-#                np.where(resctwac[i]<=110,107.5,
-#                np.where(resctwac[i]<=115,112.5,
-#                np.where(resctwac[i]<=120,117.5,
-#                np.nan))))))))))))))))))))))))
-#resctgravity=pd.DataFrame(index=resloclist,columns=['WAC1-5','WAC6-10','WAC11-15','WAC16-20','WAC21-25','WAC26-30',
-#                                                    'WAC31-35','WAC36-40','WAC41-45','WAC46-50','WAC51-55','WAC56-60',
-#                                                    'WAC61-65','WAC66-70','WAC71-75','WAC76-80','WAC81-85','WAC86-90',
-#                                                    'WAC91-95','WAC96-100','WAC101-105','WAC106-110','WAC111-115','WAC116-120',
-#                                                    'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
-#                                                    'GRAVITYWAC'])
-#for i in resloclist:
-#    resctgravity.loc[i,'WAC1-5']=sum(resctwac.loc[resctwac[i]==2.5,'wac'])
-#    resctgravity.loc[i,'WAC6-10']=sum(resctwac.loc[resctwac[i]==7.5,'wac'])
-#    resctgravity.loc[i,'WAC11-15']=sum(resctwac.loc[resctwac[i]==12.5,'wac'])
-#    resctgravity.loc[i,'WAC16-20']=sum(resctwac.loc[resctwac[i]==17.5,'wac'])
-#    resctgravity.loc[i,'WAC21-25']=sum(resctwac.loc[resctwac[i]==22.5,'wac'])
-#    resctgravity.loc[i,'WAC26-30']=sum(resctwac.loc[resctwac[i]==27.5,'wac'])
-#    resctgravity.loc[i,'WAC31-35']=sum(resctwac.loc[resctwac[i]==32.5,'wac'])
-#    resctgravity.loc[i,'WAC36-40']=sum(resctwac.loc[resctwac[i]==37.5,'wac'])
-#    resctgravity.loc[i,'WAC41-45']=sum(resctwac.loc[resctwac[i]==42.5,'wac'])
-#    resctgravity.loc[i,'WAC46-50']=sum(resctwac.loc[resctwac[i]==47.5,'wac'])
-#    resctgravity.loc[i,'WAC51-55']=sum(resctwac.loc[resctwac[i]==52.5,'wac'])
-#    resctgravity.loc[i,'WAC56-60']=sum(resctwac.loc[resctwac[i]==57.5,'wac'])
-#    resctgravity.loc[i,'WAC61-65']=sum(resctwac.loc[resctwac[i]==62.5,'wac'])
-#    resctgravity.loc[i,'WAC66-70']=sum(resctwac.loc[resctwac[i]==67.5,'wac'])
-#    resctgravity.loc[i,'WAC71-75']=sum(resctwac.loc[resctwac[i]==72.5,'wac'])
-#    resctgravity.loc[i,'WAC76-80']=sum(resctwac.loc[resctwac[i]==77.5,'wac'])
-#    resctgravity.loc[i,'WAC81-85']=sum(resctwac.loc[resctwac[i]==82.5,'wac'])
-#    resctgravity.loc[i,'WAC86-90']=sum(resctwac.loc[resctwac[i]==87.5,'wac'])
-#    resctgravity.loc[i,'WAC91-95']=sum(resctwac.loc[resctwac[i]==92.5,'wac'])
-#    resctgravity.loc[i,'WAC96-100']=sum(resctwac.loc[resctwac[i]==97.5,'wac'])
-#    resctgravity.loc[i,'WAC101-105']=sum(resctwac.loc[resctwac[i]==102.5,'wac'])
-#    resctgravity.loc[i,'WAC106-110']=sum(resctwac.loc[resctwac[i]==107.5,'wac'])
-#    resctgravity.loc[i,'WAC111-115']=sum(resctwac.loc[resctwac[i]==112.5,'wac'])
-#    resctgravity.loc[i,'WAC116-120']=sum(resctwac.loc[resctwac[i]==117.5,'wac'])
-#    resctgravity.loc[i,'GWAC1-10']=(resctgravity.loc[i,'WAC1-5']+resctgravity.loc[i,'WAC6-10'])/(5**2)
-#    resctgravity.loc[i,'GWAC11-20']=(resctgravity.loc[i,'WAC11-15']+resctgravity.loc[i,'WAC16-20'])/(15**2)
-#    resctgravity.loc[i,'GWAC21-30']=(resctgravity.loc[i,'WAC21-25']+resctgravity.loc[i,'WAC26-30'])/(25**2)
-#    resctgravity.loc[i,'GWAC31-40']=(resctgravity.loc[i,'WAC31-35']+resctgravity.loc[i,'WAC36-40'])/(35**2)
-#    resctgravity.loc[i,'GWAC41-50']=(resctgravity.loc[i,'WAC41-45']+resctgravity.loc[i,'WAC46-50'])/(45**2)
-#    resctgravity.loc[i,'GWAC51-60']=(resctgravity.loc[i,'WAC51-55']+resctgravity.loc[i,'WAC56-60'])/(55**2)
-#    resctgravity.loc[i,'GRAVITYWAC']=resctgravity.loc[i,'GWAC1-10']+resctgravity.loc[i,'GWAC11-20']+resctgravity.loc[i,'GWAC21-30']+resctgravity.loc[i,'GWAC31-40']+resctgravity.loc[i,'GWAC41-50']+resctgravity.loc[i,'GWAC51-60']
-#resctgravity.to_csv(path+'nyctract/resctgravity3.csv',index=True)
+# Tract Level Gravity Model
+# Res Gravity
+resctwac=pd.read_csv(path+'nyctract/resct3.csv',dtype=str)
+resctwac=resctwac.set_index('tractid')
+resloclist=sorted(resctwac.columns)
+wac=pd.DataFrame()
+for i in ['ct','nj','ny','pa']:
+    tp=pd.read_csv(path+'lehd/'+str(i)+'_wac_S000_JT03_2017.csv',dtype=str)
+    tp=tp[['w_geocode','C000']]
+    wac=pd.concat([wac,tp],axis=0)
+wac.columns=['blockid','wac']
+wac['tractid']=[str(x)[0:11] for x in wac['blockid']]
+wac['wac']=pd.to_numeric(wac['wac'])
+wac=pd.DataFrame(wac.groupby('tractid')['wac'].sum())
+resctwac=pd.merge(resctwac,wac,how='left',left_index=True,right_index=True)
+resctwac['wac']=resctwac['wac'].replace(np.nan,'0')
+for i in resctwac.columns:
+    resctwac[i]=pd.to_numeric(resctwac[i])
+for i in resloclist:
+    resctwac[i]=np.where(resctwac[i]<=5,2.5,
+                np.where(resctwac[i]<=10,7.5,
+                np.where(resctwac[i]<=15,12.5,
+                np.where(resctwac[i]<=20,17.5,
+                np.where(resctwac[i]<=25,22.5,
+                np.where(resctwac[i]<=30,27.5,
+                np.where(resctwac[i]<=35,32.5,
+                np.where(resctwac[i]<=40,37.5,
+                np.where(resctwac[i]<=45,42.5,
+                np.where(resctwac[i]<=50,47.5,
+                np.where(resctwac[i]<=55,52.5,
+                np.where(resctwac[i]<=60,57.5,
+                np.where(resctwac[i]<=65,62.5,
+                np.where(resctwac[i]<=70,67.5,
+                np.where(resctwac[i]<=75,72.5,
+                np.where(resctwac[i]<=80,77.5,
+                np.where(resctwac[i]<=85,82.5,
+                np.where(resctwac[i]<=90,87.5,
+                np.where(resctwac[i]<=95,92.5,
+                np.where(resctwac[i]<=100,97.5,
+                np.where(resctwac[i]<=105,102.5,
+                np.where(resctwac[i]<=110,107.5,
+                np.where(resctwac[i]<=115,112.5,
+                np.where(resctwac[i]<=120,117.5,
+                np.nan))))))))))))))))))))))))
+resctgravity=pd.DataFrame(index=resloclist,columns=['WAC1-5','WAC6-10','WAC11-15','WAC16-20','WAC21-25','WAC26-30',
+                                                    'WAC31-35','WAC36-40','WAC41-45','WAC46-50','WAC51-55','WAC56-60',
+                                                    'WAC61-65','WAC66-70','WAC71-75','WAC76-80','WAC81-85','WAC86-90',
+                                                    'WAC91-95','WAC96-100','WAC101-105','WAC106-110','WAC111-115','WAC116-120',
+                                                    'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
+                                                    'GRAVITYWAC'])
+for i in resloclist:
+    resctgravity.loc[i,'WAC1-5']=sum(resctwac.loc[resctwac[i]==2.5,'wac'])
+    resctgravity.loc[i,'WAC6-10']=sum(resctwac.loc[resctwac[i]==7.5,'wac'])
+    resctgravity.loc[i,'WAC11-15']=sum(resctwac.loc[resctwac[i]==12.5,'wac'])
+    resctgravity.loc[i,'WAC16-20']=sum(resctwac.loc[resctwac[i]==17.5,'wac'])
+    resctgravity.loc[i,'WAC21-25']=sum(resctwac.loc[resctwac[i]==22.5,'wac'])
+    resctgravity.loc[i,'WAC26-30']=sum(resctwac.loc[resctwac[i]==27.5,'wac'])
+    resctgravity.loc[i,'WAC31-35']=sum(resctwac.loc[resctwac[i]==32.5,'wac'])
+    resctgravity.loc[i,'WAC36-40']=sum(resctwac.loc[resctwac[i]==37.5,'wac'])
+    resctgravity.loc[i,'WAC41-45']=sum(resctwac.loc[resctwac[i]==42.5,'wac'])
+    resctgravity.loc[i,'WAC46-50']=sum(resctwac.loc[resctwac[i]==47.5,'wac'])
+    resctgravity.loc[i,'WAC51-55']=sum(resctwac.loc[resctwac[i]==52.5,'wac'])
+    resctgravity.loc[i,'WAC56-60']=sum(resctwac.loc[resctwac[i]==57.5,'wac'])
+    resctgravity.loc[i,'WAC61-65']=sum(resctwac.loc[resctwac[i]==62.5,'wac'])
+    resctgravity.loc[i,'WAC66-70']=sum(resctwac.loc[resctwac[i]==67.5,'wac'])
+    resctgravity.loc[i,'WAC71-75']=sum(resctwac.loc[resctwac[i]==72.5,'wac'])
+    resctgravity.loc[i,'WAC76-80']=sum(resctwac.loc[resctwac[i]==77.5,'wac'])
+    resctgravity.loc[i,'WAC81-85']=sum(resctwac.loc[resctwac[i]==82.5,'wac'])
+    resctgravity.loc[i,'WAC86-90']=sum(resctwac.loc[resctwac[i]==87.5,'wac'])
+    resctgravity.loc[i,'WAC91-95']=sum(resctwac.loc[resctwac[i]==92.5,'wac'])
+    resctgravity.loc[i,'WAC96-100']=sum(resctwac.loc[resctwac[i]==97.5,'wac'])
+    resctgravity.loc[i,'WAC101-105']=sum(resctwac.loc[resctwac[i]==102.5,'wac'])
+    resctgravity.loc[i,'WAC106-110']=sum(resctwac.loc[resctwac[i]==107.5,'wac'])
+    resctgravity.loc[i,'WAC111-115']=sum(resctwac.loc[resctwac[i]==112.5,'wac'])
+    resctgravity.loc[i,'WAC116-120']=sum(resctwac.loc[resctwac[i]==117.5,'wac'])
+    resctgravity.loc[i,'GWAC1-10']=(resctgravity.loc[i,'WAC1-5']+resctgravity.loc[i,'WAC6-10'])/(5**2)
+    resctgravity.loc[i,'GWAC11-20']=(resctgravity.loc[i,'WAC11-15']+resctgravity.loc[i,'WAC16-20'])/(15**2)
+    resctgravity.loc[i,'GWAC21-30']=(resctgravity.loc[i,'WAC21-25']+resctgravity.loc[i,'WAC26-30'])/(25**2)
+    resctgravity.loc[i,'GWAC31-40']=(resctgravity.loc[i,'WAC31-35']+resctgravity.loc[i,'WAC36-40'])/(35**2)
+    resctgravity.loc[i,'GWAC41-50']=(resctgravity.loc[i,'WAC41-45']+resctgravity.loc[i,'WAC46-50'])/(45**2)
+    resctgravity.loc[i,'GWAC51-60']=(resctgravity.loc[i,'WAC51-55']+resctgravity.loc[i,'WAC56-60'])/(55**2)
+    resctgravity.loc[i,'GRAVITYWAC']=resctgravity.loc[i,'GWAC1-10']+resctgravity.loc[i,'GWAC11-20']+resctgravity.loc[i,'GWAC21-30']+resctgravity.loc[i,'GWAC31-40']+resctgravity.loc[i,'GWAC41-50']+resctgravity.loc[i,'GWAC51-60']
+resctgravity.to_csv(path+'nyctract/resctgravity3.csv',index=True)
 
 
 
 
 
 
-## Work Gravity
-#workctrac=pd.read_csv(path+'nyctract/workct2.csv',dtype=str)
-#workctrac=workctrac.set_index('tractid')
-#workloclist=sorted(workctrac.columns)
-#rac=pd.DataFrame()
-#for i in ['ct','nj','ny','pa']:
-#    tp=pd.read_csv(path+'lehd/'+str(i)+'_rac_S000_JT03_2015.csv',dtype=str)
-#    tp=tp[['h_geocode','C000']]
-#    rac=pd.concat([rac,tp],axis=0)
-#rac.columns=['blockid','rac']
-#rac['tractid']=[str(x)[0:11] for x in rac['blockid']]
-#rac['rac']=pd.to_numeric(rac['rac'])
-#rac=pd.DataFrame(rac.groupby('tractid')['rac'].sum())
-#workctrac=pd.merge(workctrac,rac,how='left',left_index=True,right_index=True)
-#workctrac['rac']=workctrac['rac'].replace(np.nan,'0')
-#for i in workctrac.columns:
-#    workctrac[i]=pd.to_numeric(workctrac[i])
-#for i in workloclist:
-#    workctrac[i]=np.where(workctrac[i]<=10,5,
-#                 np.where(workctrac[i]<=20,15,
-#                 np.where(workctrac[i]<=30,25,
-#                 np.where(workctrac[i]<=40,35,
-#                 np.where(workctrac[i]<=50,45,
-#                 np.where(workctrac[i]<=60,55,
-#                 np.nan))))))
-#workctgravity=pd.DataFrame(index=workloclist,columns=['RAC1-10','RAC11-20','RAC21-30','RAC31-40','RAC41-50','RAC51-60',
-#                                                      'GRAC1-10','GRAC11-20','GRAC21-30','GRAC31-40','GRAC41-50','GRAC51-60',
-#                                                      'GRAVITYRAC'])
-#for i in workloclist:
-#    tp=sum(workctrac.loc[workctrac[i]==5,'rac'])
-#    workctgravity.loc[i,'RAC1-10']=tp
-#    tp=sum(workctrac.loc[workctrac[i]==15,'rac'])
-#    workctgravity.loc[i,'RAC11-20']=tp
-#    tp=sum(workctrac.loc[workctrac[i]==25,'rac'])
-#    workctgravity.loc[i,'RAC21-30']=tp
-#    tp=sum(workctrac.loc[workctrac[i]==35,'rac'])
-#    workctgravity.loc[i,'RAC31-40']=tp
-#    tp=sum(workctrac.loc[workctrac[i]==45,'rac'])
-#    workctgravity.loc[i,'RAC41-50']=tp
-#    tp=sum(workctrac.loc[workctrac[i]==55,'rac'])
-#    workctgravity.loc[i,'RAC51-60']=tp
-#    workctgravity.loc[i,'GRAC1-10']=(workctgravity.loc[i,'RAC1-10'])/(5**2)
-#    workctgravity.loc[i,'GRAC11-20']=(workctgravity.loc[i,'RAC11-20'])/(15**2)
-#    workctgravity.loc[i,'GRAC21-30']=(workctgravity.loc[i,'RAC21-30'])/(25**2)
-#    workctgravity.loc[i,'GRAC31-40']=(workctgravity.loc[i,'RAC31-40'])/(35**2)
-#    workctgravity.loc[i,'GRAC41-50']=(workctgravity.loc[i,'RAC41-50'])/(45**2)
-#    workctgravity.loc[i,'GRAC51-60']=(workctgravity.loc[i,'RAC51-60'])/(55**2)
-#    workctgravity.loc[i,'GRAVITYRAC']=workctgravity.loc[i,'GRAC1-10']+workctgravity.loc[i,'GRAC11-20']+workctgravity.loc[i,'GRAC21-30']+workctgravity.loc[i,'GRAC31-40']+workctgravity.loc[i,'GRAC41-50']+workctgravity.loc[i,'GRAC51-60']
-#workctgravity.to_csv(path+'nyctract/workctgravity2.csv',index=True)
-#
-
-
-
-
-
+# Work Gravity
+workctrac=pd.read_csv(path+'nyctract/workct3.csv',dtype=str)
+workctrac=workctrac.set_index('tractid')
+workloclist=sorted(workctrac.columns)
+rac=pd.DataFrame()
+for i in ['ct','nj','ny','pa']:
+    tp=pd.read_csv(path+'lehd/'+str(i)+'_rac_S000_JT03_2017.csv',dtype=str)
+    tp=tp[['h_geocode','C000']]
+    rac=pd.concat([rac,tp],axis=0)
+rac.columns=['blockid','rac']
+rac['tractid']=[str(x)[0:11] for x in rac['blockid']]
+rac['rac']=pd.to_numeric(rac['rac'])
+rac=pd.DataFrame(rac.groupby('tractid')['rac'].sum())
+workctrac=pd.merge(workctrac,rac,how='left',left_index=True,right_index=True)
+workctrac['rac']=workctrac['rac'].replace(np.nan,'0')
+for i in workctrac.columns:
+    workctrac[i]=pd.to_numeric(workctrac[i])
+for i in workloclist:
+    workctrac[i]=np.where(workctrac[i]<=5,2.5,
+                 np.where(workctrac[i]<=10,7.5,
+                 np.where(workctrac[i]<=15,12.5,
+                 np.where(workctrac[i]<=20,17.5,
+                 np.where(workctrac[i]<=25,22.5,
+                 np.where(workctrac[i]<=30,27.5,
+                 np.where(workctrac[i]<=35,32.5,
+                 np.where(workctrac[i]<=40,37.5,
+                 np.where(workctrac[i]<=45,42.5,
+                 np.where(workctrac[i]<=50,47.5,
+                 np.where(workctrac[i]<=55,52.5,
+                 np.where(workctrac[i]<=60,57.5,
+                 np.where(workctrac[i]<=65,62.5,
+                 np.where(workctrac[i]<=70,67.5,
+                 np.where(workctrac[i]<=75,72.5,
+                 np.where(workctrac[i]<=80,77.5,
+                 np.where(workctrac[i]<=85,82.5,
+                 np.where(workctrac[i]<=90,87.5,
+                 np.where(workctrac[i]<=95,92.5,
+                 np.where(workctrac[i]<=100,97.5,
+                 np.where(workctrac[i]<=105,102.5,
+                 np.where(workctrac[i]<=110,107.5,
+                 np.where(workctrac[i]<=115,112.5,
+                 np.where(workctrac[i]<=120,117.5,
+                 np.nan))))))))))))))))))))))))
+workctgravity=pd.DataFrame(index=workloclist,columns=['RAC1-5','RAC6-10','RAC11-15','RAC16-20','RAC21-25','RAC26-30',
+                                                      'RAC31-35','RAC36-40','RAC41-45','RAC46-50','RAC51-55','RAC56-60',
+                                                      'RAC61-65','RAC66-70','RAC71-75','RAC76-80','RAC81-85','RAC86-90',
+                                                      'RAC91-95','RAC96-100','RAC101-105','RAC106-110','RAC111-115','RAC116-120',
+                                                      'GRAC1-10','GRAC11-20','GRAC21-30','GRAC31-40','GRAC41-50','GRAC51-60',
+                                                      'GRAVITYRAC'])
+for i in workloclist:
+    workctgravity.loc[i,'RAC1-5']=sum(workctrac.loc[workctrac[i]==2.5,'rac'])
+    workctgravity.loc[i,'RAC6-10']=sum(workctrac.loc[workctrac[i]==7.5,'rac'])
+    workctgravity.loc[i,'RAC11-15']=sum(workctrac.loc[workctrac[i]==12.5,'rac'])
+    workctgravity.loc[i,'RAC16-20']=sum(workctrac.loc[workctrac[i]==17.5,'rac'])
+    workctgravity.loc[i,'RAC21-25']=sum(workctrac.loc[workctrac[i]==22.5,'rac'])
+    workctgravity.loc[i,'RAC26-30']=sum(workctrac.loc[workctrac[i]==27.5,'rac'])
+    workctgravity.loc[i,'RAC31-35']=sum(workctrac.loc[workctrac[i]==32.5,'rac'])
+    workctgravity.loc[i,'RAC36-40']=sum(workctrac.loc[workctrac[i]==37.5,'rac'])
+    workctgravity.loc[i,'RAC41-45']=sum(workctrac.loc[workctrac[i]==42.5,'rac'])
+    workctgravity.loc[i,'RAC46-50']=sum(workctrac.loc[workctrac[i]==47.5,'rac'])
+    workctgravity.loc[i,'RAC51-55']=sum(workctrac.loc[workctrac[i]==52.5,'rac'])
+    workctgravity.loc[i,'RAC56-60']=sum(workctrac.loc[workctrac[i]==57.5,'rac'])
+    workctgravity.loc[i,'RAC61-65']=sum(workctrac.loc[workctrac[i]==62.5,'rac'])
+    workctgravity.loc[i,'RAC66-70']=sum(workctrac.loc[workctrac[i]==67.5,'rac'])
+    workctgravity.loc[i,'RAC71-75']=sum(workctrac.loc[workctrac[i]==72.5,'rac'])
+    workctgravity.loc[i,'RAC76-80']=sum(workctrac.loc[workctrac[i]==77.5,'rac'])
+    workctgravity.loc[i,'RAC81-85']=sum(workctrac.loc[workctrac[i]==82.5,'rac'])
+    workctgravity.loc[i,'RAC86-90']=sum(workctrac.loc[workctrac[i]==87.5,'rac'])
+    workctgravity.loc[i,'RAC91-95']=sum(workctrac.loc[workctrac[i]==92.5,'rac'])
+    workctgravity.loc[i,'RAC96-100']=sum(workctrac.loc[workctrac[i]==97.5,'rac'])
+    workctgravity.loc[i,'RAC101-105']=sum(workctrac.loc[workctrac[i]==102.5,'rac'])
+    workctgravity.loc[i,'RAC106-110']=sum(workctrac.loc[workctrac[i]==107.5,'rac'])
+    workctgravity.loc[i,'RAC111-115']=sum(workctrac.loc[workctrac[i]==112.5,'rac'])
+    workctgravity.loc[i,'RAC116-120']=sum(workctrac.loc[workctrac[i]==117.5,'rac'])
+    workctgravity.loc[i,'GRAC1-10']=(workctgravity.loc[i,'RAC1-5']+workctgravity.loc[i,'RAC6-10'])/(5**2)
+    workctgravity.loc[i,'GRAC11-20']=(workctgravity.loc[i,'RAC11-15']+workctgravity.loc[i,'RAC16-20'])/(15**2)
+    workctgravity.loc[i,'GRAC21-30']=(workctgravity.loc[i,'RAC21-25']+workctgravity.loc[i,'RAC26-30'])/(25**2)
+    workctgravity.loc[i,'GRAC31-40']=(workctgravity.loc[i,'RAC31-35']+workctgravity.loc[i,'RAC36-40'])/(35**2)
+    workctgravity.loc[i,'GRAC41-50']=(workctgravity.loc[i,'RAC41-45']+workctgravity.loc[i,'RAC46-50'])/(45**2)
+    workctgravity.loc[i,'GRAC51-60']=(workctgravity.loc[i,'RAC51-55']+workctgravity.loc[i,'RAC56-60'])/(55**2)
+    workctgravity.loc[i,'GRAVITYRAC']=workctgravity.loc[i,'GRAC1-10']+workctgravity.loc[i,'GRAC11-20']+workctgravity.loc[i,'GRAC21-30']+workctgravity.loc[i,'GRAC31-40']+workctgravity.loc[i,'GRAC41-50']+workctgravity.loc[i,'GRAC51-60']
+workctgravity.to_csv(path+'nyctract/workctgravity3.csv',index=True)
 
 
 
