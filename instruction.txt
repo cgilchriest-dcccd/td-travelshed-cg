@@ -1,7 +1,7 @@
 create folder:
 cd Desktop
 mkdir Travelshed
-
+ 
 install github:
 sudo apt-get update
 sudo apt-get upgrade
