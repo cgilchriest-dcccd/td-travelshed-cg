@@ -815,170 +815,170 @@ adjlist=['36005000100','36005000400','36005001900','36005002400','36005003700','
 
 
 
-# Block Level Gravity Model
-# Res Gravity
-resbkwac=pd.read_csv(path+'nyctract/resbk3.csv',dtype=str)
-resbkwac=resbkwac.set_index('blockid')
-resloclist=sorted(resbkwac.columns)
-wac=pd.DataFrame()
-for i in ['ct','nj','ny','pa']:
-    tp=pd.read_csv(path+'lehd/'+str(i)+'_wac_S000_JT03_2017.csv',dtype=str)
-    tp=tp[['w_geocode','C000']]
-    wac=pd.concat([wac,tp],axis=0)
-wac.columns=['blockid','wac']
-wac=wac.set_index('blockid')
-resbkwac=pd.merge(resbkwac,wac,how='left',left_index=True,right_index=True)
-resbkwac['wac']=resbkwac['wac'].replace(np.nan,'0')
-for i in resbkwac.columns:
-    resbkwac[i]=pd.to_numeric(resbkwac[i])
-for i in resloclist:
-    resbkwac[i]=np.where(resbkwac[i]<=5,2.5,
-                np.where(resbkwac[i]<=10,7.5,
-                np.where(resbkwac[i]<=15,12.5,
-                np.where(resbkwac[i]<=20,17.5,
-                np.where(resbkwac[i]<=25,22.5,
-                np.where(resbkwac[i]<=30,27.5,
-                np.where(resbkwac[i]<=35,32.5,
-                np.where(resbkwac[i]<=40,37.5,
-                np.where(resbkwac[i]<=45,42.5,
-                np.where(resbkwac[i]<=50,47.5,
-                np.where(resbkwac[i]<=55,52.5,
-                np.where(resbkwac[i]<=60,57.5,
-                np.where(resbkwac[i]<=65,62.5,
-                np.where(resbkwac[i]<=70,67.5,
-                np.where(resbkwac[i]<=75,72.5,
-                np.where(resbkwac[i]<=80,77.5,
-                np.where(resbkwac[i]<=85,82.5,
-                np.where(resbkwac[i]<=90,87.5,
-                np.where(resbkwac[i]<=95,92.5,
-                np.where(resbkwac[i]<=100,97.5,
-                np.where(resbkwac[i]<=105,102.5,
-                np.where(resbkwac[i]<=110,107.5,
-                np.where(resbkwac[i]<=115,112.5,
-                np.where(resbkwac[i]<=120,117.5,
-                np.nan))))))))))))))))))))))))
-resbkgravity=pd.DataFrame(index=resloclist,columns=['WAC1-5','WAC6-10','WAC11-15','WAC16-20','WAC21-25','WAC26-30',
-                                                    'WAC31-35','WAC36-40','WAC41-45','WAC46-50','WAC51-55','WAC56-60',
-                                                    'WAC61-65','WAC66-70','WAC71-75','WAC76-80','WAC81-85','WAC86-90',
-                                                    'WAC91-95','WAC96-100','WAC101-105','WAC106-110','WAC111-115','WAC116-120',
-                                                    'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
-                                                    'GRAVITYWAC'])
-for i in resloclist:
-    resbkgravity.loc[i,'WAC1-5']=sum(resbkwac.loc[resbkwac[i]==2.5,'wac'])
-    resbkgravity.loc[i,'WAC6-10']=sum(resbkwac.loc[resbkwac[i]==7.5,'wac'])
-    resbkgravity.loc[i,'WAC11-15']=sum(resbkwac.loc[resbkwac[i]==12.5,'wac'])
-    resbkgravity.loc[i,'WAC16-20']=sum(resbkwac.loc[resbkwac[i]==17.5,'wac'])
-    resbkgravity.loc[i,'WAC21-25']=sum(resbkwac.loc[resbkwac[i]==22.5,'wac'])
-    resbkgravity.loc[i,'WAC26-30']=sum(resbkwac.loc[resbkwac[i]==27.5,'wac'])
-    resbkgravity.loc[i,'WAC31-35']=sum(resbkwac.loc[resbkwac[i]==32.5,'wac'])
-    resbkgravity.loc[i,'WAC36-40']=sum(resbkwac.loc[resbkwac[i]==37.5,'wac'])
-    resbkgravity.loc[i,'WAC41-45']=sum(resbkwac.loc[resbkwac[i]==42.5,'wac'])
-    resbkgravity.loc[i,'WAC46-50']=sum(resbkwac.loc[resbkwac[i]==47.5,'wac'])
-    resbkgravity.loc[i,'WAC51-55']=sum(resbkwac.loc[resbkwac[i]==52.5,'wac'])
-    resbkgravity.loc[i,'WAC56-60']=sum(resbkwac.loc[resbkwac[i]==57.5,'wac'])
-    resbkgravity.loc[i,'WAC61-65']=sum(resbkwac.loc[resbkwac[i]==62.5,'wac'])
-    resbkgravity.loc[i,'WAC66-70']=sum(resbkwac.loc[resbkwac[i]==67.5,'wac'])
-    resbkgravity.loc[i,'WAC71-75']=sum(resbkwac.loc[resbkwac[i]==72.5,'wac'])
-    resbkgravity.loc[i,'WAC76-80']=sum(resbkwac.loc[resbkwac[i]==77.5,'wac'])
-    resbkgravity.loc[i,'WAC81-85']=sum(resbkwac.loc[resbkwac[i]==82.5,'wac'])
-    resbkgravity.loc[i,'WAC86-90']=sum(resbkwac.loc[resbkwac[i]==87.5,'wac'])
-    resbkgravity.loc[i,'WAC91-95']=sum(resbkwac.loc[resbkwac[i]==92.5,'wac'])
-    resbkgravity.loc[i,'WAC96-100']=sum(resbkwac.loc[resbkwac[i]==97.5,'wac'])
-    resbkgravity.loc[i,'WAC101-105']=sum(resbkwac.loc[resbkwac[i]==102.5,'wac'])
-    resbkgravity.loc[i,'WAC106-110']=sum(resbkwac.loc[resbkwac[i]==107.5,'wac'])
-    resbkgravity.loc[i,'WAC111-115']=sum(resbkwac.loc[resbkwac[i]==112.5,'wac'])
-    resbkgravity.loc[i,'WAC116-120']=sum(resbkwac.loc[resbkwac[i]==117.5,'wac'])
-    resbkgravity.loc[i,'GWAC1-10']=(resbkgravity.loc[i,'WAC1-5']+resbkgravity.loc[i,'WAC6-10'])/(5**2)
-    resbkgravity.loc[i,'GWAC11-20']=(resbkgravity.loc[i,'WAC11-15']+resbkgravity.loc[i,'WAC16-20'])/(15**2)
-    resbkgravity.loc[i,'GWAC21-30']=(resbkgravity.loc[i,'WAC21-25']+resbkgravity.loc[i,'WAC26-30'])/(25**2)
-    resbkgravity.loc[i,'GWAC31-40']=(resbkgravity.loc[i,'WAC31-35']+resbkgravity.loc[i,'WAC36-40'])/(35**2)
-    resbkgravity.loc[i,'GWAC41-50']=(resbkgravity.loc[i,'WAC41-45']+resbkgravity.loc[i,'WAC46-50'])/(45**2)
-    resbkgravity.loc[i,'GWAC51-60']=(resbkgravity.loc[i,'WAC51-55']+resbkgravity.loc[i,'WAC56-60'])/(55**2)
-    resbkgravity.loc[i,'GRAVITYWAC']=resbkgravity.loc[i,'GWAC1-10']+resbkgravity.loc[i,'GWAC11-20']+resbkgravity.loc[i,'GWAC21-30']+resbkgravity.loc[i,'GWAC31-40']+resbkgravity.loc[i,'GWAC41-50']+resbkgravity.loc[i,'GWAC51-60']
-resbkgravity.to_csv(path+'nyctract/resbkgravity3.csv',index=True)
-
-
-
-# Work Gravity
-workbkrac=pd.read_csv(path+'nyctract/workbk3.csv',dtype=str)
-workbkrac=workbkrac.set_index('blockid')
-workloclist=sorted(workbkrac.columns)
-rac=pd.DataFrame()
-for i in ['ct','nj','ny','pa']:
-    tp=pd.read_csv(path+'lehd/'+str(i)+'_rac_S000_JT03_2017.csv',dtype=str)
-    tp=tp[['h_geocode','C000']]
-    rac=pd.concat([rac,tp],axis=0)
-rac.columns=['blockid','rac']
-rac=rac.set_index('blockid')
-workbkrac=pd.merge(workbkrac,rac,how='left',left_index=True,right_index=True)
-workbkrac['rac']=workbkrac['rac'].replace(np.nan,'0')
-for i in workbkrac.columns:
-    workbkrac[i]=pd.to_numeric(workbkrac[i])
-for i in workloclist:
-    workbkrac[i]=np.where(workbkrac[i]<=5,2.5,
-                 np.where(workbkrac[i]<=10,7.5,
-                 np.where(workbkrac[i]<=15,12.5,
-                 np.where(workbkrac[i]<=20,17.5,
-                 np.where(workbkrac[i]<=25,22.5,
-                 np.where(workbkrac[i]<=30,27.5,
-                 np.where(workbkrac[i]<=35,32.5,
-                 np.where(workbkrac[i]<=40,37.5,
-                 np.where(workbkrac[i]<=45,42.5,
-                 np.where(workbkrac[i]<=50,47.5,
-                 np.where(workbkrac[i]<=55,52.5,
-                 np.where(workbkrac[i]<=60,57.5,
-                 np.where(workbkrac[i]<=65,62.5,
-                 np.where(workbkrac[i]<=70,67.5,
-                 np.where(workbkrac[i]<=75,72.5,
-                 np.where(workbkrac[i]<=80,77.5,
-                 np.where(workbkrac[i]<=85,82.5,
-                 np.where(workbkrac[i]<=90,87.5,
-                 np.where(workbkrac[i]<=95,92.5,
-                 np.where(workbkrac[i]<=100,97.5,
-                 np.where(workbkrac[i]<=105,102.5,
-                 np.where(workbkrac[i]<=110,107.5,
-                 np.where(workbkrac[i]<=115,112.5,
-                 np.where(workbkrac[i]<=120,117.5,
-                 np.nan))))))))))))))))))))))))
-workbkgravity=pd.DataFrame(index=workloclist,columns=['RAC1-5','RAC6-10','RAC11-15','RAC16-20','RAC21-25','RAC26-30',
-                                                      'RAC31-35','RAC36-40','RAC41-45','RAC46-50','RAC51-55','RAC56-60',
-                                                      'RAC61-65','RAC66-70','RAC71-75','RAC76-80','RAC81-85','RAC86-90',
-                                                      'RAC91-95','RAC96-100','RAC101-105','RAC106-110','RAC111-115','RAC116-120',
-                                                      'GRAC1-10','GRAC11-20','GRAC21-30','GRAC31-40','GRAC41-50','GRAC51-60',
-                                                      'GRAVITYRAC'])
-for i in workloclist:
-    workbkgravity.loc[i,'RAC1-5']=sum(workbkrac.loc[workbkrac[i]==2.5,'rac'])
-    workbkgravity.loc[i,'RAC6-10']=sum(workbkrac.loc[workbkrac[i]==7.5,'rac'])
-    workbkgravity.loc[i,'RAC11-15']=sum(workbkrac.loc[workbkrac[i]==12.5,'rac'])
-    workbkgravity.loc[i,'RAC16-20']=sum(workbkrac.loc[workbkrac[i]==17.5,'rac'])
-    workbkgravity.loc[i,'RAC21-25']=sum(workbkrac.loc[workbkrac[i]==22.5,'rac'])
-    workbkgravity.loc[i,'RAC26-30']=sum(workbkrac.loc[workbkrac[i]==27.5,'rac'])
-    workbkgravity.loc[i,'RAC31-35']=sum(workbkrac.loc[workbkrac[i]==32.5,'rac'])
-    workbkgravity.loc[i,'RAC36-40']=sum(workbkrac.loc[workbkrac[i]==37.5,'rac'])
-    workbkgravity.loc[i,'RAC41-45']=sum(workbkrac.loc[workbkrac[i]==42.5,'rac'])
-    workbkgravity.loc[i,'RAC46-50']=sum(workbkrac.loc[workbkrac[i]==47.5,'rac'])
-    workbkgravity.loc[i,'RAC51-55']=sum(workbkrac.loc[workbkrac[i]==52.5,'rac'])
-    workbkgravity.loc[i,'RAC56-60']=sum(workbkrac.loc[workbkrac[i]==57.5,'rac'])
-    workbkgravity.loc[i,'RAC61-65']=sum(workbkrac.loc[workbkrac[i]==62.5,'rac'])
-    workbkgravity.loc[i,'RAC66-70']=sum(workbkrac.loc[workbkrac[i]==67.5,'rac'])
-    workbkgravity.loc[i,'RAC71-75']=sum(workbkrac.loc[workbkrac[i]==72.5,'rac'])
-    workbkgravity.loc[i,'RAC76-80']=sum(workbkrac.loc[workbkrac[i]==77.5,'rac'])
-    workbkgravity.loc[i,'RAC81-85']=sum(workbkrac.loc[workbkrac[i]==82.5,'rac'])
-    workbkgravity.loc[i,'RAC86-90']=sum(workbkrac.loc[workbkrac[i]==87.5,'rac'])
-    workbkgravity.loc[i,'RAC91-95']=sum(workbkrac.loc[workbkrac[i]==92.5,'rac'])
-    workbkgravity.loc[i,'RAC96-100']=sum(workbkrac.loc[workbkrac[i]==97.5,'rac'])
-    workbkgravity.loc[i,'RAC101-105']=sum(workbkrac.loc[workbkrac[i]==102.5,'rac'])
-    workbkgravity.loc[i,'RAC106-110']=sum(workbkrac.loc[workbkrac[i]==107.5,'rac'])
-    workbkgravity.loc[i,'RAC111-115']=sum(workbkrac.loc[workbkrac[i]==112.5,'rac'])
-    workbkgravity.loc[i,'RAC116-120']=sum(workbkrac.loc[workbkrac[i]==117.5,'rac'])
-    workbkgravity.loc[i,'GRAC1-10']=(workbkgravity.loc[i,'RAC1-5']+workbkgravity.loc[i,'RAC6-10'])/(5**2)
-    workbkgravity.loc[i,'GRAC11-20']=(workbkgravity.loc[i,'RAC11-15']+workbkgravity.loc[i,'RAC16-20'])/(15**2)
-    workbkgravity.loc[i,'GRAC21-30']=(workbkgravity.loc[i,'RAC21-25']+workbkgravity.loc[i,'RAC26-30'])/(25**2)
-    workbkgravity.loc[i,'GRAC31-40']=(workbkgravity.loc[i,'RAC31-35']+workbkgravity.loc[i,'RAC36-40'])/(35**2)
-    workbkgravity.loc[i,'GRAC41-50']=(workbkgravity.loc[i,'RAC41-45']+workbkgravity.loc[i,'RAC46-50'])/(45**2)
-    workbkgravity.loc[i,'GRAC51-60']=(workbkgravity.loc[i,'RAC51-55']+workbkgravity.loc[i,'RAC56-60'])/(55**2)
-    workbkgravity.loc[i,'GRAVITYRAC']=workbkgravity.loc[i,'GRAC1-10']+workbkgravity.loc[i,'GRAC11-20']+workbkgravity.loc[i,'GRAC21-30']+workbkgravity.loc[i,'GRAC31-40']+workbkgravity.loc[i,'GRAC41-50']+workbkgravity.loc[i,'GRAC51-60']
-workbkgravity.to_csv(path+'nyctract/workbkgravity3.csv',index=True)
+## Block Level Gravity Model
+## Res Gravity
+#resbkwac=pd.read_csv(path+'nyctract/resbk3.csv',dtype=str)
+#resbkwac=resbkwac.set_index('blockid')
+#resloclist=sorted(resbkwac.columns)
+#wac=pd.DataFrame()
+#for i in ['ct','nj','ny','pa']:
+#    tp=pd.read_csv(path+'lehd/'+str(i)+'_wac_S000_JT03_2017.csv',dtype=str)
+#    tp=tp[['w_geocode','C000']]
+#    wac=pd.concat([wac,tp],axis=0)
+#wac.columns=['blockid','wac']
+#wac=wac.set_index('blockid')
+#resbkwac=pd.merge(resbkwac,wac,how='left',left_index=True,right_index=True)
+#resbkwac['wac']=resbkwac['wac'].replace(np.nan,'0')
+#for i in resbkwac.columns:
+#    resbkwac[i]=pd.to_numeric(resbkwac[i])
+#for i in resloclist:
+#    resbkwac[i]=np.where(resbkwac[i]<=5,2.5,
+#                np.where(resbkwac[i]<=10,7.5,
+#                np.where(resbkwac[i]<=15,12.5,
+#                np.where(resbkwac[i]<=20,17.5,
+#                np.where(resbkwac[i]<=25,22.5,
+#                np.where(resbkwac[i]<=30,27.5,
+#                np.where(resbkwac[i]<=35,32.5,
+#                np.where(resbkwac[i]<=40,37.5,
+#                np.where(resbkwac[i]<=45,42.5,
+#                np.where(resbkwac[i]<=50,47.5,
+#                np.where(resbkwac[i]<=55,52.5,
+#                np.where(resbkwac[i]<=60,57.5,
+#                np.where(resbkwac[i]<=65,62.5,
+#                np.where(resbkwac[i]<=70,67.5,
+#                np.where(resbkwac[i]<=75,72.5,
+#                np.where(resbkwac[i]<=80,77.5,
+#                np.where(resbkwac[i]<=85,82.5,
+#                np.where(resbkwac[i]<=90,87.5,
+#                np.where(resbkwac[i]<=95,92.5,
+#                np.where(resbkwac[i]<=100,97.5,
+#                np.where(resbkwac[i]<=105,102.5,
+#                np.where(resbkwac[i]<=110,107.5,
+#                np.where(resbkwac[i]<=115,112.5,
+#                np.where(resbkwac[i]<=120,117.5,
+#                np.nan))))))))))))))))))))))))
+#resbkgravity=pd.DataFrame(index=resloclist,columns=['WAC1-5','WAC6-10','WAC11-15','WAC16-20','WAC21-25','WAC26-30',
+#                                                    'WAC31-35','WAC36-40','WAC41-45','WAC46-50','WAC51-55','WAC56-60',
+#                                                    'WAC61-65','WAC66-70','WAC71-75','WAC76-80','WAC81-85','WAC86-90',
+#                                                    'WAC91-95','WAC96-100','WAC101-105','WAC106-110','WAC111-115','WAC116-120',
+#                                                    'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
+#                                                    'GRAVITYWAC'])
+#for i in resloclist:
+#    resbkgravity.loc[i,'WAC1-5']=sum(resbkwac.loc[resbkwac[i]==2.5,'wac'])
+#    resbkgravity.loc[i,'WAC6-10']=sum(resbkwac.loc[resbkwac[i]==7.5,'wac'])
+#    resbkgravity.loc[i,'WAC11-15']=sum(resbkwac.loc[resbkwac[i]==12.5,'wac'])
+#    resbkgravity.loc[i,'WAC16-20']=sum(resbkwac.loc[resbkwac[i]==17.5,'wac'])
+#    resbkgravity.loc[i,'WAC21-25']=sum(resbkwac.loc[resbkwac[i]==22.5,'wac'])
+#    resbkgravity.loc[i,'WAC26-30']=sum(resbkwac.loc[resbkwac[i]==27.5,'wac'])
+#    resbkgravity.loc[i,'WAC31-35']=sum(resbkwac.loc[resbkwac[i]==32.5,'wac'])
+#    resbkgravity.loc[i,'WAC36-40']=sum(resbkwac.loc[resbkwac[i]==37.5,'wac'])
+#    resbkgravity.loc[i,'WAC41-45']=sum(resbkwac.loc[resbkwac[i]==42.5,'wac'])
+#    resbkgravity.loc[i,'WAC46-50']=sum(resbkwac.loc[resbkwac[i]==47.5,'wac'])
+#    resbkgravity.loc[i,'WAC51-55']=sum(resbkwac.loc[resbkwac[i]==52.5,'wac'])
+#    resbkgravity.loc[i,'WAC56-60']=sum(resbkwac.loc[resbkwac[i]==57.5,'wac'])
+#    resbkgravity.loc[i,'WAC61-65']=sum(resbkwac.loc[resbkwac[i]==62.5,'wac'])
+#    resbkgravity.loc[i,'WAC66-70']=sum(resbkwac.loc[resbkwac[i]==67.5,'wac'])
+#    resbkgravity.loc[i,'WAC71-75']=sum(resbkwac.loc[resbkwac[i]==72.5,'wac'])
+#    resbkgravity.loc[i,'WAC76-80']=sum(resbkwac.loc[resbkwac[i]==77.5,'wac'])
+#    resbkgravity.loc[i,'WAC81-85']=sum(resbkwac.loc[resbkwac[i]==82.5,'wac'])
+#    resbkgravity.loc[i,'WAC86-90']=sum(resbkwac.loc[resbkwac[i]==87.5,'wac'])
+#    resbkgravity.loc[i,'WAC91-95']=sum(resbkwac.loc[resbkwac[i]==92.5,'wac'])
+#    resbkgravity.loc[i,'WAC96-100']=sum(resbkwac.loc[resbkwac[i]==97.5,'wac'])
+#    resbkgravity.loc[i,'WAC101-105']=sum(resbkwac.loc[resbkwac[i]==102.5,'wac'])
+#    resbkgravity.loc[i,'WAC106-110']=sum(resbkwac.loc[resbkwac[i]==107.5,'wac'])
+#    resbkgravity.loc[i,'WAC111-115']=sum(resbkwac.loc[resbkwac[i]==112.5,'wac'])
+#    resbkgravity.loc[i,'WAC116-120']=sum(resbkwac.loc[resbkwac[i]==117.5,'wac'])
+#    resbkgravity.loc[i,'GWAC1-10']=(resbkgravity.loc[i,'WAC1-5']+resbkgravity.loc[i,'WAC6-10'])/(5**2)
+#    resbkgravity.loc[i,'GWAC11-20']=(resbkgravity.loc[i,'WAC11-15']+resbkgravity.loc[i,'WAC16-20'])/(15**2)
+#    resbkgravity.loc[i,'GWAC21-30']=(resbkgravity.loc[i,'WAC21-25']+resbkgravity.loc[i,'WAC26-30'])/(25**2)
+#    resbkgravity.loc[i,'GWAC31-40']=(resbkgravity.loc[i,'WAC31-35']+resbkgravity.loc[i,'WAC36-40'])/(35**2)
+#    resbkgravity.loc[i,'GWAC41-50']=(resbkgravity.loc[i,'WAC41-45']+resbkgravity.loc[i,'WAC46-50'])/(45**2)
+#    resbkgravity.loc[i,'GWAC51-60']=(resbkgravity.loc[i,'WAC51-55']+resbkgravity.loc[i,'WAC56-60'])/(55**2)
+#    resbkgravity.loc[i,'GRAVITYWAC']=resbkgravity.loc[i,'GWAC1-10']+resbkgravity.loc[i,'GWAC11-20']+resbkgravity.loc[i,'GWAC21-30']+resbkgravity.loc[i,'GWAC31-40']+resbkgravity.loc[i,'GWAC41-50']+resbkgravity.loc[i,'GWAC51-60']
+#resbkgravity.to_csv(path+'nyctract/resbkgravity3.csv',index=True)
+#
+#
+#
+## Work Gravity
+#workbkrac=pd.read_csv(path+'nyctract/workbk3.csv',dtype=str)
+#workbkrac=workbkrac.set_index('blockid')
+#workloclist=sorted(workbkrac.columns)
+#rac=pd.DataFrame()
+#for i in ['ct','nj','ny','pa']:
+#    tp=pd.read_csv(path+'lehd/'+str(i)+'_rac_S000_JT03_2017.csv',dtype=str)
+#    tp=tp[['h_geocode','C000']]
+#    rac=pd.concat([rac,tp],axis=0)
+#rac.columns=['blockid','rac']
+#rac=rac.set_index('blockid')
+#workbkrac=pd.merge(workbkrac,rac,how='left',left_index=True,right_index=True)
+#workbkrac['rac']=workbkrac['rac'].replace(np.nan,'0')
+#for i in workbkrac.columns:
+#    workbkrac[i]=pd.to_numeric(workbkrac[i])
+#for i in workloclist:
+#    workbkrac[i]=np.where(workbkrac[i]<=5,2.5,
+#                 np.where(workbkrac[i]<=10,7.5,
+#                 np.where(workbkrac[i]<=15,12.5,
+#                 np.where(workbkrac[i]<=20,17.5,
+#                 np.where(workbkrac[i]<=25,22.5,
+#                 np.where(workbkrac[i]<=30,27.5,
+#                 np.where(workbkrac[i]<=35,32.5,
+#                 np.where(workbkrac[i]<=40,37.5,
+#                 np.where(workbkrac[i]<=45,42.5,
+#                 np.where(workbkrac[i]<=50,47.5,
+#                 np.where(workbkrac[i]<=55,52.5,
+#                 np.where(workbkrac[i]<=60,57.5,
+#                 np.where(workbkrac[i]<=65,62.5,
+#                 np.where(workbkrac[i]<=70,67.5,
+#                 np.where(workbkrac[i]<=75,72.5,
+#                 np.where(workbkrac[i]<=80,77.5,
+#                 np.where(workbkrac[i]<=85,82.5,
+#                 np.where(workbkrac[i]<=90,87.5,
+#                 np.where(workbkrac[i]<=95,92.5,
+#                 np.where(workbkrac[i]<=100,97.5,
+#                 np.where(workbkrac[i]<=105,102.5,
+#                 np.where(workbkrac[i]<=110,107.5,
+#                 np.where(workbkrac[i]<=115,112.5,
+#                 np.where(workbkrac[i]<=120,117.5,
+#                 np.nan))))))))))))))))))))))))
+#workbkgravity=pd.DataFrame(index=workloclist,columns=['RAC1-5','RAC6-10','RAC11-15','RAC16-20','RAC21-25','RAC26-30',
+#                                                      'RAC31-35','RAC36-40','RAC41-45','RAC46-50','RAC51-55','RAC56-60',
+#                                                      'RAC61-65','RAC66-70','RAC71-75','RAC76-80','RAC81-85','RAC86-90',
+#                                                      'RAC91-95','RAC96-100','RAC101-105','RAC106-110','RAC111-115','RAC116-120',
+#                                                      'GRAC1-10','GRAC11-20','GRAC21-30','GRAC31-40','GRAC41-50','GRAC51-60',
+#                                                      'GRAVITYRAC'])
+#for i in workloclist:
+#    workbkgravity.loc[i,'RAC1-5']=sum(workbkrac.loc[workbkrac[i]==2.5,'rac'])
+#    workbkgravity.loc[i,'RAC6-10']=sum(workbkrac.loc[workbkrac[i]==7.5,'rac'])
+#    workbkgravity.loc[i,'RAC11-15']=sum(workbkrac.loc[workbkrac[i]==12.5,'rac'])
+#    workbkgravity.loc[i,'RAC16-20']=sum(workbkrac.loc[workbkrac[i]==17.5,'rac'])
+#    workbkgravity.loc[i,'RAC21-25']=sum(workbkrac.loc[workbkrac[i]==22.5,'rac'])
+#    workbkgravity.loc[i,'RAC26-30']=sum(workbkrac.loc[workbkrac[i]==27.5,'rac'])
+#    workbkgravity.loc[i,'RAC31-35']=sum(workbkrac.loc[workbkrac[i]==32.5,'rac'])
+#    workbkgravity.loc[i,'RAC36-40']=sum(workbkrac.loc[workbkrac[i]==37.5,'rac'])
+#    workbkgravity.loc[i,'RAC41-45']=sum(workbkrac.loc[workbkrac[i]==42.5,'rac'])
+#    workbkgravity.loc[i,'RAC46-50']=sum(workbkrac.loc[workbkrac[i]==47.5,'rac'])
+#    workbkgravity.loc[i,'RAC51-55']=sum(workbkrac.loc[workbkrac[i]==52.5,'rac'])
+#    workbkgravity.loc[i,'RAC56-60']=sum(workbkrac.loc[workbkrac[i]==57.5,'rac'])
+#    workbkgravity.loc[i,'RAC61-65']=sum(workbkrac.loc[workbkrac[i]==62.5,'rac'])
+#    workbkgravity.loc[i,'RAC66-70']=sum(workbkrac.loc[workbkrac[i]==67.5,'rac'])
+#    workbkgravity.loc[i,'RAC71-75']=sum(workbkrac.loc[workbkrac[i]==72.5,'rac'])
+#    workbkgravity.loc[i,'RAC76-80']=sum(workbkrac.loc[workbkrac[i]==77.5,'rac'])
+#    workbkgravity.loc[i,'RAC81-85']=sum(workbkrac.loc[workbkrac[i]==82.5,'rac'])
+#    workbkgravity.loc[i,'RAC86-90']=sum(workbkrac.loc[workbkrac[i]==87.5,'rac'])
+#    workbkgravity.loc[i,'RAC91-95']=sum(workbkrac.loc[workbkrac[i]==92.5,'rac'])
+#    workbkgravity.loc[i,'RAC96-100']=sum(workbkrac.loc[workbkrac[i]==97.5,'rac'])
+#    workbkgravity.loc[i,'RAC101-105']=sum(workbkrac.loc[workbkrac[i]==102.5,'rac'])
+#    workbkgravity.loc[i,'RAC106-110']=sum(workbkrac.loc[workbkrac[i]==107.5,'rac'])
+#    workbkgravity.loc[i,'RAC111-115']=sum(workbkrac.loc[workbkrac[i]==112.5,'rac'])
+#    workbkgravity.loc[i,'RAC116-120']=sum(workbkrac.loc[workbkrac[i]==117.5,'rac'])
+#    workbkgravity.loc[i,'GRAC1-10']=(workbkgravity.loc[i,'RAC1-5']+workbkgravity.loc[i,'RAC6-10'])/(5**2)
+#    workbkgravity.loc[i,'GRAC11-20']=(workbkgravity.loc[i,'RAC11-15']+workbkgravity.loc[i,'RAC16-20'])/(15**2)
+#    workbkgravity.loc[i,'GRAC21-30']=(workbkgravity.loc[i,'RAC21-25']+workbkgravity.loc[i,'RAC26-30'])/(25**2)
+#    workbkgravity.loc[i,'GRAC31-40']=(workbkgravity.loc[i,'RAC31-35']+workbkgravity.loc[i,'RAC36-40'])/(35**2)
+#    workbkgravity.loc[i,'GRAC41-50']=(workbkgravity.loc[i,'RAC41-45']+workbkgravity.loc[i,'RAC46-50'])/(45**2)
+#    workbkgravity.loc[i,'GRAC51-60']=(workbkgravity.loc[i,'RAC51-55']+workbkgravity.loc[i,'RAC56-60'])/(55**2)
+#    workbkgravity.loc[i,'GRAVITYRAC']=workbkgravity.loc[i,'GRAC1-10']+workbkgravity.loc[i,'GRAC11-20']+workbkgravity.loc[i,'GRAC21-30']+workbkgravity.loc[i,'GRAC31-40']+workbkgravity.loc[i,'GRAC41-50']+workbkgravity.loc[i,'GRAC51-60']
+#workbkgravity.to_csv(path+'nyctract/workbkgravity3.csv',index=True)
     
 
 
@@ -1163,3 +1163,85 @@ workbkgravity.to_csv(path+'nyctract/workbkgravity3.csv',index=True)
 
 
 
+# Population Gravity
+workctrac=pd.read_csv(path+'nyctract/workct3.csv',dtype=str)
+workctrac=workctrac.set_index('tractid')
+workloclist=sorted(workctrac.columns)
+rac=pd.DataFrame()
+for i in ['ct','nj','ny','pa']:
+    tp=pd.read_csv(path+'lehd/'+str(i)+'_rac_S000_JT03_2017.csv',dtype=str)
+    tp=tp[['h_geocode','C000']]
+    rac=pd.concat([rac,tp],axis=0)
+rac.columns=['blockid','rac']
+rac['tractid']=[str(x)[0:11] for x in rac['blockid']]
+rac['rac']=pd.to_numeric(rac['rac'])
+rac=pd.DataFrame(rac.groupby('tractid')['rac'].sum())
+workctrac=pd.merge(workctrac,rac,how='left',left_index=True,right_index=True)
+workctrac['rac']=workctrac['rac'].replace(np.nan,'0')
+for i in workctrac.columns:
+    workctrac[i]=pd.to_numeric(workctrac[i])
+for i in workloclist:
+    workctrac[i]=np.where(workctrac[i]<=5,2.5,
+                 np.where(workctrac[i]<=10,7.5,
+                 np.where(workctrac[i]<=15,12.5,
+                 np.where(workctrac[i]<=20,17.5,
+                 np.where(workctrac[i]<=25,22.5,
+                 np.where(workctrac[i]<=30,27.5,
+                 np.where(workctrac[i]<=35,32.5,
+                 np.where(workctrac[i]<=40,37.5,
+                 np.where(workctrac[i]<=45,42.5,
+                 np.where(workctrac[i]<=50,47.5,
+                 np.where(workctrac[i]<=55,52.5,
+                 np.where(workctrac[i]<=60,57.5,
+                 np.where(workctrac[i]<=65,62.5,
+                 np.where(workctrac[i]<=70,67.5,
+                 np.where(workctrac[i]<=75,72.5,
+                 np.where(workctrac[i]<=80,77.5,
+                 np.where(workctrac[i]<=85,82.5,
+                 np.where(workctrac[i]<=90,87.5,
+                 np.where(workctrac[i]<=95,92.5,
+                 np.where(workctrac[i]<=100,97.5,
+                 np.where(workctrac[i]<=105,102.5,
+                 np.where(workctrac[i]<=110,107.5,
+                 np.where(workctrac[i]<=115,112.5,
+                 np.where(workctrac[i]<=120,117.5,
+                 np.nan))))))))))))))))))))))))
+workctgravity=pd.DataFrame(index=workloclist,columns=['RAC1-5','RAC6-10','RAC11-15','RAC16-20','RAC21-25','RAC26-30',
+                                                      'RAC31-35','RAC36-40','RAC41-45','RAC46-50','RAC51-55','RAC56-60',
+                                                      'RAC61-65','RAC66-70','RAC71-75','RAC76-80','RAC81-85','RAC86-90',
+                                                      'RAC91-95','RAC96-100','RAC101-105','RAC106-110','RAC111-115','RAC116-120',
+                                                      'GRAC1-10','GRAC11-20','GRAC21-30','GRAC31-40','GRAC41-50','GRAC51-60',
+                                                      'GRAVITYRAC'])
+for i in workloclist:
+    workctgravity.loc[i,'RAC1-5']=sum(workctrac.loc[workctrac[i]==2.5,'rac'])
+    workctgravity.loc[i,'RAC6-10']=sum(workctrac.loc[workctrac[i]==7.5,'rac'])
+    workctgravity.loc[i,'RAC11-15']=sum(workctrac.loc[workctrac[i]==12.5,'rac'])
+    workctgravity.loc[i,'RAC16-20']=sum(workctrac.loc[workctrac[i]==17.5,'rac'])
+    workctgravity.loc[i,'RAC21-25']=sum(workctrac.loc[workctrac[i]==22.5,'rac'])
+    workctgravity.loc[i,'RAC26-30']=sum(workctrac.loc[workctrac[i]==27.5,'rac'])
+    workctgravity.loc[i,'RAC31-35']=sum(workctrac.loc[workctrac[i]==32.5,'rac'])
+    workctgravity.loc[i,'RAC36-40']=sum(workctrac.loc[workctrac[i]==37.5,'rac'])
+    workctgravity.loc[i,'RAC41-45']=sum(workctrac.loc[workctrac[i]==42.5,'rac'])
+    workctgravity.loc[i,'RAC46-50']=sum(workctrac.loc[workctrac[i]==47.5,'rac'])
+    workctgravity.loc[i,'RAC51-55']=sum(workctrac.loc[workctrac[i]==52.5,'rac'])
+    workctgravity.loc[i,'RAC56-60']=sum(workctrac.loc[workctrac[i]==57.5,'rac'])
+    workctgravity.loc[i,'RAC61-65']=sum(workctrac.loc[workctrac[i]==62.5,'rac'])
+    workctgravity.loc[i,'RAC66-70']=sum(workctrac.loc[workctrac[i]==67.5,'rac'])
+    workctgravity.loc[i,'RAC71-75']=sum(workctrac.loc[workctrac[i]==72.5,'rac'])
+    workctgravity.loc[i,'RAC76-80']=sum(workctrac.loc[workctrac[i]==77.5,'rac'])
+    workctgravity.loc[i,'RAC81-85']=sum(workctrac.loc[workctrac[i]==82.5,'rac'])
+    workctgravity.loc[i,'RAC86-90']=sum(workctrac.loc[workctrac[i]==87.5,'rac'])
+    workctgravity.loc[i,'RAC91-95']=sum(workctrac.loc[workctrac[i]==92.5,'rac'])
+    workctgravity.loc[i,'RAC96-100']=sum(workctrac.loc[workctrac[i]==97.5,'rac'])
+    workctgravity.loc[i,'RAC101-105']=sum(workctrac.loc[workctrac[i]==102.5,'rac'])
+    workctgravity.loc[i,'RAC106-110']=sum(workctrac.loc[workctrac[i]==107.5,'rac'])
+    workctgravity.loc[i,'RAC111-115']=sum(workctrac.loc[workctrac[i]==112.5,'rac'])
+    workctgravity.loc[i,'RAC116-120']=sum(workctrac.loc[workctrac[i]==117.5,'rac'])
+    workctgravity.loc[i,'GRAC1-10']=(workctgravity.loc[i,'RAC1-5']+workctgravity.loc[i,'RAC6-10'])/(5**2)
+    workctgravity.loc[i,'GRAC11-20']=(workctgravity.loc[i,'RAC11-15']+workctgravity.loc[i,'RAC16-20'])/(15**2)
+    workctgravity.loc[i,'GRAC21-30']=(workctgravity.loc[i,'RAC21-25']+workctgravity.loc[i,'RAC26-30'])/(25**2)
+    workctgravity.loc[i,'GRAC31-40']=(workctgravity.loc[i,'RAC31-35']+workctgravity.loc[i,'RAC36-40'])/(35**2)
+    workctgravity.loc[i,'GRAC41-50']=(workctgravity.loc[i,'RAC41-45']+workctgravity.loc[i,'RAC46-50'])/(45**2)
+    workctgravity.loc[i,'GRAC51-60']=(workctgravity.loc[i,'RAC51-55']+workctgravity.loc[i,'RAC56-60'])/(55**2)
+    workctgravity.loc[i,'GRAVITYRAC']=workctgravity.loc[i,'GRAC1-10']+workctgravity.loc[i,'GRAC11-20']+workctgravity.loc[i,'GRAC21-30']+workctgravity.loc[i,'GRAC31-40']+workctgravity.loc[i,'GRAC41-50']+workctgravity.loc[i,'GRAC51-60']
+workctgravity.to_csv(path+'nyctract/workctgravity3.csv',index=True)
