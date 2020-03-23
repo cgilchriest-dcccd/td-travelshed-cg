@@ -1164,6 +1164,7 @@ workctpop=pd.read_csv(path+'nyctract/workct3.csv',dtype=float,converters={'tract
 workctpop=workctpop.set_index('tractid')
 workloclist=sorted(workctpop.columns)
 pop=pd.read_csv(path+'population/tractpop2018.csv',dtype=float,converters={'tractid':str})
+pop=pop.set_index('tractid')
 workctpop=pd.merge(workctpop,pop,how='left',left_index=True,right_index=True)
 workctpop['pop']=workctpop['pop'].replace(np.nan,0)
 for i in workloclist:
