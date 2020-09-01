@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transit Travelshed</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="style.css"> -->
 </head>
 
 <body>
@@ -33,6 +33,10 @@
             var divElement = document.getElementById('viz1598992746181');
             var vizElement = divElement.getElementsByTagName('object')[0];
             if (divElement.offsetWidth > 800) {
+                vizElement.style.width = '650px';
+                vizElement.style.height = '887px';
+            }
+            else if (divElement.offsetWidth > 500) {
                 vizElement.style.width = '650px';
                 vizElement.style.height = '887px';
             }
