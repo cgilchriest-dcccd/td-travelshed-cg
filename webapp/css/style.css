@@ -1,14 +1,21 @@
 /* .container {
-    max-width:650px;
     padding-left: 0px;
     padding-right: 0px;
     margin-left: auto;
     margin-right: auto;
     position: relative;
+    background-color: lightgrey;
 } */
 
-#test{
+/* #test{
     width:900px;
     margin-left: auto;
     margin-right: auto;
-}
+} */
+
+
+/* #headtab{
+    margin-left: auto;
+    margin-right: auto;
+} */
+
