@@ -136,60 +136,16 @@ def parallelize(data, func):
     pool.join()
     return dt
 
-## Multiprocessing travelshed function for NYC Res Census Tracts
-#if __name__=='__main__':
-#    location=pd.read_csv(path+'nyctract/centroid/nycrestractpt.csv',dtype=str)
-#    location['id']=['RES'+str(x).zfill(11) for x in location['censustract']]
-#    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlat'],location['resintlong'])]
-#    destination=location.loc[0:max(location.count())-1,['id','latlong']]
-#    for i in destination.index:
-#        df=parallelize(arrivaltime,restravelshed)
-#        df['TTMEDIAN']=df.median(skipna=True,axis=1)
-#        df=df['TTMEDIAN'].sort_index()
-#        df.name=destination.loc[i,'id']
-#        df.to_csv(path+'nyctract/res/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
-#    print(datetime.datetime.now()-start)
-#
-## Multiprocessing travelshed function for NYC Work Census Tracts
-#if __name__=='__main__':
-#    location=pd.read_csv(path+'nyctract/centroid/nycworktractpt.csv',dtype=str)
-#    location['id']=['WORK'+str(x).zfill(11) for x in location['censustract']]
-#    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlat'],location['workintlong'])]
-#    destination=location.loc[0:max(location.count())-1,['id','latlong']]
-#    for i in destination.index:
-#        df=parallelize(arrivaltime,worktravelshed)
-#        df['TTMEDIAN']=df.median(skipna=True,axis=1)
-#        df=df['TTMEDIAN'].sort_index()
-#        df.name=destination.loc[i,'id']
-#        df.to_csv(path+'nyctract/work/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
-#    print(datetime.datetime.now()-start)
-
-
-## Multiprocessing travelshed function for NYC Res Census Tracts Adjustment
-#if __name__=='__main__':
-#    location=pd.read_csv(path+'nyctract/centroid/nycrestractptadj.csv',dtype=str)
-#    location['id']=['ADJRES'+str(x).zfill(11) for x in location['censustract']]
-#    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlat'],location['resintlong'])]
-#    destination=location.loc[0:max(location.count())-1,['id','latlong']]
-#    for i in destination.index:
-#        df=parallelize(arrivaltime,restravelshed)
-#        df['TTMEDIAN']=df.median(skipna=True,axis=1)
-#        df=df['TTMEDIAN'].sort_index()
-#        df.name=destination.loc[i,'id']
-#        df.to_csv(path+'nyctract/res2/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
-#    print(datetime.datetime.now()-start)
-
-
-# Multiprocessing travelshed function for NYC Work Census Tracts Adjustment
+# Multiprocessing travelshed function for NYC Res Census Tracts
 if __name__=='__main__':
-    location=pd.read_csv(path+'nyctract/centroid/nycworktractptadj.csv',dtype=str)
-    location['id']=['ADJWORK'+str(x).zfill(11) for x in location['censustract']]
-    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlat'],location['workintlong'])]
-    destination=location.loc[0:max(location.count())-1,['id','latlong']]
+    location=pd.read_csv(path+'nyctract/centroid/nycrestractptop.csv',dtype=str)
+    location['id']=['RES'+str(x).zfill(11) for x in location['censustract']]
+    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
+    destination=location.loc[0:max(location.count())-1,['id','latlong']][0:1]
     for i in destination.index:
-        df=parallelize(arrivaltime,worktravelshed)
+        df=parallelize(arrivaltime,restravelshed)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
         df.name=destination.loc[i,'id']
-        df.to_csv(path+'nyctract/work2/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
+        df.to_csv(path+'nyctract/op/'+destination.loc[i,'id']+'.csv',index=True,header=True,na_rep=999)
     print(datetime.datetime.now()-start)
