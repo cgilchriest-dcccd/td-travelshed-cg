@@ -14,9 +14,6 @@ import numpy as np
 import shapely
 import requests
 import multiprocessing as mp
-import matplotlib.pyplot as plt
-import contextily as ctx
-import mpl_toolkits.axes_grid1
 
 start=datetime.datetime.now()
 
@@ -170,13 +167,6 @@ def parallelize(data, func):
     pool.join()
     return dt
 
-# Define add basemap
-def add_basemap(ax, zoom, url='http://tile.stamen.com/terrain/tileZ/tileX/tileY.png'):
-    xmin, xmax, ymin, ymax = ax.axis()
-    basemap, extent = ctx.bounds2img(xmin, ymin, xmax, ymax, zoom=zoom, url=url)
-    ax.imshow(basemap, extent=extent, interpolation='bilinear')
-    ax.axis((xmin, xmax, ymin, ymax))
-
 
 
 # Multiprocessing travelshed function for sites
@@ -192,73 +182,4 @@ if __name__=='__main__':
         df=df['TTMEDIAN'].sort_index()
         df.name=destination.loc[i,'id']
         df.to_csv(path+'perrequest/'+destination.loc[i,'id']+'wt.csv',index=True,header=True,na_rep=999)
-    # Join travelsheds to block shapefile
-    wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
-    wtbk.crs={'init': 'epsg:4326'}
-    wtbk=wtbk[['blockid','geometry']]    
-    for i in destination.index:
-        tp=pd.read_csv(path+'perrequest/'+destination.loc[i,'id']+'wt.csv',dtype=str)
-        tp.iloc[:,1]=pd.to_numeric(tp.iloc[:,1])
-        wtbk=wtbk.merge(tp,on='blockid')
-    wtbk.to_file(path+'perrequest/wtbk.shp')
-    wtbk=wtbk.drop('geometry',axis=1)
-    wtbk.to_csv(path+'perrequest/wtbk.csv',index=False)
-    # Join travelsheds to tract shapefile
-    wtbk=wtbk.replace(999,np.nan)
-    loclist=wtbk.columns[1:]
-    wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
-    wtbk=wtbk.groupby(['tractid'])[loclist].median(skipna=True)
-    wtbk=wtbk.replace(np.nan,999)
-    wtbk=wtbk.reset_index()
-    wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-    wtct.crs={'init': 'epsg:4326'}
-    wtct=wtct[['tractid','geometry']]
-    wtct=wtct.merge(wtbk,on='tractid')
-    wtct.to_file(path+'perrequest/wtct.shp')
-    wtct=wtct.drop('geometry',axis=1)
-    wtct.to_csv(path+'perrequest/wtct.csv',index=False)
-    # Create map for each site
-    wtbk=gpd.read_file(path+'perrequest/wtbk.shp')
-    wtbk.crs={'init': 'epsg:4326'}
-    wtct=gpd.read_file(path+'perrequest/wtct.shp')
-    wtct.crs={'init': 'epsg:4326'}
-    for i in destination.index:
-        # Create block level map
-        wtbkmap=wtbk.loc[wtbk[destination.loc[i,'id']]<=90,[destination.loc[i,'id'],'geometry']]
-        wtbkmap=wtbkmap.to_crs(epsg=3857)
-        fig,ax=plt.subplots(1,figsize=(11,8.5))
-        plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
-        ax=wtbkmap.plot(figsize=(11,8.5),edgecolor=None,column=destination.loc[i,'id'],cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
-        add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
-        ax.set_axis_off()
-        if destination.loc[i,'direction']=='in':
-            ax.set_title('AM Peak Transit Travel Time (Minutes) to '+destination.loc[i,'id'],fontdict={'fontsize':'16','fontweight':'10'})
-        elif destination.loc[i,'direction']=='out':
-            ax.set_title('AM Peak Transit Travel Time (Minutes) from '+destination.loc[i,'id'],fontdict={'fontsize':'16','fontweight':'10'})
-        sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=90))
-        sm._A=[]
-        divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
-        cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
-        cbar=fig.colorbar(sm,cax=cax)
-        fig.tight_layout()
-        fig.savefig(path+'perrequest/'+destination.loc[i,'id']+'wtbk.jpg', dpi=300)
-        # Create tract level map
-        wtctmap=wtct.loc[wtct[destination.loc[i,'id']]<=90,[destination.loc[i,'id'],'geometry']]
-        wtctmap=wtctmap.to_crs(epsg=3857)
-        fig,ax=plt.subplots(1,figsize=(11,8.5))
-        plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
-        ax=wtctmap.plot(figsize=(11,8.5),edgecolor=None,column=destination.loc[i,'id'],cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
-        add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
-        ax.set_axis_off()
-        if destination.loc[i,'direction']=='in':
-            ax.set_title('AM Peak Transit Travel Time (Minutes) to '+destination.loc[i,'id'],fontdict={'fontsize':'16','fontweight':'10'})
-        elif destination.loc[i,'direction']=='out':
-            ax.set_title('AM Peak Transit Travel Time (Minutes) from '+destination.loc[i,'id'],fontdict={'fontsize':'16','fontweight':'10'})
-        sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=90))
-        sm._A=[]
-        divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
-        cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
-        cbar=fig.colorbar(sm,cax=cax)
-        fig.tight_layout()
-        fig.savefig(path+'perrequest/'+destination.loc[i,'id']+'wtct.jpg', dpi=300)
-    print(datetime.datetime.now()-start)
+ 
