@@ -141,7 +141,7 @@ if __name__=='__main__':
     location=pd.read_csv(path+'nyctract/centroid/nycrestractptop.csv',dtype=str)
     location['id']=['RES'+str(x).zfill(11) for x in location['censustract']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlat'],location['resintlong'])]
-    destination=location.loc[0:max(location.count())-1,['id','latlong']]
+    destination=location.loc[0:max(location.count())-1,['id','latlong']][0:10]
     for i in destination.index:
         df=parallelize(arrivaltime,restravelshed)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
