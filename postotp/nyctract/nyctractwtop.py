@@ -15,54 +15,7 @@ import shapely
 import requests
 import multiprocessing as mp
 
-start=datetime.datetime.now()
 
-pd.set_option('display.max_columns', None)
-path='/home/mayijun/TRAVELSHED/'
-# path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
-#path='C:/Users/Y_Ma2/Desktop/amazon/'
-#doserver='http://142.93.21.138:8801/'
-doserver='http://localhost:8801/'
-
-
-
-
-
-
-# Load quadstate block point shapefile
-bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
-bkpt.crs={'init': 'epsg:4326'}
-
-# Set typical day
-typicaldate='2018/06/06'
-
-# Create arrival time list
-arrivaltimeinterval=15 # in minutes
-arrivaltimestart='12:00:00'
-arrivaltimeend='13:00:00'
-arrivaltimestart=datetime.datetime.strptime(arrivaltimestart,'%H:%M:%S')
-arrivaltimeend=datetime.datetime.strptime(arrivaltimeend,'%H:%M:%S')
-arrivaltimeincrement=arrivaltimestart
-arrivaltime=[]
-while arrivaltimeincrement<=arrivaltimeend:
-    arrivaltime.append(datetime.datetime.strftime(arrivaltimeincrement,'%H:%M:%S'))
-    arrivaltimeincrement+=datetime.timedelta(seconds=arrivaltimeinterval*60)
-
-# Set maximum number of transfers
-maxTransfers=3 # 4 boardings
-
-# Set maximum walking distance
-maxWalkDistance=805 # in meters
-
-# Set cut off points between 0-120 mins
-cutoffinterval=2 # in minutes
-cutoffstart=0
-cutoffend=120
-cutoffincrement=cutoffstart
-cutoff=''
-while cutoffincrement<cutoffend:
-    cutoff+='&cutoffSec='+str((cutoffincrement+cutoffinterval)*60)
-    cutoffincrement+=cutoffinterval
 
 # Definie res travelshed function to generate isochrones and spatial join to Census Blocks
 def travelshedwt(arrt):
@@ -171,6 +124,42 @@ def parallelize(data, func):
 
 # Multiprocessing travelshed function for sites
 if __name__=='__main__':
+    start=datetime.datetime.now()
+    pd.set_option('display.max_columns', None)
+    path='/home/mayijun/TRAVELSHED/'
+    # path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
+    #path='C:/Users/Y_Ma2/Desktop/amazon/'
+    #doserver='http://142.93.21.138:8801/'
+    doserver='http://localhost:8801/'
+    # Load quadstate block point shapefile
+    bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
+    bkpt.crs={'init': 'epsg:4326'}
+    # Set typical day
+    typicaldate='2018/06/06'
+    # Create arrival time list
+    arrivaltimeinterval=15 # in minutes
+    arrivaltimestart='12:00:00'
+    arrivaltimeend='13:00:00'
+    arrivaltimestart=datetime.datetime.strptime(arrivaltimestart,'%H:%M:%S')
+    arrivaltimeend=datetime.datetime.strptime(arrivaltimeend,'%H:%M:%S')
+    arrivaltimeincrement=arrivaltimestart
+    arrivaltime=[]
+    while arrivaltimeincrement<=arrivaltimeend:
+        arrivaltime.append(datetime.datetime.strftime(arrivaltimeincrement,'%H:%M:%S'))
+        arrivaltimeincrement+=datetime.timedelta(seconds=arrivaltimeinterval*60)
+    # Set maximum number of transfers
+    maxTransfers=3 # 4 boardings
+    # Set maximum walking distance
+    maxWalkDistance=805 # in meters
+    # Set cut off points between 0-120 mins
+    cutoffinterval=2 # in minutes
+    cutoffstart=0
+    cutoffend=120
+    cutoffincrement=cutoffstart
+    cutoff=''
+    while cutoffincrement<cutoffend:
+        cutoff+='&cutoffSec='+str((cutoffincrement+cutoffinterval)*60)
+        cutoffincrement+=cutoffinterval
     location=pd.read_excel(path+'perrequest/input.xlsx',sheet_name='input',dtype=str)
     location['id']=['SITE'+str(x).zfill(3) for x in location['siteid']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['intlat'],location['intlong'])]
