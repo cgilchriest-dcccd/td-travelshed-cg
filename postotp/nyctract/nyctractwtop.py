@@ -110,8 +110,8 @@ def travelshedwt(arrt):
 
 # Define parallel multiprocessing function
 def parallelize(data, func):
-    data_split=np.array_split(data,np.ceil(len(data)/(mp.cpu_count()-1)))
-    pool=mp.Pool(mp.cpu_count()-1)
+    data_split=np.array_split(data,np.ceil(len(arrivaltime)/(mp.cpu_count()-7)))
+    pool=mp.Pool(mp.cpu_count()-7)
     dt=pd.DataFrame()
     for i in data_split:
         ds=pd.concat(pool.map(func,i),axis=1)
@@ -130,7 +130,7 @@ if __name__=='__main__':
     # path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
     #path='C:/Users/Y_Ma2/Desktop/amazon/'
     #doserver='http://142.93.21.138:8801/'
-    doserver='http://localhost:8801/'
+    doserver='http://159.65.64.166:8801/'
     # Load quadstate block point shapefile
     bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
     bkpt.crs={'init': 'epsg:4326'}
@@ -161,11 +161,12 @@ if __name__=='__main__':
         cutoff+='&cutoffSec='+str((cutoffincrement+cutoffinterval)*60)
         cutoffincrement+=cutoffinterval
     location=pd.read_excel(path+'perrequest/input.xlsx',sheet_name='input',dtype=str)
-    location['id']=['SITE'+str(x).zfill(3) for x in location['siteid']]
+    location['id']=['RES'+str(x).zfill(3) for x in location['siteid']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['intlat'],location['intlong'])]
     destination=location.loc[0:max(location.count())-1,['id','direction','latlong']]
     # Create travel time table for each site
     for i in destination.index:
+        k=travelshedwt(arrivaltime[0])
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
