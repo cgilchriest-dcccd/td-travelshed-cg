@@ -91,43 +91,6 @@ path='/home/mayijun/TRAVELSHED/'
 #     bk=bk.set_index('blockid')
 #     return bk
 
-# # Definie work travelshed function to generate isochrones and spatial join to Census Blocks
-# def worktravelshed(arrt):
-#     bk=bkpt.copy()
-#     url='http://localhost:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
-#     url+='&fromPlace='+destination.loc[i,'latlong']+'&toPlace='+destination.loc[i,'latlong']
-#     url+='&arriveBy=true&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
-#     url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=-1'+cutoff
-#     headers={'Accept':'application/json'}  
-#     req=requests.get(url=url,headers=headers)
-#     js=req.json()
-#     iso=gpd.GeoDataFrame.from_features(js,crs={'init': 'epsg:4326'})
-#     bk['T'+arrt[0:2]+arrt[3:5]]=999
-#     cut=range(cutoffend,cutoffstart,-cutoffinterval)
-#     bkiso=gpd.sjoin(bk,iso.loc[iso['time']==cut[0]*60],how='left',op='within')
-#     bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-#     bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[0]-cutoffinterval/2
-#     for k in range(0,(len(cut)-1)):
-#         if (iso.loc[iso['time']==cut[k+1]*60,'geometry'].notna()).bool():
-#             if len(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2])!=0:
-#                 try:
-#                     bkiso=gpd.sjoin(bk.loc[bk['T'+arrt[0:2]+arrt[3:5]]==cut[k]-cutoffinterval/2],
-#                                     iso.loc[iso['time']==cut[k+1]*60],how='left',op='within')
-#                     bkiso=bkiso.loc[pd.notnull(bkiso['time']),'blockid']
-#                     bk.loc[bk['blockid'].isin(bkiso),'T'+arrt[0:2]+arrt[3:5]]=cut[k+1]-cutoffinterval/2
-#                 except ValueError:
-#                     print(destination.loc[i,'id']+' '+arrt+' '+
-#                           str(cut[k+1])+'-minute isochrone has no Census Block in it!')
-#             else:
-#                 print(destination.loc[i,'id']+' '+arrt+' '+
-#                       str(cut[k])+'-minute isochrone has no Census Block in it!')
-#         else:
-#             print(destination.loc[i,'id']+' '+arrt+' '+
-#                   str(cut[k+1])+'-minute isochrone has no geometry!')
-#     bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
-#     bk=bk.drop(['lat','long','geometry'],axis=1)
-#     bk=bk.set_index('blockid')
-#     return bk
 
 # # Define parallel multiprocessing function
 # def parallelize(data, func):
