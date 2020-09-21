@@ -135,8 +135,6 @@ resbk=pd.DataFrame()
 #     resbk=pd.concat([resbk,tp],axis=1)
 # resbk.to_csv(path+'nyctract/resbkop2.csv',index=True)
 
-
-
 # resct=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
 # resct=resct.set_index('blockid')
 # resloclist=sorted(resct.columns)
