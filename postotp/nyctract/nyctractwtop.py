@@ -123,7 +123,7 @@ path='/home/mayijun/TRAVELSHED/'
 # Summarize travelshed outputs
 # NYC Res Censust Tracts
 resbk=pd.DataFrame()
-for i in os.listdir(path+'nyctract/op/')[0:100]:
+for i in os.listdir(path+'nyctract/op/')[0:500]:
     tp=pd.read_csv(path+'nyctract/op/'+i,dtype=str)
     tp=tp.set_index('blockid')
     resbk=pd.concat([resbk,tp],axis=1)
