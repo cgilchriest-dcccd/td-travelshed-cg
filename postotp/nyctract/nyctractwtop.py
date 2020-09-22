@@ -147,18 +147,16 @@ path='/home/mayijun/TRAVELSHED/'
 #     resbk=pd.concat([resbk,tp],axis=1)
 # resbk.to_csv(path+'nyctract/resbkop4.csv',index=True)
 
-resbk=pd.DataFrame()
-for i in range(1,5):
-    tp=pd.read_csv(path+'nyctract/resbkop'+str(i)+'.csv',dtype=str)
-    tp=tp.set_index('blockid')
-    resbk=pd.concat([resbk,tp],axis=1)
-resbk.to_csv(path+'nyctract/resbkop.csv',index=True)
-resct=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
-resct=resct.set_index('blockid')
-resloclist=sorted(resct.columns)
-for i in resct.columns:
-    resct[i]=pd.to_numeric(resct[i])
-resct=resct.replace(999,np.nan)
-resct['tractid']=[str(x)[0:11] for x in resct.index]
-resct=resct.groupby(['tractid'])[resloclist].median(skipna=True)
-resct.to_csv(path+'nyctract/resctop.csv',index=True,na_rep='999')
+tp1=pd.read_csv(path+'nyctract/resbkop1.csv',dtype=str)
+tp2=pd.read_csv(path+'nyctract/resbkop2.csv',dtype=str)
+resbk5=pd.merge(tp1,tp2,on='blockid',how='inner')
+resbk5.to_csv(path+'nyctract/resbkop5.csv',index=True)
+# resct=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
+# resct=resct.set_index('blockid')
+# resloclist=sorted(resct.columns)
+# for i in resct.columns:
+#     resct[i]=pd.to_numeric(resct[i])
+# resct=resct.replace(999,np.nan)
+# resct['tractid']=[str(x)[0:11] for x in resct.index]
+# resct=resct.groupby(['tractid'])[resloclist].median(skipna=True)
+# resct.to_csv(path+'nyctract/resctop.csv',index=True,na_rep='999')
