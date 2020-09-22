@@ -128,30 +128,37 @@ path='/home/mayijun/TRAVELSHED/'
 #     tp=tp.set_index('blockid')
 #     resbk=pd.concat([resbk,tp],axis=1)
 # resbk.to_csv(path+'nyctract/resbkop1.csv',index=True)
+# resbk=pd.DataFrame()
+# for i in sorted(os.listdir(path+'nyctract/op/'))[500:1000]:
+#     tp=pd.read_csv(path+'nyctract/op/'+i,dtype=str)
+#     tp=tp.set_index('blockid')
+#     resbk=pd.concat([resbk,tp],axis=1)
+# resbk.to_csv(path+'nyctract/resbkop2.csv',index=True)
+# resbk=pd.DataFrame()
+# for i in sorted(os.listdir(path+'nyctract/op/'))[1000:1500]:
+#     tp=pd.read_csv(path+'nyctract/op/'+i,dtype=str)
+#     tp=tp.set_index('blockid')
+#     resbk=pd.concat([resbk,tp],axis=1)
+# resbk.to_csv(path+'nyctract/resbkop3.csv',index=True)
+# resbk=pd.DataFrame()
+# for i in sorted(os.listdir(path+'nyctract/op/'))[1500:]:
+#     tp=pd.read_csv(path+'nyctract/op/'+i,dtype=str)
+#     tp=tp.set_index('blockid')
+#     resbk=pd.concat([resbk,tp],axis=1)
+# resbk.to_csv(path+'nyctract/resbkop4.csv',index=True)
+
 resbk=pd.DataFrame()
-for i in sorted(os.listdir(path+'nyctract/op/'))[500:1000]:
-    tp=pd.read_csv(path+'nyctract/op/'+i,dtype=str)
+for i in range(1,5):
+    tp=pd.read_csv(path+'nyctract/resbkop'+str(i),dtype=str)
     tp=tp.set_index('blockid')
     resbk=pd.concat([resbk,tp],axis=1)
-resbk.to_csv(path+'nyctract/resbkop2.csv',index=True)
-resbk=pd.DataFrame()
-for i in sorted(os.listdir(path+'nyctract/op/'))[1000:1500]:
-    tp=pd.read_csv(path+'nyctract/op/'+i,dtype=str)
-    tp=tp.set_index('blockid')
-    resbk=pd.concat([resbk,tp],axis=1)
-resbk.to_csv(path+'nyctract/resbkop3.csv',index=True)
-resbk=pd.DataFrame()
-for i in sorted(os.listdir(path+'nyctract/op/'))[1500:]:
-    tp=pd.read_csv(path+'nyctract/op/'+i,dtype=str)
-    tp=tp.set_index('blockid')
-    resbk=pd.concat([resbk,tp],axis=1)
-resbk.to_csv(path+'nyctract/resbkop4.csv',index=True)
-# resct=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
-# resct=resct.set_index('blockid')
-# resloclist=sorted(resct.columns)
-# for i in resct.columns:
-#     resct[i]=pd.to_numeric(resct[i])
-# resct=resct.replace(999,np.nan)
-# resct['tractid']=[str(x)[0:11] for x in resct.index]
-# resct=resct.groupby(['tractid'])[resloclist].median(skipna=True)
-# resct.to_csv(path+'nyctract/resctop.csv',index=True,na_rep='999')
+resbk.to_csv(path+'nyctract/resbkop.csv',index=True)
+resct=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
+resct=resct.set_index('blockid')
+resloclist=sorted(resct.columns)
+for i in resct.columns:
+    resct[i]=pd.to_numeric(resct[i])
+resct=resct.replace(999,np.nan)
+resct['tractid']=[str(x)[0:11] for x in resct.index]
+resct=resct.groupby(['tractid'])[resloclist].median(skipna=True)
+resct.to_csv(path+'nyctract/resctop.csv',index=True,na_rep='999')
