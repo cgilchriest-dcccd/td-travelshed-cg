@@ -149,7 +149,7 @@ path='/home/mayijun/TRAVELSHED/'
 
 resbk=pd.DataFrame()
 for i in range(1,5):
-    tp=pd.read_csv(path+'nyctract/resbkop'+str(i),dtype=str)
+    tp=pd.read_csv(path+'nyctract/resbkop'+str(i)+'.csv',dtype=str)
     tp=tp.set_index('blockid')
     resbk=pd.concat([resbk,tp],axis=1)
 resbk.to_csv(path+'nyctract/resbkop.csv',index=True)
