@@ -16,8 +16,8 @@ start=datetime.datetime.now()
 pd.set_option('display.max_columns', None)
 path='/home/mayijun/TRAVELSHED/'
 #path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2018/TRAVELSHEDREVAMP/'
-
-
+# path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
+ 
 # # Load quadstate blokc point shapefile
 # bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
 # bkpt.crs={'init': 'epsg:4326'}
@@ -147,14 +147,29 @@ path='/home/mayijun/TRAVELSHED/'
 #     resbk=pd.concat([resbk,tp],axis=1)
 # resbk.to_csv(path+'nyctract/resbkop4.csv',index=True)
 
-# tp1=pd.read_csv(path+'nyctract/resbkop1.csv',dtype=str)
+
+tp1=pd.read_csv(path+'nyctract/resbkop1.csv',dtype=str)
+tp1=tp1.set_index('blockid')
+tp1=tp1.transpose()
+tp1.to_csv(path+'nyctract/resbkop.csv',index=True,index_label='SITE',header=True,mode='w')
 # tp2=pd.read_csv(path+'nyctract/resbkop2.csv',dtype=str)
-# resbk5=pd.merge(tp1,tp2,on='blockid',how='inner')
-# resbk5.to_csv(path+'nyctract/resbkop5.csv',index=True)
-tp3=pd.read_csv(path+'nyctract/resbkop3.csv',dtype=str)
-tp4=pd.read_csv(path+'nyctract/resbkop4.csv',dtype=str)
-resbk6=pd.merge(tp3,tp4,on='blockid',how='inner')
-resbk6.to_csv(path+'nyctract/resbkop6.csv',index=True)
+# tp2=tp2.set_index('blockid')
+# tp2=tp2.transpose()
+# tp2.to_csv(path+'nyctract/resbkop.csv',index=True,header=False,mode='a')
+# tp3=pd.read_csv(path+'nyctract/resbkop3.csv',dtype=str)
+# tp3=tp3.set_index('blockid')
+# tp3=tp3.transpose()
+# tp3.to_csv(path+'nyctract/resbkop.csv',index=True,header=False,mode='a')
+# tp4=pd.read_csv(path+'nyctract/resbkop4.csv',dtype=str)
+# tp4=tp4.set_index('blockid')
+# tp4=tp4.transpose()
+# tp4.to_csv(path+'nyctract/resbkop.csv',index=True,header=False,mode='a')
+# resbk=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
+# resbk=resbk.set_index('SITE')
+# resbk=resbk.transpose()
+# resbk.to_csv(path+'nyctract/resbkop5.csv',index=True,index_label='blockid',header=True,mode='w')
+
+
 # resct=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
 # resct=resct.set_index('blockid')
 # resloclist=sorted(resct.columns)
