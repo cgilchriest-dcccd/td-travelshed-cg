@@ -176,7 +176,7 @@ tp3.to_csv(path+'nyctract/resbkop.csv',index=True,header=False,mode='a')
 # resbk=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
 # resbk=resbk.set_index('SITE')
 # resbk=resbk.transpose()
-# resbk.to_csv(path+'nyctract/resbkop5.csv',index=True,index_label='blockid',header=True,mode='w')
+# resbk.to_csv(path+'nyctract/resbkop6.csv',index=True,index_label='blockid',header=True,mode='w')
 
 
 # resct=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
