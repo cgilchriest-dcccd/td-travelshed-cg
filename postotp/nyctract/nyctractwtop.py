@@ -160,7 +160,7 @@ resct1=resct1.set_index('blockid')
 resloclist=sorted(resct1.columns)
 resct1=resct1.replace(999,np.nan)
 resct1['tractid']=[str(x)[0:11] for x in resct1.index]
-resct1=resct1.groupby(['tractid'])[resloclist].median(skipna=True)
+resct1=resct1.groupby(['tractid'])[resloclist].median()
 resct1.to_csv(path+'nyctract/resctop1.csv',index=True,na_rep='999')
 
 
