@@ -163,12 +163,41 @@ path='/home/mayijun/TRAVELSHED/'
 #     resct=resct.groupby(['tractid'])[resloclist].median()
 #     resct.to_csv(path+'nyctract/resctop'+str(i)+'.csv',index=True,na_rep='999')
 
-resct=pd.DataFrame()
-for i in range(1,6):
-    tp=pd.read_csv(path+'nyctract/resctop'+str(i)+'.csv',dtype=str)
-    tp=tp.set_index('tractid')
-    resct=pd.concat([resct,tp],axis=1)
-resct.to_csv(path+'nyctract/resctop.csv',index=True)
+# resct=pd.DataFrame()
+# for i in range(1,6):
+#     tp=pd.read_csv(path+'nyctract/resctop'+str(i)+'.csv',dtype=str)
+#     tp=tp.set_index('tractid')
+#     resct=pd.concat([resct,tp],axis=1)
+# resct.to_csv(path+'nyctract/resctop.csv',index=True)
+
+
+
+
+# Comparison
+resctam=pd.read_csv(path+'nyctract/resct3.csv',dtype=float,converters={'tractid':str})
+resctam=pd.melt(resctam,id_vars='tractid',value_vars=resctam.columns[1:])
+resctam.columns=['origtract','desttract','amtime']
+
+resctop=pd.read_csv(path+'nyctract/resctop.csv',dtype=float,converters={'tractid':str})
+resctop=pd.melt(resctop,id_vars='tractid',value_vars=resctop.columns[1:])
+resctop.columns=['origtract','desttract','optime']
+
+resct=pd.merge(resctam,resctop,how='inner',on=['origtract','desttract'])
+resct=resct[(resct['amtime']!=999)&(resct['optime']!=999)].reset_index(drop=True)
+resct['pct']=resct['amtime']/resct['optime']
+resct['pct'].hist(bins=100,xlim=[0,2])
+
+import plotly.express as px
+import plotly.io as pio
+pio.renderers.default = "browser"
+# fig=px.scatter(resct,x='amtime',y='optime',render_mode='webgl')
+fig=px.histogram(resct,x='pct',nbins=100,title='amtime/optime')
+fig.show()
+
+len(resct[resct['amtime']<resct['optime']])
+3398645
+len(resct[resct['amtime']>resct['optime']])
+1692273
 
 
 
