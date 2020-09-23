@@ -153,6 +153,25 @@ path='/home/mayijun/TRAVELSHED/'
 #     resbk=pd.concat([resbk,tp],axis=1)
 # resbk.to_csv(path+'nyctract/resbkop5.csv',index=True)
 
+
+
+resct1=pd.read_csv(path+'nyctract/resbkop1.csv',dtype=float,converters={'blockid':str})
+resct1=resct1.set_index('blockid')
+resloclist=sorted(resct1.columns)
+resct1=resct1.replace(999,np.nan)
+resct1['tractid']=[str(x)[0:11] for x in resct1.index]
+resct1=resct1.groupby(['tractid'])[resloclist].median(skipna=True)
+resct1.to_csv(path+'nyctract/resctop1.csv',index=True,na_rep='999')
+
+
+
+
+
+
+
+
+
+
 # tp1=pd.read_csv(path+'nyctract/resbkop1.csv',dtype=str)
 # tp1=tp1.set_index('blockid')
 # tp1=tp1.transpose()
@@ -173,18 +192,7 @@ path='/home/mayijun/TRAVELSHED/'
 # tp5=tp5.set_index('blockid')
 # tp5=tp5.transpose()
 # tp5.to_csv(path+'nyctract/resbkop.csv',index=True,header=False,mode='a')
-resbk=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
-resbk=resbk.set_index('SITE')
-resbk=resbk.transpose()
-resbk.to_csv(path+'nyctract/resbkop6.csv',index=True,index_label='blockid',header=True,mode='w')
-
-
-# resct=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
-# resct=resct.set_index('blockid')
-# resloclist=sorted(resct.columns)
-# for i in resct.columns:
-#     resct[i]=pd.to_numeric(resct[i])
-# resct=resct.replace(999,np.nan)
-# resct['tractid']=[str(x)[0:11] for x in resct.index]
-# resct=resct.groupby(['tractid'])[resloclist].median(skipna=True)
-# resct.to_csv(path+'nyctract/resctop.csv',index=True,na_rep='999')
+# resbk=pd.read_csv(path+'nyctract/resbkop.csv',dtype=str)
+# resbk=resbk.set_index('SITE')
+# resbk=resbk.transpose()
+# resbk.to_csv(path+'nyctract/resbkop6.csv',index=True,index_label='blockid',header=True,mode='w')
