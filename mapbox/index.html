@@ -15,9 +15,6 @@
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"></script>
-
 
 
     <style>
@@ -176,21 +173,28 @@
 
 
 
-            // Add polygons
-            // Set layer contents
-            var layerContent = {
-                'sourceid': 'nycct', // source id
-                'sourcetype': 'geojson', // source type
-                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/nycct.geojson', // data source
-                'layerid': 'nycct', // layer id
-                'layertype': 'fill', // symbology type
-                'layername': 'NYC Tract', // layer name for the legend
-                'layervisibility': 'visible', // visibility of the layer
-                'layercolor': ['rgba(217,107,39,0.5)'], // color for each category; use rgba
-                'layeropacity': 1, // fill opacity
-                'layeroutlinecolor': 'rgba(255,255,255,0.5)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
-            };
 
+            var sl = '';
+            var bm = '';
+
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "WITH resct AS (SELECT cartodb_id,worktractid,time FROM dcptransportation.resct WHERE restractid='";
+            q += sl;
+            q += "') SELECT quadstatectclipped.*,resct.time FROM dcptransportation.quadstatectclipped INNER JOIN resct ON tractid=worktractid";
+            q += "&format=GeoJSON&api_key=8e2-Oz7VSpmafuTg2Eu1eA"; // Carto API
+            console.log(q);
+            var layerContent = {
+                'sourceid': 'resct', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'resct', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Res Travelshed', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolor': 'rgba(0,0,255,0.5)', // color for each category; use rgba
+                'layeroutlinecolor': 'rgba(0,0,0,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
 
             // Add layer content to the overall layer content list
             layerContentList.push(layerContent);
@@ -210,30 +214,108 @@
                     'visibility': layerContent['layervisibility'],
                 },
                 'paint': {
-                    'fill-color': layerContent['layercolor'][0],
-                    'fill-opacity': layerContent['layeropacity'],
+                    'fill-color': layerContent['layercolor'],
                     'fill-outline-color': layerContent['layeroutlinecolor'],
                 },
             });
 
 
 
-            // Add Zoning District Label
+
+
+
+
+
+            // Add NYC Tract
             // Set layer contents
             var layerContent = {
                 'sourceid': 'nycct', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/nycct.geojson', // data source
+                'layerid': 'nycct', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'NYC Tract', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': 'rgba(217,107,39,0.5)', // color for each category; use rgba
+                'layeroutlinecolor': 'rgba(0,0,0,0.2)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'],
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+
+
+
+            // Add NYC Tract Selected
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'nycct', // source id
+                'layerid': 'nycct-selected', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'NYC Tract Selected', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolor': 'rgba(0,0,0,1)', // color for each category; use rgba
+                'layerwidth': 2, // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+
+
+
+
+            // Add NYC Tract Label
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'nycct', // source id
                 'layerid': 'nycct-label', // layer id
                 'layertype': 'symbol', // symbology type
                 'layername': 'NYC Tract Label', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layerfield': ['get', 'tractid'], // categories
-                'layeroverlap': true,
+                'layerfield': ['get', 'label'], // categories
+                'layeroverlap': false,
                 'layeranchor': 'center',
-                'layersize': 12,
-                'layercolor': ['rgba(0,0,0,1)'], // color for each category; use rgba
-                'layeropacity': 0.5, // circle opacity
+                'layersize': 15,
+                'layercolor': 'rgba(0,0,0,0.5)', // color for each category; use rgba
             };
 
             // Add label layer
@@ -241,6 +323,7 @@
                 'id': layerContent['layerid'],
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
+                'minzoom': 12,
                 'layout': {
                     'visibility': layerContent['layervisibility'],
                     'text-field': layerContent['layerfield'],
@@ -249,8 +332,7 @@
                     'text-anchor': layerContent['layeranchor'],
                 },
                 'paint': {
-                    'text-color': layerContent['layercolor'][0],
-                    'text-opacity': layerContent['layeropacity'],
+                    'text-color': layerContent['layercolor'],
                 },
             });
 
@@ -259,16 +341,45 @@
 
 
 
-            var bm = '';
+
+            map.on('click', 'nycct', function (e) {
+                if (e.features[0].properties.tractid != sl) {
+                    sl = e.features[0].properties.tractid;
+                    map.setPaintProperty('nycct', 'fill-color', 'rgba(217,107,39,0)');
+                    map.setLayoutProperty('nycct-selected', 'visibility', 'visible');
+                    map.setFilter('nycct-selected', ['==', 'tractid', sl]);
+                    map.setFilter('nycct-label', ['==', 'tractid', sl]);
+
+
+                    q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+                    q += "WITH resct AS (SELECT cartodb_id,worktractid,time FROM dcptransportation.resct WHERE restractid='";
+                    q += sl;
+                    q += "') SELECT quadstatectclipped.*,resct.time FROM dcptransportation.quadstatectclipped INNER JOIN resct ON tractid=worktractid";
+                    q += "&format=GeoJSON&api_key=8e2-Oz7VSpmafuTg2Eu1eA"; // Carto API
+                    map.setLayoutProperty('resct', 'visibility', 'visible');
+                    map.getSource('resct').setData(q);
+
+
+                } else {
+                    sl = '';
+                    map.setPaintProperty('nycct', 'fill-color', 'rgba(217,107,39,0.5)');
+                    map.setLayoutProperty('nycct-selected', 'visibility', 'none');
+                    map.setFilter('nycct-selected', null);
+                    map.setFilter('nycct-label', null);
+                    map.setLayoutProperty('resct', 'visibility', 'none');
+                };
+            });
+
+
 
             map.on('mousemove', 'nycct', function (e) {
                 map.getCanvas().style.cursor = 'pointer';
                 if (e.features[0].properties.tractid != bm) {
-                    if (map.getLayer('selector') != undefined) {
-                        map.removeLayer('selector');
+                    if (map.getLayer('hover-selector') != undefined) {
+                        map.removeLayer('hover-selector');
                     };
                     map.addLayer({
-                        'id': 'selector',
+                        'id': 'hover-selector',
                         'type': 'line',
                         'source': 'nycct',
                         'filter': ['==', 'tractid', e.features[0].properties.tractid],
@@ -283,8 +394,8 @@
 
             map.on('mouseleave', 'nycct', function (e) {
                 map.getCanvas().style.cursor = '';
-                if (map.getLayer('selector') != undefined) {
-                    map.removeLayer('selector');
+                if (map.getLayer('hover-selector') != undefined) {
+                    map.removeLayer('hover-selector');
                 };
                 bm = '';
             });
