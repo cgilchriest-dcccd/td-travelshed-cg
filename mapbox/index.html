@@ -186,7 +186,7 @@
                 'layertype': 'fill', // symbology type
                 'layername': 'NYC Tract', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolor': ['rgba(0,0,0,0.2)'], // color for each category; use rgba
+                'layercolor': ['rgba(217,107,39,0.5)'], // color for each category; use rgba
                 'layeropacity': 1, // fill opacity
                 'layeroutlinecolor': 'rgba(255,255,255,0.5)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
@@ -218,45 +218,76 @@
 
 
 
+            // Add Zoning District Label
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'nycct', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/nycct.geojson', // data source
+                'layerid': 'nycct-label', // layer id
+                'layertype': 'symbol', // symbology type
+                'layername': 'NYC Tract Label', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layerfield': ['get', 'tractid'], // categories
+                'layeroverlap': true,
+                'layeranchor': 'center',
+                'layersize': 12,
+                'layercolor': ['rgba(0,0,0,1)'], // color for each category; use rgba
+                'layeropacity': 0.5, // circle opacity
+            };
+
+            // Add label layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                    'text-field': layerContent['layerfield'],
+                    'text-size': layerContent['layersize'],
+                    'text-allow-overlap': layerContent['layeroverlap'],
+                    'text-anchor': layerContent['layeranchor'],
+                },
+                'paint': {
+                    'text-color': layerContent['layercolor'][0],
+                    'text-opacity': layerContent['layeropacity'],
+                },
+            });
+
+
+
+
+
+
             var bm = '';
 
-
-
-
-
             map.on('mousemove', 'nycct', function (e) {
-                if (e.features.length > 0) {
-                    map.getCanvas().style.cursor = 'pointer';
-                    if (e.features[0].properties.tractid != bm) {
-                        if (map.getLayer('selector') != undefined) {
-                            map.removeLayer('selector');
-                        };
-                        map.addLayer({
-                            'id': 'selector',
-                            'type': 'line',
-                            'source': 'nycct',
-                            'filter': ['==', 'tractid', e.features[0].properties.tractid],
-                            'paint': {
-                                'line-color': 'black',
-                                'line-width': 2,
-                            },
-                        });
-                        bm = e.features[0].properties.tractid;
-                    };
-                } else {
-                    map.getCanvas().style.cursor = '';
+                map.getCanvas().style.cursor = 'pointer';
+                if (e.features[0].properties.tractid != bm) {
                     if (map.getLayer('selector') != undefined) {
                         map.removeLayer('selector');
                     };
+                    map.addLayer({
+                        'id': 'selector',
+                        'type': 'line',
+                        'source': 'nycct',
+                        'filter': ['==', 'tractid', e.features[0].properties.tractid],
+                        'paint': {
+                            'line-color': 'black',
+                            'line-width': 2,
+                        },
+                    });
+                    bm = e.features[0].properties.tractid;
                 };
             });
 
-            // map.on('mouseout', 'nycct', function (e) {
-            //     map.getCanvas().style.cursor = '';
-            //     if (map.getLayer('selector') != undefined) {
-            //         map.removeLayer('selector');
-            //     };
-            // });
+            map.on('mouseleave', 'nycct', function (e) {
+                map.getCanvas().style.cursor = '';
+                if (map.getLayer('selector') != undefined) {
+                    map.removeLayer('selector');
+                };
+                bm = '';
+            });
         });
     </script>
 
