@@ -179,10 +179,10 @@
             // Add polygons
             // Set layer contents
             var layerContent = {
-                'sourceid': 'polygontest', // source id
+                'sourceid': 'nycct', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': 'https://raw.githubusercontent.com/nycplanning/td-travelshed/master/mapbox/nycct.geojson', // data source
-                'layerid': 'pg', // layer id
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/nycct.geojson', // data source
+                'layerid': 'nycct', // layer id
                 'layertype': 'fill', // symbology type
                 'layername': 'NYC Tract', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
@@ -218,40 +218,45 @@
 
 
 
-            var ntabench = '';
+            var bm = '';
 
-            map.on('mousemove', 'pg', function (e) {
+
+
+
+
+            map.on('mousemove', 'nycct', function (e) {
                 if (e.features.length > 0) {
                     map.getCanvas().style.cursor = 'pointer';
-                    if (e.features[0].properties.NTAName != ntabench) {
+                    if (e.features[0].properties.tractid != bm) {
                         if (map.getLayer('selector') != undefined) {
                             map.removeLayer('selector');
                         };
                         map.addLayer({
                             'id': 'selector',
                             'type': 'line',
-                            'source': 'polygontest',
-                            'filter': ['==', 'NTAName', e.features[0].properties.NTAName],
+                            'source': 'nycct',
+                            'filter': ['==', 'tractid', e.features[0].properties.tractid],
                             'paint': {
                                 'line-color': 'black',
                                 'line-width': 2,
                             },
                         });
-                        ntabench = e.features[0].NTAName;
+                        bm = e.features[0].properties.tractid;
                     };
-                }
-            });
-
-            map.on('mouseleave', 'pg', function (e) {
-                map.getCanvas().style.cursor = '';
-                if (map.getLayer('selector') != undefined) {
-                    map.removeLayer('selector');
+                } else {
+                    map.getCanvas().style.cursor = '';
+                    if (map.getLayer('selector') != undefined) {
+                        map.removeLayer('selector');
+                    };
                 };
             });
 
-
-
-
+            // map.on('mouseout', 'nycct', function (e) {
+            //     map.getCanvas().style.cursor = '';
+            //     if (map.getLayer('selector') != undefined) {
+            //         map.removeLayer('selector');
+            //     };
+            // });
         });
     </script>
 
