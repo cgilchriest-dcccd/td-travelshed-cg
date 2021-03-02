@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Mapbox Testing</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+        type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"></script>
+
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #mainmap {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #legend {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: auto;
+            height: auto;
+            padding-top: 0rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 1rem;
+            line-height: 1.5rem;
+            color: #000000;
+            background-color: rgba(255, 255, 255, 0.8);
+            font-family: sans-serif;
+            font-size: 1rem;
+        }
+
+        #legend label {
+            font-weight: bold;
+        }
+
+        #legend input {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 1rem;
+            margin-top: 1rem;
+            vertical-align: -0.1rem;
+        }
+
+        .legend-key-circle {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 100%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+
+        .legend-key-line {
+            width: 1rem;
+            height: 0.3rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: 0.25rem;
+        }
+
+        .legend-key-fill {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+
+        .legend-key-fill-extrusion {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <div id="mainmap"></div> <!-- placeholder for main map -->
+
+    <nav id="legend">
+        <!-- <div> <a id="downloadLink" href="" download="map.png">Export to image</a></div> -->
+    </nav> <!-- placeholder for layer selector and legend -->
+
+
+
+    <script>
+        'use strict';
+        // Set MapBox token
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
+
+
+
+        // Initialize the map
+        var map = new mapboxgl.Map({ // creating a new map
+            container: 'mainmap', // same as the div id to place the map
+            style: 'mapbox://styles/mapbox/light-v10', // light base map
+            hash: true, // make sure it's on to get the url with map view
+            attributionControl: false, // show the credit bar
+            preserveDrawingBuffer: true, // make sure it's on to allow printing
+            center: [-74.0197, 40.721], // testing to get the centroid of bounds
+            zoom: 10, // set the initial zoom of the map view
+        });
+
+
+
+        // Add layers
+        map.on('load', function () {
+
+            var layerContentList = []; // store all the layer contents
+
+            // Add geocoder control
+            map.addControl(new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+            }),
+                'top-left', // control position
+            );
+
+            // Add navigation control
+            map.addControl(new mapboxgl.NavigationControl({
+                showCompass: true, // show compass
+                showZoom: true, // show zoom
+                visualizePitch: true, // show pitch
+            }),
+                'top-left', // control position
+            );
+
+            // Add user location control
+            map.addControl(new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true
+            }),
+                'top-left', // control position
+            );
+
+            // Add full screen control
+            map.addControl(new mapboxgl.FullscreenControl({
+                container: document.querySelector('body'),
+            }),
+                'top-left', // control position
+            );
+
+
+
+            // Add polygons
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'polygontest', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/nycplanning/td-travelshed/master/mapbox/nycct.geojson', // data source
+                'layerid': 'pg', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'NYC Tract', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': ['rgba(0,0,0,0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // fill opacity
+                'layeroutlinecolor': 'rgba(255,255,255,0.5)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'][0],
+                    'fill-opacity': layerContent['layeropacity'],
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            var ntabench = '';
+
+            map.on('mousemove', 'pg', function (e) {
+                if (e.features.length > 0) {
+                    map.getCanvas().style.cursor = 'pointer';
+                    if (e.features[0].properties.NTAName != ntabench) {
+                        if (map.getLayer('selector') != undefined) {
+                            map.removeLayer('selector');
+                        };
+                        map.addLayer({
+                            'id': 'selector',
+                            'type': 'line',
+                            'source': 'polygontest',
+                            'filter': ['==', 'NTAName', e.features[0].properties.NTAName],
+                            'paint': {
+                                'line-color': 'black',
+                                'line-width': 2,
+                            },
+                        });
+                        ntabench = e.features[0].NTAName;
+                    };
+                }
+            });
+
+            map.on('mouseleave', 'pg', function (e) {
+                map.getCanvas().style.cursor = '';
+                if (map.getLayer('selector') != undefined) {
+                    map.removeLayer('selector');
+                };
+            });
+
+
+
+
+        });
+    </script>
+
+</body>
+
+</html>

@@ -69,7 +69,7 @@ p.update_layout(mapbox={'style':'carto-positron',
                       'color':'black'},
                 margin={'r':0,'t':40,'l':0,'b':0})
 p.show()
-p.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-plotly/15min.html',include_plotlyjs='cdn')
+p.write_html('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/postotp/15min/index.html',include_plotlyjs='cdn')
 
 
 
