@@ -214,7 +214,15 @@
                     'visibility': layerContent['layervisibility'],
                 },
                 'paint': {
-                    'fill-color': layerContent['layercolor'],
+                    'fill-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'time'],
+                        0,
+                        '#F2F12D',
+                        45,
+                        '#723122'
+                    ],
                     'fill-outline-color': layerContent['layeroutlinecolor'],
                 },
             });

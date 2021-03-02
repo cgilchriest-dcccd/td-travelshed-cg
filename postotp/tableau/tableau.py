@@ -5,6 +5,7 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 
 path='E:/TRAVELSHEDREVAMP/'
+path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
 
 nyc=['36005','36047','36061','36081','36085']
 
