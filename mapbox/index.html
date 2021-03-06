@@ -126,7 +126,7 @@
             hash: true, // make sure it's on to get the url with map view
             attributionControl: false, // show the credit bar
             preserveDrawingBuffer: true, // make sure it's on to allow printing
-            center: [-73.9469,40.7121], // testing to get the centroid of bounds
+            center: [-73.9469, 40.7121], // testing to get the centroid of bounds
             zoom: 9.8, // set the initial zoom of the map view
         });
 
@@ -173,10 +173,11 @@
 
 
 
-
             var sl = '';
             var bm = '';
 
+
+            // Add Travelshed
             // Set layer contents
             var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
             q += "WITH resct AS (SELECT cartodb_id,worktractid,time FROM dcptransportation.resct WHERE restractid='";
