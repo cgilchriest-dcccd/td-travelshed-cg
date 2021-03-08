@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>NYC DCP Travelshed</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+        type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #mainmap {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #legend {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: auto;
+            height: auto;
+            padding-top: 0rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 1rem;
+            line-height: 1.5rem;
+            color: #000000;
+            background-color: rgba(255, 255, 255, 0.8);
+            font-family: sans-serif;
+            font-size: 1rem;
+        }
+
+        #legend label {
+            font-weight: bold;
+        }
+
+        #legend input {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 1rem;
+            margin-top: 1rem;
+            vertical-align: -0.1rem;
+        }
+
+        .legend-key-circle {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 100%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+
+        .legend-key-line {
+            width: 1rem;
+            height: 0.3rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: 0.25rem;
+        }
+
+        .legend-key-fill {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+
+        .legend-key-fill-extrusion {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.25rem;
+            margin-right: 1rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.15rem;
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <div id="mainmap"></div> <!-- placeholder for main map -->
+
+    <nav id="legend">
+    </nav> <!-- placeholder for layer selector and legend -->
+
+    <script>
+        'use strict';
+        // Set MapBox token
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
+
+
+
+        // Initialize the map
+        var map = new mapboxgl.Map({ // creating a new map
+            container: 'mainmap', // same as the div id to place the map
+            style: 'mapbox://styles/mapbox/dark-v10', // light base map
+            hash: true, // make sure it's on to get the url with map view
+            attributionControl: false, // show the credit bar
+            preserveDrawingBuffer: true, // make sure it's on to allow printing
+            center: [-73.9469, 40.7121], // testing to get the centroid of bounds
+            zoom: 9.8, // set the initial zoom of the map view
+        });
+
+
+
+        // Add layers
+        map.on('load', function () {
+
+            var layerContentList = []; // store all the layer contents
+
+            // Add geocoder control
+            map.addControl(new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+            }),
+                'top-left', // control position
+            );
+
+            // Add navigation control
+            map.addControl(new mapboxgl.NavigationControl({
+                showCompass: true, // show compass
+                showZoom: true, // show zoom
+                visualizePitch: true, // show pitch
+            }),
+                'top-left', // control position
+            );
+
+            // Add user location control
+            map.addControl(new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true
+            }),
+                'top-left', // control position
+            );
+
+            // Add full screen control
+            map.addControl(new mapboxgl.FullscreenControl({
+                container: document.querySelector('body'),
+            }),
+                'top-left', // control position
+            );
+
+
+
+            var sl = '';
+            var bm = '';
+
+            // Add Travelshed
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "WITH resct AS (SELECT cartodb_id,worktractid,time FROM dcptransportation.resct WHERE restractid='";
+            q += sl;
+            q += "') SELECT quadstatectclipped.*,resct.time FROM dcptransportation.quadstatectclipped INNER JOIN resct ON tractid=worktractid";
+            q += "&format=GeoJSON&api_key=tK7fWRhkNeAybpSQZkCtRg"; // Carto API
+            var layerContent = {
+                'sourceid': 'resct', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'resct', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Res Travelshed', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolor': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'time'],
+                    0,
+                    'rgba(8,81,156,0.9)',
+                    60,
+                    'rgba(222,235,247,0.9)',
+                ], // color for each category; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'],
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add NYC Tract
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'nycct', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/nycct.geojson', // data source
+                'layerid': 'nycct', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'NYC Tract', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': 'rgba(217,107,39,0.9)', // color for each category; use rgba
+                'layeroutlinecolor': 'rgba(255,255,255,0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'],
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add NYC Tract Outline
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'nycct', // source id
+                'layerid': 'nycct-outline', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'NYC Tract Outline', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': 'rgba(255,255,255,0.5)', // color for each category; use rgba
+                'layerwidth': 1, // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add NYC Tract Selected
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'nycct', // source id
+                'layerid': 'nycct-selected', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'NYC Tract Selected', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolor': 'rgba(255,255,255,1)', // color for each category; use rgba
+                'layerwidth': 2, // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add NYC Tract Label
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'nycct', // source id
+                'layerid': 'nycct-label', // layer id
+                'layertype': 'symbol', // symbology type
+                'layername': 'NYC Tract Label', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layerfield': ['get', 'label'], // categories
+                'layeroverlap': false,
+                'layeranchor': 'center',
+                'layersize': 15,
+                'layercolor': 'rgba(255,255,255,0.8)', // color for each category; use rgba
+            };
+
+            // Add label layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'minzoom': 12,
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                    'text-field': layerContent['layerfield'],
+                    'text-size': layerContent['layersize'],
+                    'text-allow-overlap': layerContent['layeroverlap'],
+                    'text-anchor': layerContent['layeranchor'],
+                },
+                'paint': {
+                    'text-color': layerContent['layercolor'],
+                },
+            });
+
+
+
+
+            // Add selector
+            // Add click events
+            map.on('click', 'nycct', function (e) {
+                if (e.features[0].properties.tractid != sl) {
+                    sl = e.features[0].properties.tractid;
+                    map.setPaintProperty('nycct', 'fill-color', 'rgba(217,107,39,0)');
+                    map.setPaintProperty('nycct-outline', 'line-color', 'rgba(255,255,255,0.1)');
+                    map.setLayoutProperty('nycct-selected', 'visibility', 'visible');
+                    map.setFilter('nycct-selected', ['==', 'tractid', sl]);
+                    map.setFilter('nycct-label', ['==', 'tractid', sl]);
+                    q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+                    q += "WITH resct AS (SELECT cartodb_id,worktractid,time FROM dcptransportation.resct WHERE restractid='";
+                    q += sl;
+                    q += "') SELECT quadstatectclipped.*,resct.time FROM dcptransportation.quadstatectclipped INNER JOIN resct ON tractid=worktractid";
+                    q += "&format=GeoJSON&api_key=tK7fWRhkNeAybpSQZkCtRg"; // Carto API
+                    map.getSource('resct').setData(q);
+                    map.setLayoutProperty('resct', 'visibility', 'visible');
+                } else {
+                    sl = '';
+                    map.setPaintProperty('nycct', 'fill-color', 'rgba(217,107,39,0.9)');
+                    map.setPaintProperty('nycct-outline', 'line-color', 'rgba(255,255,255,0.5)');
+                    map.setLayoutProperty('nycct-selected', 'visibility', 'none');
+                    map.setFilter('nycct-selected', null);
+                    map.setFilter('nycct-label', null);
+                    q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+                    q += "WITH resct AS (SELECT cartodb_id,worktractid,time FROM dcptransportation.resct WHERE restractid='";
+                    q += sl;
+                    q += "') SELECT quadstatectclipped.*,resct.time FROM dcptransportation.quadstatectclipped INNER JOIN resct ON tractid=worktractid";
+                    q += "&format=GeoJSON&api_key=tK7fWRhkNeAybpSQZkCtRg"; // Carto API
+                    map.getSource('resct').setData(q);
+                    map.setLayoutProperty('resct', 'visibility', 'none');
+                };
+            });
+
+            // Add hover events
+            map.on('mousemove', 'nycct', function (e) {
+                map.getCanvas().style.cursor = 'pointer';
+                if (e.features[0].properties.tractid != bm) {
+                    if (map.getLayer('hover-selector') != undefined) {
+                        map.removeLayer('hover-selector');
+                    };
+                    map.addLayer({
+                        'id': 'hover-selector',
+                        'type': 'line',
+                        'source': 'nycct',
+                        'filter': ['==', 'tractid', e.features[0].properties.tractid],
+                        'paint': {
+                            'line-color': 'rgba(255,255,255,1)',
+                            'line-width': 2,
+                        },
+                    });
+                    bm = e.features[0].properties.tractid;
+                };
+            });
+            map.on('mouseleave', 'nycct', function (e) {
+                map.getCanvas().style.cursor = '';
+                if (map.getLayer('hover-selector') != undefined) {
+                    map.removeLayer('hover-selector');
+                };
+                bm = '';
+            });
+
+
+
+            //Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: false, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+            });
+            // Add hover events
+            map.on('mousemove', 'resct', function (e) {
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Origin Census Tract: </b><span>" + sl + "</span><br>"; // description in the popup
+                description += "<b>Destination Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>";
+                description += "<b>AM Peak Transit Travel Time: </b><span>" + e.features[0].properties.time + " mins</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            map.on('mouseleave', 'resct', function (e) {
+                popup.remove()
+            });
+        });
+    </script>
+
+</body>
+
+</html>
