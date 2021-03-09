@@ -52,13 +52,13 @@
             border-radius: 4px;
         }
 
-        #legend>div {
+        #legend p {
             font-weight: bold;
             margin-top: 1rem;
-            display: inline-block;
+            margin-bottom: 0rem;
         }
 
-        #legend>input {
+        #legend input {
             width: 1rem;
             height: 1rem;
             margin-right: 0.5rem;
@@ -66,8 +66,13 @@
             vertical-align: -0.1rem;
         }
 
-        #legend>label {
+        #legend label {
             font-weight: normal;
+            opacity: 1;
+        }
+
+        .container {
+            width: 21rem;
         }
 
         .form-select {
@@ -83,33 +88,44 @@
     <div id="mainmap"></div> <!-- placeholder for main map -->
 
     <nav id="legend">
-        <div>
-            Land Use Grouping
+        <p> Mode </p>
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    <input class="form-check-input" type="checkbox" value="WALK" id="walk" checked disabled>
+                    <label class="form-check-label" for="walk"> Walk </label>
+                </div>
+                <div class="col-4">
+                    <input class="form-check-input" type="checkbox" value="BUS" id="bus" checked>
+                    <label class="form-check-label" for="bus"> Bus </label>
+                </div>
+                <div class="col-4">
+                    <input class="form-check-input" type="checkbox" value="SUBWAY" id="subway" checked>
+                    <label class="form-check-label" for="subway"> Subway </label>
+                </div>
+                <div class="col-4">
+                    <input class="form-check-input" type="checkbox" value="RAIL" id="rail" checked>
+                    <label class="form-check-label" for="rail"> Rail </label>
+                </div>
+                <div class="col-4">
+                    <input class="form-check-input" type="checkbox" value="FERRY" id="ferry" checked>
+                    <label class="form-check-label" for="ferry"> Ferry </label>
+                </div>
+                <div class="col-4">
+                    <input class="form-check-input" type="checkbox" value="BICYCLE_RENT" id="citibike" unchecked>
+                    <label class="form-check-label" for="citibike"> Citi Bike </label>
+                </div>
+            </div>
         </div>
-        <br>
-        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-        <label class="form-check-label" for="flexCheckDefault">
-            Walk
-        </label>
-        <br>
-        <div>
-            Land Use Grouping
-        </div>
-        <br>
+        <p> Land Use Grouping </p>
         <select class='form-select' id='lucat'>
             <option value='cat3'>Res+OffRet+Other</option>
-            <option value='cat5'>Res+Off+Ret+Ind+Other</option>
         </select>
-        <br>
-        <div>
-            Aggregation Level
-        </div>
-        <br>
+        <p> Aggregation Level </p>
         <select class='form-select' id='agglvl'>
             <option value='ct'>Census Tract</option>
-            <option value='nta'>Neightborhood Tabulation Area (NTA)</option>
         </select>
-        <br>
+        <button type="button" class="btn btn-primary" id="submit"> Submit </button>
     </nav> <!-- placeholder for layer selector and legend -->
 
     <script>
@@ -173,59 +189,77 @@
 
 
 
-            var sl = '';
-            var bm = '';
 
-            // Add Travelshed
-            // Set layer contents
-            var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT";
-            q += "&fromPlace= 40.717504646617385, -73.99877721611341&date=2018/06/06&time=10:00:00&maxTransfers=3&maxWalkDistance=805&clampInitialWait=0";
-            q += "&cutoffSec=1800"
-            console.log(q);
-            var layerContent = {
-                'sourceid': 'resct', // source id
-                'sourcetype': 'geojson', // source type
-                'sourcedata': q, // data source
-                'layerid': 'resct', // layer id
-                'layertype': 'fill', // symbology type
-                'layername': 'Res Travelshed', // layer name for the legend
-                'layervisibility': 'visible', // visibility of the layer
-                'layercolor': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', 'time'],
-                    0,
-                    'rgba(8,81,156,0.9)',
-                    60,
-                    'rgba(222,235,247,0.9)',
-                ], // color for each category; use rgba
-                'layeroutlinecolor': 'rgba(255,255,255,0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
-            };
 
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
 
-            // Add data source
-            map.addSource(layerContent['sourceid'], {
-                'type': layerContent['sourcetype'],
-                'data': layerContent['sourcedata'],
+            // Add click events
+            submit.addEventListener('click', function () {
+                // Modes
+                var modes = [];
+                var checkedMode = document.getElementsByClassName('form-check-input');
+                for (var i = 0; checkedMode[i]; ++i) {
+                    if (checkedMode[i].checked) {
+                        modes.push(checkedMode[i].value);
+                    };
+                };
+                modes = modes.join(',');
+                var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
+                q += "&date=2018/06/06&clampInitialWait=0&maxTransfers=3&maxWalkDistance=805";
+                q += "&mode=" + modes;
+                q += "&fromPlace=40.717504646617385,-73.99877721611341&time=10:00:00";
+                q += "&cutoffSec=1800"
+                console.log(q);
+
+                if (map.getLayer('isochrone')){
+                    map.removeLayer('isochrone');
+                    map.removeSource('isochrone');
+                };
+
+                // Add Travelshed
+                // Set layer contents
+                var layerContent = {
+                    'sourceid': 'isochrone', // source id
+                    'sourcetype': 'geojson', // source type
+                    'sourcedata': q, // data source
+                    'layerid': 'isochrone', // layer id
+                    'layertype': 'fill', // symbology type
+                    'layername': 'Isochrone', // layer name for the legend
+                    'layervisibility': 'visible', // visibility of the layer
+                    'layercolor': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'time'],
+                        0,
+                        'rgba(8,81,156,0.9)',
+                        60,
+                        'rgba(222,235,247,0.9)',
+                    ], // color for each category; use rgba
+                    'layeroutlinecolor': 'rgba(255,255,255,0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                };
+
+                // Add layer content to the overall layer content list
+                layerContentList.push(layerContent);
+
+                // Add data source
+                map.addSource(layerContent['sourceid'], {
+                    'type': layerContent['sourcetype'],
+                    'data': layerContent['sourcedata'],
+                });
+
+                // Add fill layer
+                map.addLayer({
+                    'id': layerContent['layerid'],
+                    'type': layerContent['layertype'],
+                    'source': layerContent['sourceid'],
+                    'layout': {
+                        'visibility': layerContent['layervisibility'],
+                    },
+                    'paint': {
+                        'fill-color': layerContent['layercolor'],
+                        // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                    },
+                });
             });
-
-            // Add fill layer
-            map.addLayer({
-                'id': layerContent['layerid'],
-                'type': layerContent['layertype'],
-                'source': layerContent['sourceid'],
-                'layout': {
-                    'visibility': layerContent['layervisibility'],
-                },
-                'paint': {
-                    'fill-color': layerContent['layercolor'],
-                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
-                },
-            });
-
-
         });
     </script>
 
