@@ -52,15 +52,12 @@
             border-radius: 4px;
         }
 
-        #legend p {
-            font-weight: bold;
+        #legend strong {
             margin-top: 1rem;
-            margin-bottom: 0rem;
         }
 
         .container {
-            width: 18rem;
-
+            width: 17rem;
         }
 
         .form-check-input {
@@ -69,18 +66,13 @@
             vertical-align: -0.1rem;
         }
 
-        .form-check-label {
-            font-weight: normal;
-        }
-
         .form-control {
             margin-top: 0.5rem;
         }
 
         .form-range {
-            margin-top: 0.5rem;
             margin-right: 0.5rem;
-            width: 16rem;
+            width: 15rem;
             height: 0rem;
         }
 
@@ -89,12 +81,16 @@
         }
 
         output {
-            vertical-align: -0.35rem;
+            vertical-align: -0.4rem;
             height: 0rem;
         }
 
         .form-select {
             margin-top: 0.5rem;
+        }
+
+        .btn {
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -105,9 +101,9 @@
     <div id="mainmap"></div> <!-- placeholder for main map -->
 
     <nav id="legend">
-        <p> Mode </p>
-        <div class="container">
+        <div class="container g-0">
             <div class="row g-0">
+                <strong> Mode </strong>
                 <div class="col-4">
                     <input class="form-check-input" type="checkbox" value="WALK" id="walk" checked disabled>
                     <label class="form-check-label" for="walk"> Walk </label>
@@ -133,23 +129,37 @@
                     <label class="form-check-label" for="citibike"> Citi Bike </label>
                 </div>
             </div>
+            <div class="row g-0">
+                <strong> Departure Time </strong>
+                <div class="col">
+                    <input type="time" class="form-control" value="08:00" id="dptt">
+                </div>
+            </div>
+            <div class="row g-0">
+                <strong> Max Travel Time (0-60 mins) </strong>
+                <div class="col">
+                    <input type="range" class="form-range" min="0" max="60" step="5" value="60"
+                        oninput="this.nextElementSibling.value = this.value" id="maxtt">
+                    <output>60</output>
+                </div>
+            </div>
+            <div class="row g-0">
+                <strong> Land Use Grouping </strong>
+                <select class='form-select' id='lucat'>
+                    <option value='cat3'>Res+OffRet+Other</option>
+                </select>
+            </div>
+            <div class="row g-0 justify-content-center">
+                <div class="col-auto">
+                    <button type="button" class="btn btn-primary" id="submit"> Submit </button>
+                </div>
+            </div>
         </div>
-        <p> Departure Time </p>
-        <input type="time" class="form-control" value="08:00">
-        <p> Max Travel Time (0-60 mins) </p>
-        <input type="range" class="form-range" min="0" max="60" step="5" value="60"
-            oninput="this.nextElementSibling.value = this.value">
-        <output>60</output>
-        <p> Land Use Grouping </p>
-        <select class='form-select' id='lucat'>
-            <option value='cat3'>Res+OffRet+Other</option>
-        </select>
-        <p> Aggregation Level </p>
-        <select class='form-select' id='agglvl'>
-            <option value='ct'>Census Tract</option>
-        </select>
-        <button type="button" class="btn btn-primary" id="submit"> Submit </button>
     </nav> <!-- placeholder for layer selector and legend -->
+
+
+
+
 
     <script>
         'use strict';
@@ -212,33 +222,33 @@
 
 
 
-
-
-
             // Add click events
             submit.addEventListener('click', function () {
                 // Mode
+                var modes = ['walk', 'bus', 'subway', 'rail', 'ferry', 'citibike'];
                 var selectedModes = [];
-                var checkedMode = document.getElementsByClassName('form-check-input');
-                for (var i = 0; i < checkedMode.length; ++i) {
-                    if (checkedMode[i].checked) {
-                        selectedModes.push(checkedMode[i].value);
+                for (var i = 0; i < modes.length; ++i) {
+                    if (document.getElementById(modes[i]).checked) {
+                        selectedModes.push(document.getElementById(modes[i]).value);
                     };
                 };
                 selectedModes = selectedModes.join(',');
                 console.log(selectedModes);
+
                 // Departure time
-                var selectedTime = document.getElementsByClassName('form-control')[0].value;
+                var selectedTime = document.getElementById('dptt').value;
                 console.log(selectedTime);
+
                 // Max travel time
-                var maxTravelTime = document.getElementsByClassName('form-range')[0].value;
+                var maxTravelTime = document.getElementById('maxtt').value;
                 var cutOffs = [];
                 for (var i = 0; i < maxTravelTime / 5; ++i) {
-                    cutOffs.push('&cutoffSec='+300 * (i + 1));
+                    cutOffs.push('&cutoffSec=' + 300 * (i + 1));
                 };
-                cutOffs=cutOffs.join('');
+                cutOffs = cutOffs.join('');
                 console.log(cutOffs);
 
+                // Generate query
                 var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
                 q += "&date=2018/06/06&clampInitialWait=0&maxTransfers=3&maxWalkDistance=805";
                 q += "&mode=" + selectedModes;
@@ -247,12 +257,13 @@
                 q += cutOffs;
                 console.log(q);
 
+                // Remove previous isochrones
                 if (map.getLayer('isochrone')) {
                     map.removeLayer('isochrone');
                     map.removeSource('isochrone');
                 };
 
-                // Add Travelshed
+                // Add isochrones
                 // Set layer contents
                 var layerContent = {
                     'sourceid': 'isochrone', // source id
@@ -277,25 +288,25 @@
                 // Add layer content to the overall layer content list
                 layerContentList.push(layerContent);
 
-                // Add data source
-                map.addSource(layerContent['sourceid'], {
-                    'type': layerContent['sourcetype'],
-                    'data': layerContent['sourcedata'],
-                });
+                // // Add data source
+                // map.addSource(layerContent['sourceid'], {
+                //     'type': layerContent['sourcetype'],
+                //     'data': layerContent['sourcedata'],
+                // });
 
-                // Add fill layer
-                map.addLayer({
-                    'id': layerContent['layerid'],
-                    'type': layerContent['layertype'],
-                    'source': layerContent['sourceid'],
-                    'layout': {
-                        'visibility': layerContent['layervisibility'],
-                    },
-                    'paint': {
-                        'fill-color': layerContent['layercolor'],
-                        // 'fill-outline-color': layerContent['layeroutlinecolor'],
-                    },
-                });
+                // // Add fill layer
+                // map.addLayer({
+                //     'id': layerContent['layerid'],
+                //     'type': layerContent['layertype'],
+                //     'source': layerContent['sourceid'],
+                //     'layout': {
+                //         'visibility': layerContent['layervisibility'],
+                //     },
+                //     'paint': {
+                //         'fill-color': layerContent['layercolor'],
+                //         // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                //     },
+                // });
             });
         });
     </script>
