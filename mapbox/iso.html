@@ -175,7 +175,7 @@
             hash: true, // make sure it's on to get the url with map view
             attributionControl: false, // show the credit bar
             preserveDrawingBuffer: true, // make sure it's on to allow printing
-            center: [-73.9469, 40.7121], // testing to get the centroid of bounds
+            center: [-74.01051404065525, 40.70821675967404], // testing to get the centroid of bounds
             zoom: 9.8, // set the initial zoom of the map view
         });
 
@@ -220,7 +220,11 @@
                 'top-left', // control position
             );
 
-
+            var marker = new mapboxgl.Marker({
+                draggable: true
+            })
+                .setLngLat([-74.01051404065525, 40.70821675967404])
+                .addTo(map);
 
             // Add click events
             submit.addEventListener('click', function () {
@@ -247,6 +251,9 @@
                 };
                 cutOffs = cutOffs.join('');
                 console.log(cutOffs);
+
+                // Coordinates
+                console.log(marker.getLngLat());
 
                 // Generate query
                 var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
