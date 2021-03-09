@@ -66,24 +66,8 @@
             vertical-align: -0.1rem;
         }
 
-        .form-check-input:checked {
-            background-color: rgba(217, 107, 39, 1);
-            border-color: rgba(217, 107, 39, 1);
-        }
-
-        .form-check-input:focus,
-        .form-check-input:focus:active,
-        .form-check-input:active {
-            border-color: rgba(217, 107, 39, 1);
-            box-shadow: 0 0 0 5px rgba(217, 107, 39, 0.5);
-        }
-
         .form-control {
             margin-top: 0.5rem;
-        }
-
-        input[type="time"]::-webkit-calendar-picker-indicator {
-            /* background-color: rgba(217, 107, 39, 1); */
         }
 
         .form-range {
@@ -107,21 +91,6 @@
 
         .btn-primary {
             margin-top: 1rem;
-            background-color: rgba(217, 107, 39, 1);
-            border-color: rgba(217, 107, 39, 1);
-        }
-
-        .btn-primary:hover {
-            background-color: rgba(174, 86, 31, 1);
-            border-color: rgba(174, 86, 31, 1);
-        }
-
-        .btn-primary:focus,
-        .btn-primary:focus:active,
-        .btn-primary:active {
-            background-color: rgba(174, 86, 31, 1);
-            border-color: rgba(174, 86, 31, 1);
-            box-shadow: 0 0 0 5px rgba(217, 107, 39, 0.5);
         }
     </style>
 </head>
@@ -169,16 +138,10 @@
             <div class="row g-0">
                 <strong> Max Travel Time (0-60 mins) </strong>
                 <div class="col">
-                    <input type="range" class="form-range" min="0" max="60" step="5" value="60"
+                    <input type="range" class="form-range" min="0" max="60" step="5" value="30"
                         oninput="this.nextElementSibling.value = this.value" id="maxtt">
-                    <output>60</output>
+                    <output>30</output>
                 </div>
-            </div>
-            <div class="row g-0">
-                <strong> Land Use Grouping </strong>
-                <select class='form-select' id='lucat'>
-                    <option value='cat3'>Res+OffRet+Other</option>
-                </select>
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-auto">
@@ -214,7 +177,8 @@
         // Add marker to the map
         var marker = new mapboxgl.Marker({
             draggable: true,
-            color: 'rgba(217,107,39,1)',
+            color: 'rgba(13, 110, 253, 1)',
+            scale: 0.9,
         })
             .setLngLat([-74.01051404065525, 40.70821675967404])
             .addTo(map);
@@ -262,6 +226,12 @@
 
             // Add click events
             submit.addEventListener('click', function () {
+                // From point
+                var fromLat = marker.getLngLat().lat;
+                console.log(fromLat);
+                var fromLong = marker.getLngLat().lng;
+                console.log(fromLong);
+
                 // Mode
                 var modes = ['walk', 'bus', 'subway', 'rail', 'ferry', 'citibike'];
                 var selectedModes = [];
@@ -286,15 +256,12 @@
                 cutOffs = cutOffs.join('');
                 console.log(cutOffs);
 
-                // Coordinates
-                var fromPoint = marker.getLngLat().lat + ',' + marker.getLngLat().lng;
-
                 // Generate query
                 var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
                 q += "&date=2018/06/06&clampInitialWait=0&maxTransfers=3&maxWalkDistance=805";
+                q += "&fromPlace=" + fromLat + "," + fromLong;
                 q += "&mode=" + selectedModes;
                 q += "&time=" + selectedTime;
-                q += "&fromPlace=" + fromPoint;
                 q += cutOffs;
                 console.log(q);
 
@@ -329,25 +296,25 @@
                 // Add layer content to the overall layer content list
                 layerContentList.push(layerContent);
 
-                // // Add data source
-                // map.addSource(layerContent['sourceid'], {
-                //     'type': layerContent['sourcetype'],
-                //     'data': layerContent['sourcedata'],
-                // });
+                // Add data source
+                map.addSource(layerContent['sourceid'], {
+                    'type': layerContent['sourcetype'],
+                    'data': layerContent['sourcedata'],
+                });
 
-                // // Add fill layer
-                // map.addLayer({
-                //     'id': layerContent['layerid'],
-                //     'type': layerContent['layertype'],
-                //     'source': layerContent['sourceid'],
-                //     'layout': {
-                //         'visibility': layerContent['layervisibility'],
-                //     },
-                //     'paint': {
-                //         'fill-color': layerContent['layercolor'],
-                //         // 'fill-outline-color': layerContent['layeroutlinecolor'],
-                //     },
-                // });
+                // Add fill layer
+                map.addLayer({
+                    'id': layerContent['layerid'],
+                    'type': layerContent['layertype'],
+                    'source': layerContent['sourceid'],
+                    'layout': {
+                        'visibility': layerContent['layervisibility'],
+                    },
+                    'paint': {
+                        'fill-color': layerContent['layercolor'],
+                        // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                    },
+                });
             });
         });
     </script>
