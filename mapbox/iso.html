@@ -66,8 +66,24 @@
             vertical-align: -0.1rem;
         }
 
+        .form-check-input:checked {
+            background-color: rgba(217, 107, 39, 1);
+            border-color: rgba(217, 107, 39, 1);
+        }
+
+        .form-check-input:focus,
+        .form-check-input:focus:active,
+        .form-check-input:active {
+            border-color: rgba(217, 107, 39, 1);
+            box-shadow: 0 0 0 5px rgba(217, 107, 39, 0.5);
+        }
+
         .form-control {
             margin-top: 0.5rem;
+        }
+
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            /* background-color: rgba(217, 107, 39, 1); */
         }
 
         .form-range {
@@ -89,8 +105,23 @@
             margin-top: 0.5rem;
         }
 
-        .btn {
+        .btn-primary {
             margin-top: 1rem;
+            background-color: rgba(217, 107, 39, 1);
+            border-color: rgba(217, 107, 39, 1);
+        }
+
+        .btn-primary:hover {
+            background-color: rgba(174, 86, 31, 1);
+            border-color: rgba(174, 86, 31, 1);
+        }
+
+        .btn-primary:focus,
+        .btn-primary:focus:active,
+        .btn-primary:active {
+            background-color: rgba(174, 86, 31, 1);
+            border-color: rgba(174, 86, 31, 1);
+            box-shadow: 0 0 0 5px rgba(217, 107, 39, 0.5);
         }
     </style>
 </head>
@@ -180,6 +211,14 @@
         });
 
 
+        // Add marker to the map
+        var marker = new mapboxgl.Marker({
+            draggable: true,
+            color: 'rgba(217,107,39,1)',
+        })
+            .setLngLat([-74.01051404065525, 40.70821675967404])
+            .addTo(map);
+
 
         // Add layers
         map.on('load', function () {
@@ -220,11 +259,6 @@
                 'top-left', // control position
             );
 
-            var marker = new mapboxgl.Marker({
-                draggable: true
-            })
-                .setLngLat([-74.01051404065525, 40.70821675967404])
-                .addTo(map);
 
             // Add click events
             submit.addEventListener('click', function () {
@@ -253,14 +287,14 @@
                 console.log(cutOffs);
 
                 // Coordinates
-                console.log(marker.getLngLat());
+                var fromPoint = marker.getLngLat().lat + ',' + marker.getLngLat().lng;
 
                 // Generate query
                 var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
                 q += "&date=2018/06/06&clampInitialWait=0&maxTransfers=3&maxWalkDistance=805";
                 q += "&mode=" + selectedModes;
                 q += "&time=" + selectedTime;
-                q += "&fromPlace=40.717504646617385,-73.99877721611341";
+                q += "&fromPlace=" + fromPoint;
                 q += cutOffs;
                 console.log(q);
 
