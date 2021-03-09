@@ -58,26 +58,43 @@
             margin-bottom: 0rem;
         }
 
-        #legend input {
-            width: 1rem;
-            height: 1rem;
+        .container {
+            width: 18rem;
+
+        }
+
+        .form-check-input {
             margin-right: 0.5rem;
             margin-top: 0.5rem;
             vertical-align: -0.1rem;
         }
 
-        #legend label {
+        .form-check-label {
             font-weight: normal;
-            opacity: 1;
         }
 
-        .container {
-            width: 21rem;
+        .form-control {
+            margin-top: 0.5rem;
+        }
+
+        .form-range {
+            margin-top: 0.5rem;
+            margin-right: 0.5rem;
+            width: 16rem;
+            height: 0rem;
+        }
+
+        .form-range::-webkit-slider-runnable-track {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        output {
+            vertical-align: -0.35rem;
+            height: 0rem;
         }
 
         .form-select {
             margin-top: 0.5rem;
-            display: inline-block;
         }
     </style>
 </head>
@@ -90,7 +107,7 @@
     <nav id="legend">
         <p> Mode </p>
         <div class="container">
-            <div class="row">
+            <div class="row g-0">
                 <div class="col-4">
                     <input class="form-check-input" type="checkbox" value="WALK" id="walk" checked disabled>
                     <label class="form-check-label" for="walk"> Walk </label>
@@ -117,6 +134,12 @@
                 </div>
             </div>
         </div>
+        <p> Departure Time </p>
+        <input type="time" class="form-control" value="08:00">
+        <p> Max Travel Time (0-60 mins) </p>
+        <input type="range" class="form-range" min="0" max="60" step="5" value="60"
+            oninput="this.nextElementSibling.value = this.value">
+        <output>60</output>
         <p> Land Use Grouping </p>
         <select class='form-select' id='lucat'>
             <option value='cat3'>Res+OffRet+Other</option>
@@ -194,23 +217,37 @@
 
             // Add click events
             submit.addEventListener('click', function () {
-                // Modes
-                var modes = [];
+                // Mode
+                var selectedModes = [];
                 var checkedMode = document.getElementsByClassName('form-check-input');
-                for (var i = 0; checkedMode[i]; ++i) {
+                for (var i = 0; i < checkedMode.length; ++i) {
                     if (checkedMode[i].checked) {
-                        modes.push(checkedMode[i].value);
+                        selectedModes.push(checkedMode[i].value);
                     };
                 };
-                modes = modes.join(',');
+                selectedModes = selectedModes.join(',');
+                console.log(selectedModes);
+                // Departure time
+                var selectedTime = document.getElementsByClassName('form-control')[0].value;
+                console.log(selectedTime);
+                // Max travel time
+                var maxTravelTime = document.getElementsByClassName('form-range')[0].value;
+                var cutOffs = [];
+                for (var i = 0; i < maxTravelTime / 5; ++i) {
+                    cutOffs.push('&cutoffSec='+300 * (i + 1));
+                };
+                cutOffs=cutOffs.join('');
+                console.log(cutOffs);
+
                 var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
                 q += "&date=2018/06/06&clampInitialWait=0&maxTransfers=3&maxWalkDistance=805";
-                q += "&mode=" + modes;
-                q += "&fromPlace=40.717504646617385,-73.99877721611341&time=10:00:00";
-                q += "&cutoffSec=1800"
+                q += "&mode=" + selectedModes;
+                q += "&time=" + selectedTime;
+                q += "&fromPlace=40.717504646617385,-73.99877721611341";
+                q += cutOffs;
                 console.log(q);
 
-                if (map.getLayer('isochrone')){
+                if (map.getLayer('isochrone')) {
                     map.removeLayer('isochrone');
                     map.removeSource('isochrone');
                 };
@@ -231,7 +268,7 @@
                         ['get', 'time'],
                         0,
                         'rgba(8,81,156,0.9)',
-                        60,
+                        3600,
                         'rgba(222,235,247,0.9)',
                     ], // color for each category; use rgba
                     'layeroutlinecolor': 'rgba(255,255,255,0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
