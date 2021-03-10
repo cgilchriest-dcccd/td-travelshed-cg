@@ -377,6 +377,7 @@
                     q += sl;
                     q += "') SELECT quadstatectclipped.*,resct.time FROM dcptransportation.quadstatectclipped INNER JOIN resct ON tractid=worktractid";
                     q += "&format=GeoJSON&api_key=tK7fWRhkNeAybpSQZkCtRg"; // Carto API
+                    console.log(q);
                     map.getSource('resct').setData(q);
                     map.setLayoutProperty('resct', 'visibility', 'visible');
                 } else {
