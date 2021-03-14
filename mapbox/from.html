@@ -54,7 +54,7 @@
         }
 
         .container {
-            width: 20rem;
+            width: 17rem;
         }
 
         .row {
@@ -129,7 +129,13 @@
                 </div>
             </div>
             <div class="row g-0 justify-content-center" id="plotlyrowjob" style="display: none">
+                <div class="col-12">
+                    <strong>Jobs Accessible by Travel Time:</strong>
+                </div>
                 <div class="col-auto" id="plotlycoljob">
+                </div>
+                <div class="col-12">
+                   <span>Total number of jobs that can be accessed from the selected Census Tract by transit within 60 minutes is </span> 
                 </div>
             </div>
             <div class="row g-0 justify-content-center" id="resetbt" style="display: none">
@@ -444,6 +450,7 @@
                         var layout = {
                             title: { text: 'test' },
                             xaxis: {
+                                tickangle: -90,
                                 fixedrange: true,
                                 showgrid: false,
                             },
@@ -462,7 +469,7 @@
                                 l: 0,
                                 r: 0,
                                 t: 20,
-                                b: 20,
+                                b: 50,
                             },
                             dragmode: false,
                             modebar: { orientation: 'h' },
