@@ -16,58 +16,29 @@
     <script>
 
         var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-        q += "WITH workct AS (SELECT cartodb_id,restractid,time FROM dcptransportation.resct WHERE worktractid='";
-        q += sl;
-        q += "') SELECT quadstatectclipped.*,workct.time FROM dcptransportation.quadstatectclipped INNER JOIN workct ON tractid=restractid";
-        q += "&format=GeoJSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
+        q += "SELECT * FROM dcptransportation.resbkgravity WHERE restractid=";
+        q += "36061029700"
+        q += "&format=JSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
 
 
-        Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv", function (data) {
-            console.log(data);
+        Plotly.d3.json(q, function (data) {
+            var x = [], y = [];
+            for (var i = 0; i < data['rows'].length; i++) {
+                x.push(data['rows'][i]['cat']);
+                y.push(data['rows'][i]['wac']);
+            };
+            console.log(x);
+            console.log(y);
+            var trace = {
+                x: x,
+                y: y,
+                type:'bar',
+            };
+            Plotly.plot('myDiv', [trace]);
         });
 
 
-        // Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv", function (data) {
-        //     for (var i = 0; i < data.length; i++) {
-        //         console.log(data[i].Name);
-        //         console.log(data[i].Age);
-        //     }
-        // });
 
-
-
-
-        // function makeplot() {
-        //     Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv",
-        //         function (data) { processData(data) });
-
-        // };
-
-        // function processData(allRows) {
-
-        //     console.log(allRows);
-        //     var x = [], y = [], standard_deviation = [];
-
-        //     for (var i = 0; i < allRows.length; i++) {
-        //         row = allRows[i];
-        //         x.push(row['AAPL_x']);
-        //         y.push(row['AAPL_y']);
-        //     }
-        //     console.log('X', x, 'Y', y, 'SD', standard_deviation);
-        //     makePlotly(x, y, standard_deviation);
-        // }
-
-        // function makePlotly(x, y, standard_deviation) {
-        //     var plotDiv = document.getElementById("plot");
-        //     var traces = [{
-        //         x: x,
-        //         y: y
-        //     }];
-
-        //     Plotly.newPlot('myDiv', traces,
-        //         { title: 'Plotting CSV data from AJAX call' });
-        // };
-        // makeplot();
     </script>
 
 </body>
