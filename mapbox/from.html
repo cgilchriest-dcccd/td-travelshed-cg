@@ -37,7 +37,7 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            width: auto;
+            width: 18rem;
             height: auto;
             max-height: 90%;
             padding-top: 0rem;
@@ -47,14 +47,10 @@
             color: rgba(0, 0, 0, 0.9);
             background-color: rgba(255, 255, 255, 0.9);
             font-family: sans-serif;
-            font-size: 1rem;
+            font-size: 0.9rem;
             overflow: auto;
             box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
             border-radius: 4px;
-        }
-
-        .container {
-            width: 17rem;
         }
 
         .row {
@@ -84,63 +80,73 @@
 
     <nav id="legend">
         <div class="container g-0">
-            <div class="row g-0" id="initselect" style="display: flex">
-                <div class="col-12">
+            <div class="row g-0 justify-content-center" id="initselect" style="display: flex">
+                <div class="col-auto">
                     <span class='legend-key-fill'
                         style='background-color: rgba(217, 107, 39, 0); border-color: rgba(217, 107, 39, 0.5); border-style: solid; border-width: bold;'>
                     </span>
                     <b> NYC Census Tract for Selection </b>
                 </div>
             </div>
-            <div class="row g-0" id="travelshed" style="display: none">
+            <div class="row g-0 justify-content-center" id="travelshed" style="display: none">
                 <div class="col-12">
-                    <strong> AM Peak Transit Travel Time from the Selected Census Tract (mins) </strong>
-                    <br>
+                    <strong>
+                        <span> AM Peak Transit Travel Time from Census Tract </span>
+                        <span id="selectedtract"></span>
+                        <span> (mins) </span>
+                    </strong>
+                </div>
+                <div class="col-4">
                     <span class='legend-key-fill'
                         style='background-color: rgba(183, 29, 62, 0.8); border-color: rgba(0, 0, 0, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> 0 ~ 10 </span>
-                    <br>
+                    <span> 1 - 10 </span>
+                </div>
+                <div class="col-4">
                     <span class='legend-key-fill'
                         style='background-color: rgba(208, 67, 68, 0.8); border-color: rgba(0, 0, 0, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> 11 ~ 20 </span>
-                    <br>
+                    <span> 11 - 20 </span>
+                </div>
+                <div class="col-4">
                     <span class='legend-key-fill'
                         style='background-color: rgba(230, 101, 73, 0.8); border-color: rgba(0, 0, 0, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> 21 ~ 30 </span>
-                    <br>
+                    <span> 21 - 30 </span>
+                </div>
+                <div class="col-4">
                     <span class='legend-key-fill'
                         style='background-color: rgba(247, 137, 75, 0.8); border-color: rgba(0, 0, 0, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> 31 ~ 40 </span>
-                    <br>
+                    <span> 31 - 40 </span>
+                </div>
+                <div class="col-4">
                     <span class='legend-key-fill'
                         style='background-color: rgba(246, 188, 88, 0.8); border-color: rgba(0, 0, 0, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> 41 ~ 50 </span>
-                    <br>
+                    <span> 41 - 50 </span>
+                </div>
+
+                <div class="col-4">
                     <span class='legend-key-fill'
                         style='background-color: rgba(244, 209, 102, 0.8); border-color: rgba(0, 0, 0, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> 51 ~ 60 </span>
-                    <br>
+                    <span> 51 - 60 </span>
                 </div>
             </div>
             <div class="row g-0 justify-content-center" id="plotlyrowjob" style="display: none">
-                <div class="col-12">
-                    <strong>Jobs Accessible by Travel Time:</strong>
-                </div>
+                <hr>
                 <div class="col-auto" id="plotlycoljob">
                 </div>
-                <div class="col-12">
-                   <span>Total number of jobs that can be accessed from the selected Census Tract by transit within 60 minutes is </span> 
+                <div class="col-auto">
+                    <span>Total jobs within 60 minutes: </span>
+                    <span id="totaljob"></span>
                 </div>
             </div>
             <div class="row g-0 justify-content-center" id="resetbt" style="display: none">
+                <hr>
                 <div class="col-auto">
-                    <button type="button" class="btn btn-primary" id="reset"> Reset </button>
+                    <button type="button" class="btn btn-primary btn-sm" id="reset"> Reset </button>
                 </div>
             </div>
         </div>
@@ -424,7 +430,7 @@
                     map.setLayoutProperty('resct', 'visibility', 'visible');
                     document.getElementById('initselect').style.display = 'none';
                     document.getElementById('travelshed').style.display = 'flex';
-                    document.getElementById('resetbt').style.display = 'flex';
+                    document.getElementById('selectedtract').textContent = sl;
 
 
 
@@ -439,6 +445,7 @@
                             x.push(data['rows'][i]['cat'].replace('WAC', ''));
                             y.push(data['rows'][i]['wac']);
                         };
+                        document.getElementById('totaljob').textContent = Plotly.d3.format(",")(Plotly.d3.sum(y));
                         var trace = {
                             x: x,
                             y: y,
@@ -448,31 +455,37 @@
                             hoverinfo: 'y',
                         };
                         var layout = {
-                            title: { text: 'test' },
+                            title: {
+                                text: '<b>Jobs Accessible by Travel Time</b>',
+                                font: { size: 14 },
+                            },
                             xaxis: {
                                 tickangle: -90,
+                                tickfont: { size: 12 },
                                 fixedrange: true,
                                 showgrid: false,
                             },
                             yaxis: {
+                                tickfont: { size: 12 },
                                 fixedrange: true,
                                 showgrid: false,
                                 zeroline: false,
                             },
                             font: {
                                 family: 'arial',
-                                color: 'red',
+                                color: 'rgba(0, 0, 0, 0.9)',
                             },
-                            width: 200,
+                            width: 250,
                             height: 200,
                             margin: {
-                                l: 0,
+                                l: 30,
                                 r: 0,
-                                t: 20,
-                                b: 50,
+                                t: 25,
+                                b: 40,
                             },
+                            plot_bgcolor: 'rgba(0, 0, 0, 0)',
+                            paper_bgcolor: 'rgba(0, 0, 0, 0.5)',
                             dragmode: false,
-                            modebar: { orientation: 'h' },
                         };
                         Plotly.react('plotlycoljob',
                             [trace],
@@ -480,6 +493,7 @@
                             { displayModeBar: false });
                     });
                     document.getElementById('plotlyrowjob').style.display = 'flex';
+                    document.getElementById('resetbt').style.display = 'flex';
                 } else {
                     sl = '';
                     map.setPaintProperty('nycct', 'fill-color', 'rgba(217, 107, 39, 0)');
