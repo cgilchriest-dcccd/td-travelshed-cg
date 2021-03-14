@@ -179,7 +179,7 @@
             q += "WITH workct AS (SELECT cartodb_id,restractid,time FROM dcptransportation.resct WHERE worktractid='";
             q += sl;
             q += "') SELECT quadstatectclipped.*,workct.time FROM dcptransportation.quadstatectclipped INNER JOIN workct ON tractid=restractid";
-            q += "&format=GeoJSON&api_key=tK7fWRhkNeAybpSQZkCtRg"; // Carto API
+            q += "&format=GeoJSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
             var layerContent = {
                 'sourceid': 'workct', // source id
                 'sourcetype': 'geojson', // source type
@@ -376,7 +376,7 @@
                     q += "WITH workct AS (SELECT cartodb_id,restractid,time FROM dcptransportation.resct WHERE worktractid='";
                     q += sl;
                     q += "') SELECT quadstatectclipped.*,workct.time FROM dcptransportation.quadstatectclipped INNER JOIN workct ON tractid=restractid";
-                    q += "&format=GeoJSON&api_key=tK7fWRhkNeAybpSQZkCtRg"; // Carto API
+                    q += "&format=GeoJSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
                     map.getSource('workct').setData(q);
                     map.setLayoutProperty('workct', 'visibility', 'visible');
                 } else {
@@ -390,7 +390,7 @@
                     q += "WITH workct AS (SELECT cartodb_id,restractid,time FROM dcptransportation.resct WHERE worktractid='";
                     q += sl;
                     q += "') SELECT quadstatectclipped.*,workct.time FROM dcptransportation.quadstatectclipped INNER JOIN workct ON tractid=restractid";
-                    q += "&format=GeoJSON&api_key=tK7fWRhkNeAybpSQZkCtRg"; // Carto API
+                    q += "&format=GeoJSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
                     map.getSource('workct').setData(q);
                     map.setLayoutProperty('workct', 'visibility', 'none');
                 };

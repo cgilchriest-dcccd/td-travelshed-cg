@@ -15,8 +15,27 @@
     </div>
     <script>
 
-        var df=Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv");
-        console.log(df);
+        var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+        q += "WITH workct AS (SELECT cartodb_id,restractid,time FROM dcptransportation.resct WHERE worktractid='";
+        q += sl;
+        q += "') SELECT quadstatectclipped.*,workct.time FROM dcptransportation.quadstatectclipped INNER JOIN workct ON tractid=restractid";
+        q += "&format=GeoJSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
+
+
+        Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv", function (data) {
+            console.log(data);
+        });
+
+
+        // Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv", function (data) {
+        //     for (var i = 0; i < data.length; i++) {
+        //         console.log(data[i].Name);
+        //         console.log(data[i].Age);
+        //     }
+        // });
+
+
+
 
         // function makeplot() {
         //     Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv",
