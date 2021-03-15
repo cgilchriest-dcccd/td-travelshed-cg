@@ -312,7 +312,6 @@
                 'layername': 'NYC Tract', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolor': 'rgba(217, 107, 39, 0)', // color for each category; use rgba
-                'layeroutlinecolor': 'rgba(0, 0, 0, 0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Add layer content to the overall layer content list
@@ -334,7 +333,6 @@
                 },
                 'paint': {
                     'fill-color': layerContent['layercolor'],
-                    'fill-outline-color': layerContent['layeroutlinecolor'],
                 },
             });
 
@@ -349,7 +347,7 @@
                 'layername': 'NYC Tract Outline', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolor': 'rgba(217, 107, 39, 0.5)', // color for each category; use rgba
-                'layerwidth': 1, // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                'layerwidth': 1, // outline width
             };
 
             // Add layer content to the overall layer content list
@@ -380,7 +378,7 @@
                 'layername': 'NYC Tract Selected', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
                 'layercolor': 'rgba(0, 0, 0, 1)', // color for each category; use rgba
-                'layerwidth': 2, // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                'layerwidth': 2, // outline width
             };
 
             // Add layer content to the overall layer content list
@@ -494,7 +492,7 @@
                             },
                             yaxis: {
                                 tickfont: { size: 12 },
-                                range: [0, 1500000],
+                                range: [0, 1650000],
                                 fixedrange: true,
                                 showgrid: false,
                                 zeroline: false,

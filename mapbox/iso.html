@@ -36,13 +36,13 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            width: 17rem;
+            width: 18rem;
             height: auto;
             max-height: 90%;
             padding-top: 0rem;
             padding-right: 1rem;
             padding-left: 1rem;
-            padding-bottom: 1rem;
+            padding-bottom: 0rem;
             color: rgba(0, 0, 0, 0.9);
             background-color: rgba(255, 255, 255, 0.9);
             font-family: sans-serif;
@@ -87,7 +87,9 @@
         }
 
         .btn-primary {
+            width: 7rem;
             font-size: 0.9rem;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
@@ -98,63 +100,68 @@
     <div id="mainmap"></div> <!-- placeholder for main map -->
 
     <nav id="legend">
-        <div class="container g-0">
-            <div class="row g-0 justify-content-center">
-                <div class="col-12">
-                    <strong> Mode </strong>
+        <form>
+            <div class="container g-0">
+                <div class="row g-0 justify-content-center">
+                    <div class="col-12">
+                        <strong> Mode </strong>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="WALK" id="walk" checked disabled>
+                        <label class="form-check-label" for="walk"> Walk </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="BUS" id="bus" checked>
+                        <label class="form-check-label" for="bus"> Bus </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="SUBWAY" id="subway" checked>
+                        <label class="form-check-label" for="subway"> Subway </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="RAIL" id="rail" checked>
+                        <label class="form-check-label" for="rail"> Rail </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="FERRY" id="ferry" checked>
+                        <label class="form-check-label" for="ferry"> Ferry </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="BICYCLE_RENT" id="citibike" unchecked>
+                        <label class="form-check-label" for="citibike"> Citi Bike </label>
+                    </div>
                 </div>
-                <div class="col-4">
-                    <input class="form-check-input" type="checkbox" value="WALK" id="walk" checked disabled>
-                    <label class="form-check-label" for="walk"> Walk </label>
+                <div class="row g-0 justify-content-center">
+                    <hr>
+                    <div class="col-12">
+                        <strong> Departure Time </strong>
+                    </div>
+                    <div class="col-auto">
+                        <input type="time" class="form-control" value="08:00" id="dptt">
+                    </div>
                 </div>
-                <div class="col-4">
-                    <input class="form-check-input" type="checkbox" value="BUS" id="bus" checked>
-                    <label class="form-check-label" for="bus"> Bus </label>
+                <div class="row g-0 justify-content-center">
+                    <hr>
+                    <div class="col-12">
+                        <strong> Max Travel Time (0-60 mins) </strong>
+                    </div>
+                    <div class="col-auto">
+                        <input type="range" class="form-range" min="0" max="60" step="5" value="30"
+                            oninput="this.nextElementSibling.value = this.value" id="maxtt">
+                        <output>30</output>
+                    </div>
                 </div>
-                <div class="col-4">
-                    <input class="form-check-input" type="checkbox" value="SUBWAY" id="subway" checked>
-                    <label class="form-check-label" for="subway"> Subway </label>
-                </div>
-                <div class="col-4">
-                    <input class="form-check-input" type="checkbox" value="RAIL" id="rail" checked>
-                    <label class="form-check-label" for="rail"> Rail </label>
-                </div>
-                <div class="col-4">
-                    <input class="form-check-input" type="checkbox" value="FERRY" id="ferry" checked>
-                    <label class="form-check-label" for="ferry"> Ferry </label>
-                </div>
-                <div class="col-4">
-                    <input class="form-check-input" type="checkbox" value="BICYCLE_RENT" id="citibike" unchecked>
-                    <label class="form-check-label" for="citibike"> Citi Bike </label>
+                <div class="row g-0 justify-content-between">
+                    <hr>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary" id="submit"> Submit </button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="reset" class="btn btn-primary" id="reset"> Reset </button>
+                    </div>
                 </div>
             </div>
-            <div class="row g-0 justify-content-center">
-                <hr>
-                <div class="col-12">
-                    <strong> Departure Time </strong>
-                </div>
-                <div class="col-auto">
-                    <input type="time" class="form-control" value="08:00" id="dptt">
-                </div>
-            </div>
-            <div class="row g-0 justify-content-center">
-                <hr>
-                <div class="col-12">
-                    <strong> Max Travel Time (0-60 mins) </strong>
-                </div>
-                <div class="col-auto">
-                    <input type="range" class="form-range" min="0" max="60" step="5" value="30"
-                        oninput="this.nextElementSibling.value = this.value" id="maxtt">
-                    <output>30</output>
-                </div>
-            </div>
-            <div class="row g-0 justify-content-center">
-                <hr>
-                <div class="col-auto">
-                    <button type="button" class="btn btn-primary" id="submit"> Submit </button>
-                </div>
-            </div>
-        </div>
+        </form>
     </nav>
 
 
@@ -234,24 +241,23 @@
             submit.addEventListener('click', function () {
                 // From point
                 var fromLat = marker.getLngLat().lat;
-                console.log(fromLat);
                 var fromLong = marker.getLngLat().lng;
-                console.log(fromLong);
 
                 // Mode
                 var modes = ['walk', 'bus', 'subway', 'rail', 'ferry', 'citibike'];
                 var selectedModes = [];
+                var selectedModesPop = [];
                 for (var i = 0; i < modes.length; ++i) {
                     if (document.getElementById(modes[i]).checked) {
                         selectedModes.push(document.getElementById(modes[i]).value);
+                        selectedModesPop.push(document.getElementById(modes[i]).labels[0].textContent.trim());
                     };
                 };
                 selectedModes = selectedModes.join(',');
-                console.log(selectedModes);
+                selectedModesPop = selectedModesPop.join(', ');
 
                 // Departure time
                 var selectedTime = document.getElementById('dptt').value;
-                console.log(selectedTime);
 
                 // Max travel time
                 var maxTravelTime = document.getElementById('maxtt').value;
@@ -260,7 +266,6 @@
                     cutOffs.push('&cutoffSec=' + 300 * (i + 1));
                 };
                 cutOffs = cutOffs.join('');
-                console.log(cutOffs);
 
                 // Generate query
                 var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
@@ -269,7 +274,6 @@
                 q += "&mode=" + selectedModes;
                 q += "&time=" + selectedTime;
                 q += cutOffs;
-                console.log(q);
 
                 // Remove previous isochrones
                 if (map.getLayer('isochrone')) {
@@ -287,16 +291,8 @@
                     'layertype': 'fill', // symbology type
                     'layername': 'Isochrone', // layer name for the legend
                     'layervisibility': 'visible', // visibility of the layer
-                    'layercolor': [
-                        'interpolate',
-                        ['linear'],
-                        ['get', 'time'],
-                        0,
-                        'rgba(8,81,156,0.9)',
-                        3600,
-                        'rgba(222,235,247,0.9)',
-                    ], // color for each category; use rgba
-                    'layeroutlinecolor': 'rgba(255,255,255,0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                    'layercolor': 'rgba(217, 107, 39, 0.2)', // color for each category; use rgba
+                    'layeroutlinecolor': 'rgba(255, 255, 255, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
                 };
 
                 // Add layer content to the overall layer content list
@@ -318,9 +314,47 @@
                     },
                     'paint': {
                         'fill-color': layerContent['layercolor'],
-                        // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                        'fill-outline-color': layerContent['layeroutlinecolor'],
                     },
                 });
+
+
+
+                //Add popup
+                var popup = new mapboxgl.Popup({
+                    closeButton: false, // close button
+                    closeOnClick: false, // close if click on map
+                    closeOnMove: false, // close if move the map
+                    anchor: 'bottom', // anchor of the popup
+                    offset: 0, // offset from the feature
+                    maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+                });
+                // Add hover events
+                map.on('mousemove', 'isochrone', function (e) {
+                    map.getCanvas().style.cursor = 'pointer';
+                    var coordinates = e.lngLat; // get pointer coordinates
+                    var description = "<b>From: </b><span>" + fromLat.toFixed(4) + ", " + fromLong.toFixed(4) + "</span><br>";
+                    description += "<b>Modes: </b><span>" + selectedModesPop + "</span><br>";
+                    description += "<b>Departure Time: </b><span>" + selectedTime + "</span><br>";
+                    description += "<b>Travel Time: </b><span>" + (e.features[0].properties.time / 60 - 5) + "-" + e.features[0].properties.time / 60 + " mins</span><br>";
+                    popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+                });
+                map.on('mouseleave', 'isochrone', function (e) {
+                    map.getCanvas().style.cursor = '';
+                    popup.remove()
+                });
+            });
+
+
+
+            // Add reset event
+            reset.addEventListener('click', function () {
+                document.getElementById('subway').defaultValue;
+                // Remove previous isochrones
+                if (map.getLayer('isochrone')) {
+                    map.removeLayer('isochrone');
+                    map.removeSource('isochrone');
+                };
             });
         });
     </script>
