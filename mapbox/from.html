@@ -33,11 +33,11 @@
             width: 100%;
         }
 
-        #legend {
+        #legend1 {
             position: absolute;
             top: 1rem;
             right: 1rem;
-            width: 18rem;
+            width: auto;
             height: auto;
             max-height: 90%;
             padding-top: 0rem;
@@ -53,11 +53,31 @@
             border-radius: 4px;
         }
 
+        #legend2 {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 18rem;
+            height: auto;
+            max-height: 90%;
+            padding-top: 0rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 0rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-family: sans-serif;
+            font-size: 0.9rem;
+            overflow: auto;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
         .row {
             margin-top: 1rem;
         }
 
-        #legend strong {
+        #legend2 strong {
             margin-bottom: 0.5rem;
             display: inline-block;
         }
@@ -70,6 +90,10 @@
             display: inline-block;
             vertical-align: -0.15rem;
         }
+
+        .btn {
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 
@@ -78,9 +102,9 @@
 <body>
     <div id="mainmap"></div> <!-- placeholder for main map -->
 
-    <nav id="legend">
+    <nav id="legend1" style="display: flex">
         <div class="container g-0">
-            <div class="row g-0 justify-content-center" id="initselect" style="display: flex">
+            <div class="row g-0 justify-content-center">
                 <div class="col-auto">
                     <span class='legend-key-fill'
                         style='background-color: rgba(217, 107, 39, 0); border-color: rgba(217, 107, 39, 0.5); border-style: solid; border-width: bold;'>
@@ -88,7 +112,12 @@
                     <b> NYC Census Tract for Selection </b>
                 </div>
             </div>
-            <div class="row g-0 justify-content-center" id="travelshed" style="display: none">
+        </div>
+    </nav>
+
+    <nav id="legend2" style="display: none">
+        <div class="container g-0">
+            <div class="row g-0 justify-content-center">
                 <div class="col-12">
                     <strong>
                         <span> AM Peak Transit Travel Time from Census Tract </span>
@@ -126,7 +155,6 @@
                     </span>
                     <span> 41 - 50 </span>
                 </div>
-
                 <div class="col-4">
                     <span class='legend-key-fill'
                         style='background-color: rgba(244, 209, 102, 0.8); border-color: rgba(0, 0, 0, 0); border-style: solid; border-width: thin;'>
@@ -134,16 +162,16 @@
                     <span> 51 - 60 </span>
                 </div>
             </div>
-            <div class="row g-0 justify-content-center" id="plotlyrowjob" style="display: none">
+            <div class="row g-0 justify-content-center">
                 <hr>
-                <div class="col-auto" id="plotlycoljob">
+                <div class="col-auto" id="plotlyjob">
                 </div>
                 <div class="col-auto">
                     <span>Total jobs within 60 minutes: </span>
                     <span id="totaljob"></span>
                 </div>
             </div>
-            <div class="row g-0 justify-content-center" id="resetbt" style="display: none">
+            <div class="row g-0 justify-content-center">
                 <hr>
                 <div class="col-auto">
                     <button type="button" class="btn btn-primary btn-sm" id="reset"> Reset </button>
@@ -428,35 +456,34 @@
                     q += "&format=GeoJSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
                     map.getSource('resct').setData(q);
                     map.setLayoutProperty('resct', 'visibility', 'visible');
-                    document.getElementById('initselect').style.display = 'none';
-                    document.getElementById('travelshed').style.display = 'flex';
+                    document.getElementById('legend1').style.display = 'none';
+                    document.getElementById('legend2').style.display = 'flex';
                     document.getElementById('selectedtract').textContent = sl;
-
-
-
                     var p = "https://dcptransportation.carto.com/api/v2/sql?q=";
                     p += "SELECT * FROM dcptransportation.resbkgravity WHERE restractid=";
                     p += sl;
                     p += ' ORDER BY cat ASC'
                     p += "&format=JSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
                     Plotly.d3.json(p, function (data) {
-                        var x = [], y = [];
+                        var x = [], y = [], ht = [];
                         for (var i = 0; i < data['rows'].length; i++) {
                             x.push(data['rows'][i]['cat'].replace('WAC', ''));
                             y.push(data['rows'][i]['wac']);
+                            ht.push(Plotly.d3.format('.3s')(data['rows'][i]['wac']));
                         };
-                        document.getElementById('totaljob').textContent = Plotly.d3.format(",")(Plotly.d3.sum(y));
+                        document.getElementById('totaljob').textContent = Plotly.d3.format(',')(Plotly.d3.sum(y));
                         var trace = {
                             x: x,
                             y: y,
                             type: 'bar',
                             showlegend: false,
                             marker: { color: ['rgba(183, 29, 62, 0.8)', 'rgba(208, 67, 68, 0.8)', 'rgba(230, 101, 73, 0.8)', 'rgba(247, 137, 75, 0.8)', 'rgba(246, 188, 88, 0.8)', 'rgba(244, 209, 102, 0.8)'] },
-                            hoverinfo: 'y',
+                            hoverinfo: 'text',
+                            hovertext: ht,
                         };
                         var layout = {
                             title: {
-                                text: '<b>Jobs Accessible by Travel Time</b>',
+                                text: '<b> Jobs Accessible by Travel Time </b>',
                                 font: { size: 14 },
                             },
                             xaxis: {
@@ -484,16 +511,14 @@
                                 b: 40,
                             },
                             plot_bgcolor: 'rgba(0, 0, 0, 0)',
-                            paper_bgcolor: 'rgba(0, 0, 0, 0.5)',
+                            paper_bgcolor: 'rgba(0, 0, 0, 0)',
                             dragmode: false,
                         };
-                        Plotly.react('plotlycoljob',
+                        Plotly.react('plotlyjob',
                             [trace],
                             layout,
                             { displayModeBar: false });
                     });
-                    document.getElementById('plotlyrowjob').style.display = 'flex';
-                    document.getElementById('resetbt').style.display = 'flex';
                 } else {
                     sl = '';
                     map.setPaintProperty('nycct', 'fill-color', 'rgba(217, 107, 39, 0)');
@@ -510,10 +535,8 @@
                     q += "&format=GeoJSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
                     map.getSource('resct').setData(q);
                     map.setLayoutProperty('resct', 'visibility', 'none');
-                    document.getElementById('initselect').style.display = 'block';
-                    document.getElementById('travelshed').style.display = 'none';
-                    document.getElementById('resetbt').style.display = 'none';
-                    document.getElementById('plotlyrowjob').style.display = 'none';
+                    document.getElementById('legend1').style.display = 'flex';
+                    document.getElementById('legend2').style.display = 'none';
                 };
             });
 
@@ -587,10 +610,8 @@
                 q += "&format=GeoJSON&api_key=MuLwHwAtn6FKypIjpj4kYg"; // Carto API
                 map.getSource('resct').setData(q);
                 map.setLayoutProperty('resct', 'visibility', 'none');
-                document.getElementById('initselect').style.display = 'flex';
-                document.getElementById('travelshed').style.display = 'none';
-                document.getElementById('resetbt').style.display = 'none';
-                document.getElementById('plotlyrowjob').style.display = 'none';
+                document.getElementById('legend1').style.display = 'flex';
+                document.getElementById('legend2').style.display = 'none';
             });
         });
     </script>
