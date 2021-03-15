@@ -61,35 +61,9 @@
             display: inline-block;
         }
 
-        .form-check-input {
-            margin-right: 0.5rem;
-            vertical-align: -0.1rem;
-        }
-
-        .form-control {
-            width: 15rem;
+        .form-select {
+            /* width: 15rem; */
             font-size: 0.9rem;
-        }
-
-        .form-range {
-            margin-right: 0.5rem;
-            width: 13rem;
-            height: 0rem;
-        }
-
-        .form-range::-webkit-slider-runnable-track {
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        output {
-            vertical-align: -0.3rem;
-            height: 0rem;
-        }
-
-        .btn-primary {
-            width: 7rem;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
         }
     </style>
 </head>
@@ -104,61 +78,18 @@
             <div class="container g-0">
                 <div class="row g-0 justify-content-center">
                     <div class="col-12">
-                        <strong> Mode </strong>
+                        <strong> Transit Access Index </strong>
                     </div>
-                    <div class="col-4">
-                        <input class="form-check-input" type="checkbox" value="WALK" id="walk" checked disabled>
-                        <label class="form-check-label" for="walk"> Walk </label>
-                    </div>
-                    <div class="col-4">
-                        <input class="form-check-input" type="checkbox" value="BUS" id="bus" checked>
-                        <label class="form-check-label" for="bus"> Bus </label>
-                    </div>
-                    <div class="col-4">
-                        <input class="form-check-input" type="checkbox" value="SUBWAY" id="subway" checked>
-                        <label class="form-check-label" for="subway"> Subway </label>
-                    </div>
-                    <div class="col-4">
-                        <input class="form-check-input" type="checkbox" value="RAIL" id="rail" checked>
-                        <label class="form-check-label" for="rail"> Rail </label>
-                    </div>
-                    <div class="col-4">
-                        <input class="form-check-input" type="checkbox" value="FERRY" id="ferry" checked>
-                        <label class="form-check-label" for="ferry"> Ferry </label>
-                    </div>
-                    <div class="col-4">
-                        <input class="form-check-input" type="checkbox" value="BICYCLE_RENT" id="citibike" unchecked>
-                        <label class="form-check-label" for="citibike"> Citi Bike </label>
-                    </div>
-                </div>
-                <div class="row g-0 justify-content-center">
-                    <hr>
                     <div class="col-12">
-                        <strong> Departure Time </strong>
-                    </div>
-                    <div class="col-auto">
-                        <input type="time" class="form-control" value="08:00" id="dptt">
-                    </div>
-                </div>
-                <div class="row g-0 justify-content-center">
-                    <hr>
-                    <div class="col-12">
-                        <strong> Max Travel Time (0-60 mins) </strong>
-                    </div>
-                    <div class="col-auto">
-                        <input type="range" class="form-range" min="0" max="60" step="5" value="30"
-                            oninput="this.nextElementSibling.value = this.value" id="maxtt">
-                        <output>30</output>
+                        <select class="form-select" id="tai">
+                            <option value="job"> Access to Jobs </option>
+                            <option value="pop"> Access to Population </option>
+                            <option value="labor"> Access to Labor Force </option>
+                        </select>
                     </div>
                 </div>
                 <div class="row g-0 justify-content-between">
                     <hr>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary" id="submit"> Submit </button>
-                    </div>
-                    <div class="col-auto">
-                        <button type="reset" class="btn btn-primary" id="reset"> Reset </button>
-                    </div>
                 </div>
             </div>
         </form>
@@ -186,15 +117,6 @@
             zoom: 9.8, // set the initial zoom of the map view
         });
 
-
-        // Add marker to the map
-        var marker = new mapboxgl.Marker({
-            draggable: true,
-            color: 'rgba(13, 110, 253, 1)',
-            scale: 0.9,
-        })
-            .setLngLat([-74.01051404065525, 40.70821675967404])
-            .addTo(map);
 
 
         // Add layers
@@ -237,125 +159,185 @@
             );
 
 
-            // Add click events
-            submit.addEventListener('click', function () {
-                // From point
-                var fromLat = marker.getLngLat().lat;
-                var fromLong = marker.getLngLat().lng;
 
-                // Mode
-                var modes = ['walk', 'bus', 'subway', 'rail', 'ferry', 'citibike'];
-                var selectedModes = [];
-                var selectedModesPop = [];
-                for (var i = 0; i < modes.length; ++i) {
-                    if (document.getElementById(modes[i]).checked) {
-                        selectedModes.push(document.getElementById(modes[i]).value);
-                        selectedModesPop.push(document.getElementById(modes[i]).labels[0].textContent.trim());
-                    };
-                };
-                selectedModes = selectedModes.join(',');
-                selectedModesPop = selectedModesPop.join(', ');
+            // Add access to jobs
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT * FROM dcptransportation.accessindex";
+            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            var layerContent = {
+                'sourceid': 'job', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'job', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Access to Jobs', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'jobstdcat', // category column name
+                'layercat': ['-1.5STD~-0.5STD', '-0.5STD~+0.5STD', '+0.5STD~+1.5STD', '+1.5STD~+2.5STD', '>+2.5STD'], // categories
+                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(171, 221, 164, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(253, 174, 97, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0.3)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
 
-                // Departure time
-                var selectedTime = document.getElementById('dptt').value;
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
 
-                // Max travel time
-                var maxTravelTime = document.getElementById('maxtt').value;
-                var cutOffs = [];
-                for (var i = 0; i < maxTravelTime / 5; ++i) {
-                    cutOffs.push('&cutoffSec=' + 300 * (i + 1));
-                };
-                cutOffs = cutOffs.join('');
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
 
-                // Generate query
-                var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
-                q += "&date=2018/06/06&clampInitialWait=0&maxTransfers=3&maxWalkDistance=805";
-                q += "&fromPlace=" + fromLat + "," + fromLong;
-                q += "&mode=" + selectedModes;
-                q += "&time=" + selectedTime;
-                q += cutOffs;
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
 
-                // Remove previous isochrones
-                if (map.getLayer('isochrone')) {
-                    map.removeLayer('isochrone');
-                    map.removeSource('isochrone');
-                };
-
-                // Add isochrones
-                // Set layer contents
-                var layerContent = {
-                    'sourceid': 'isochrone', // source id
-                    'sourcetype': 'geojson', // source type
-                    'sourcedata': q, // data source
-                    'layerid': 'isochrone', // layer id
-                    'layertype': 'fill', // symbology type
-                    'layername': 'Isochrone', // layer name for the legend
-                    'layervisibility': 'visible', // visibility of the layer
-                    'layercolor': 'rgba(217, 107, 39, 0.2)', // color for each category; use rgba
-                    'layeroutlinecolor': 'rgba(255, 255, 255, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
-                };
-
-                // Add layer content to the overall layer content list
-                layerContentList.push(layerContent);
-
-                // Add data source
-                map.addSource(layerContent['sourceid'], {
-                    'type': layerContent['sourcetype'],
-                    'data': layerContent['sourcedata'],
-                });
-
-                // Add fill layer
-                map.addLayer({
-                    'id': layerContent['layerid'],
-                    'type': layerContent['layertype'],
-                    'source': layerContent['sourceid'],
-                    'layout': {
-                        'visibility': layerContent['layervisibility'],
-                    },
-                    'paint': {
-                        'fill-color': layerContent['layercolor'],
-                        'fill-outline-color': layerContent['layeroutlinecolor'],
-                    },
-                });
-
-
-
-                //Add popup
-                var popup = new mapboxgl.Popup({
-                    closeButton: false, // close button
-                    closeOnClick: false, // close if click on map
-                    closeOnMove: false, // close if move the map
-                    anchor: 'bottom', // anchor of the popup
-                    offset: 0, // offset from the feature
-                    maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
-                });
-                // Add hover events
-                map.on('mousemove', 'isochrone', function (e) {
-                    map.getCanvas().style.cursor = 'pointer';
-                    var coordinates = e.lngLat; // get pointer coordinates
-                    var description = "<b>From: </b><span>" + fromLat.toFixed(4) + ", " + fromLong.toFixed(4) + "</span><br>";
-                    description += "<b>Modes: </b><span>" + selectedModesPop + "</span><br>";
-                    description += "<b>Departure Time: </b><span>" + selectedTime + "</span><br>";
-                    description += "<b>Travel Time: </b><span>" + (e.features[0].properties.time / 60 - 5) + "-" + e.features[0].properties.time / 60 + " mins</span><br>";
-                    popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-                });
-                map.on('mouseleave', 'isochrone', function (e) {
-                    map.getCanvas().style.cursor = '';
-                    popup.remove()
-                });
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
             });
 
 
 
-            // Add reset event
-            reset.addEventListener('click', function () {
-                document.getElementById('subway').defaultValue;
-                // Remove previous isochrones
-                if (map.getLayer('isochrone')) {
-                    map.removeLayer('isochrone');
-                    map.removeSource('isochrone');
+            // Add access to populaiton
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT * FROM dcptransportation.accessindex";
+            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            var layerContent = {
+                'sourceid': 'pop', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'pop', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Access to Population', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'popstdcat', // category column name
+                'layercat': ['-1.5STD~-0.5STD', '-0.5STD~+0.5STD', '+0.5STD~+1.5STD', '+1.5STD~+2.5STD', '>+2.5STD'], // categories
+                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(171, 221, 164, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(253, 174, 97, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0.3)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add access to labor force
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT * FROM dcptransportation.accessindex";
+            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            var layerContent = {
+                'sourceid': 'labor', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'labor', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Access to Labor Force', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'laborstdca', // category column name
+                'layercat': ['-1.5STD~-0.5STD', '-0.5STD~+0.5STD', '+0.5STD~+1.5STD', '+1.5STD~+2.5STD', '>+2.5STD'], // categories
+                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(171, 221, 164, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(253, 174, 97, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0.3)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+            var layerOrder = ['job', 'pop', 'labor']; // set layer order in the legend
+
+            // Create click event
+            // Land use grouping
+            tai.addEventListener('change', function () {
+                var chosenLayer = document.getElementById('tai').value;
+                map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
+                // document.getElementsByClassName(chosenLayer)[0].style.display = 'block';
+                // var chosenLegendGroup = document.getElementsByClassName(chosenLayer + '-item');
+                // for (var i = 0; i < chosenLegendGroup.length; i++) {
+                //     chosenLegendGroup[i].style.display = 'block';
+                // };
+                var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
+                for (var i = 0; i < unchosenLayer.length; i++) {
+                    map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
+                    // document.getElementsByClassName(unchosenLayer[i])[0].style.display = 'none';
+                    // var unchosenLegendGroup = document.getElementsByClassName(unchosenLayer[i] + '-item');
+                    // for (var j = 0; j < unchosenLegendGroup.length; j++) {
+                    //     unchosenLegendGroup[j].style.display = 'none';
+                    // };
                 };
             });
+
         });
     </script>
 
