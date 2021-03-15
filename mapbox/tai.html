@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>NYC DCP Travelshed</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+        type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #mainmap {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #legend {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 18rem;
+            height: auto;
+            max-height: 90%;
+            padding-top: 0rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            padding-bottom: 0rem;
+            color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
+            font-family: sans-serif;
+            font-size: 0.9rem;
+            overflow: auto;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .row {
+            margin-top: 1rem;
+        }
+
+        #legend strong {
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .form-check-input {
+            margin-right: 0.5rem;
+            vertical-align: -0.1rem;
+        }
+
+        .form-control {
+            width: 15rem;
+            font-size: 0.9rem;
+        }
+
+        .form-range {
+            margin-right: 0.5rem;
+            width: 13rem;
+            height: 0rem;
+        }
+
+        .form-range::-webkit-slider-runnable-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        output {
+            vertical-align: -0.3rem;
+            height: 0rem;
+        }
+
+        .btn-primary {
+            width: 7rem;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <div id="mainmap"></div> <!-- placeholder for main map -->
+
+    <nav id="legend">
+        <form>
+            <div class="container g-0">
+                <div class="row g-0 justify-content-center">
+                    <div class="col-12">
+                        <strong> Mode </strong>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="WALK" id="walk" checked disabled>
+                        <label class="form-check-label" for="walk"> Walk </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="BUS" id="bus" checked>
+                        <label class="form-check-label" for="bus"> Bus </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="SUBWAY" id="subway" checked>
+                        <label class="form-check-label" for="subway"> Subway </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="RAIL" id="rail" checked>
+                        <label class="form-check-label" for="rail"> Rail </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="FERRY" id="ferry" checked>
+                        <label class="form-check-label" for="ferry"> Ferry </label>
+                    </div>
+                    <div class="col-4">
+                        <input class="form-check-input" type="checkbox" value="BICYCLE_RENT" id="citibike" unchecked>
+                        <label class="form-check-label" for="citibike"> Citi Bike </label>
+                    </div>
+                </div>
+                <div class="row g-0 justify-content-center">
+                    <hr>
+                    <div class="col-12">
+                        <strong> Departure Time </strong>
+                    </div>
+                    <div class="col-auto">
+                        <input type="time" class="form-control" value="08:00" id="dptt">
+                    </div>
+                </div>
+                <div class="row g-0 justify-content-center">
+                    <hr>
+                    <div class="col-12">
+                        <strong> Max Travel Time (0-60 mins) </strong>
+                    </div>
+                    <div class="col-auto">
+                        <input type="range" class="form-range" min="0" max="60" step="5" value="30"
+                            oninput="this.nextElementSibling.value = this.value" id="maxtt">
+                        <output>30</output>
+                    </div>
+                </div>
+                <div class="row g-0 justify-content-between">
+                    <hr>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary" id="submit"> Submit </button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="reset" class="btn btn-primary" id="reset"> Reset </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </nav>
+
+
+
+
+
+    <script>
+        'use strict';
+        // Set MapBox token
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWF5aWp1biIsImEiOiJjaXg4ZmlyY20wMDBjMm9tcjI0bjQ0Z21zIn0.Io0XJ4JelN903V9HGo4TfQ'; // still need to find a way to store the token
+
+
+
+        // Initialize the map
+        var map = new mapboxgl.Map({ // creating a new map
+            container: 'mainmap', // same as the div id to place the map
+            style: 'mapbox://styles/mapbox/light-v10', // light base map
+            hash: true, // make sure it's on to get the url with map view
+            attributionControl: false, // show the credit bar
+            preserveDrawingBuffer: true, // make sure it's on to allow printing
+            center: [-74.01051404065525, 40.70821675967404], // testing to get the centroid of bounds
+            zoom: 9.8, // set the initial zoom of the map view
+        });
+
+
+        // Add marker to the map
+        var marker = new mapboxgl.Marker({
+            draggable: true,
+            color: 'rgba(13, 110, 253, 1)',
+            scale: 0.9,
+        })
+            .setLngLat([-74.01051404065525, 40.70821675967404])
+            .addTo(map);
+
+
+        // Add layers
+        map.on('load', function () {
+
+            var layerContentList = []; // store all the layer contents
+
+            // Add geocoder control
+            map.addControl(new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+            }),
+                'top-left', // control position
+            );
+
+            // Add navigation control
+            map.addControl(new mapboxgl.NavigationControl({
+                showCompass: true, // show compass
+                showZoom: true, // show zoom
+                visualizePitch: true, // show pitch
+            }),
+                'top-left', // control position
+            );
+
+            // Add user location control
+            map.addControl(new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true
+            }),
+                'top-left', // control position
+            );
+
+            // Add full screen control
+            map.addControl(new mapboxgl.FullscreenControl({
+                container: document.querySelector('body'),
+            }),
+                'top-left', // control position
+            );
+
+
+            // Add click events
+            submit.addEventListener('click', function () {
+                // From point
+                var fromLat = marker.getLngLat().lat;
+                var fromLong = marker.getLngLat().lng;
+
+                // Mode
+                var modes = ['walk', 'bus', 'subway', 'rail', 'ferry', 'citibike'];
+                var selectedModes = [];
+                var selectedModesPop = [];
+                for (var i = 0; i < modes.length; ++i) {
+                    if (document.getElementById(modes[i]).checked) {
+                        selectedModes.push(document.getElementById(modes[i]).value);
+                        selectedModesPop.push(document.getElementById(modes[i]).labels[0].textContent.trim());
+                    };
+                };
+                selectedModes = selectedModes.join(',');
+                selectedModesPop = selectedModesPop.join(', ');
+
+                // Departure time
+                var selectedTime = document.getElementById('dptt').value;
+
+                // Max travel time
+                var maxTravelTime = document.getElementById('maxtt').value;
+                var cutOffs = [];
+                for (var i = 0; i < maxTravelTime / 5; ++i) {
+                    cutOffs.push('&cutoffSec=' + 300 * (i + 1));
+                };
+                cutOffs = cutOffs.join('');
+
+                // Generate query
+                var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
+                q += "&date=2018/06/06&clampInitialWait=0&maxTransfers=3&maxWalkDistance=805";
+                q += "&fromPlace=" + fromLat + "," + fromLong;
+                q += "&mode=" + selectedModes;
+                q += "&time=" + selectedTime;
+                q += cutOffs;
+
+                // Remove previous isochrones
+                if (map.getLayer('isochrone')) {
+                    map.removeLayer('isochrone');
+                    map.removeSource('isochrone');
+                };
+
+                // Add isochrones
+                // Set layer contents
+                var layerContent = {
+                    'sourceid': 'isochrone', // source id
+                    'sourcetype': 'geojson', // source type
+                    'sourcedata': q, // data source
+                    'layerid': 'isochrone', // layer id
+                    'layertype': 'fill', // symbology type
+                    'layername': 'Isochrone', // layer name for the legend
+                    'layervisibility': 'visible', // visibility of the layer
+                    'layercolor': 'rgba(217, 107, 39, 0.2)', // color for each category; use rgba
+                    'layeroutlinecolor': 'rgba(255, 255, 255, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                };
+
+                // Add layer content to the overall layer content list
+                layerContentList.push(layerContent);
+
+                // Add data source
+                map.addSource(layerContent['sourceid'], {
+                    'type': layerContent['sourcetype'],
+                    'data': layerContent['sourcedata'],
+                });
+
+                // Add fill layer
+                map.addLayer({
+                    'id': layerContent['layerid'],
+                    'type': layerContent['layertype'],
+                    'source': layerContent['sourceid'],
+                    'layout': {
+                        'visibility': layerContent['layervisibility'],
+                    },
+                    'paint': {
+                        'fill-color': layerContent['layercolor'],
+                        'fill-outline-color': layerContent['layeroutlinecolor'],
+                    },
+                });
+
+
+
+                //Add popup
+                var popup = new mapboxgl.Popup({
+                    closeButton: false, // close button
+                    closeOnClick: false, // close if click on map
+                    closeOnMove: false, // close if move the map
+                    anchor: 'bottom', // anchor of the popup
+                    offset: 0, // offset from the feature
+                    maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
+                });
+                // Add hover events
+                map.on('mousemove', 'isochrone', function (e) {
+                    map.getCanvas().style.cursor = 'pointer';
+                    var coordinates = e.lngLat; // get pointer coordinates
+                    var description = "<b>From: </b><span>" + fromLat.toFixed(4) + ", " + fromLong.toFixed(4) + "</span><br>";
+                    description += "<b>Modes: </b><span>" + selectedModesPop + "</span><br>";
+                    description += "<b>Departure Time: </b><span>" + selectedTime + "</span><br>";
+                    description += "<b>Travel Time: </b><span>" + (e.features[0].properties.time / 60 - 5) + "-" + e.features[0].properties.time / 60 + " mins</span><br>";
+                    popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+                });
+                map.on('mouseleave', 'isochrone', function (e) {
+                    map.getCanvas().style.cursor = '';
+                    popup.remove()
+                });
+            });
+
+
+
+            // Add reset event
+            reset.addEventListener('click', function () {
+                document.getElementById('subway').defaultValue;
+                // Remove previous isochrones
+                if (map.getLayer('isochrone')) {
+                    map.removeLayer('isochrone');
+                    map.removeSource('isochrone');
+                };
+            });
+        });
+    </script>
+
+</body>
+
+</html>
