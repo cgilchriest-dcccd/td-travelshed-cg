@@ -81,7 +81,7 @@
                 <div class="col-auto" id="header"> Transit Access Index </div>
             </div>
             <div class="row g-0 justify-content-center">
-                <div class="col-auto">
+                <div class="col-12">
                     <select class='form-select' id='tai'>
                         <option value='job'> Access to Jobs </option>
                         <option value='pop'> Access to Population </option>
@@ -90,12 +90,9 @@
                 </div>
             </div>
             <div class="row g-0 justify-content-center">
-                <div class="col-auto">
+                <div class="col-12">
                     <img src="https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/colorbar.png">
                 </div>
-            </div>
-            <div class="row g-0 justify-content-start">
-                <div class="col-auto" id="legends"> </div>
             </div>
         </div>
     </nav>
@@ -272,7 +269,6 @@
             var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
             q += "SELECT nycct.*, tai.jobindex, tai.jobstd, tai.jobcat, tai.jobpct FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid";
             q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
-            console.log(q);
             var layerContent = {
                 'sourceid': 'job', // source id
                 'sourcetype': 'geojson', // source type
@@ -376,6 +372,19 @@
             map.on('mouseleave', 'job', function () {
                 map.getCanvas().style.cursor = '';
                 popup.remove()
+            });
+
+
+
+            // Create click event
+            var layerOrder = ['job', 'pop', 'labor']; // set layer order in the legend
+            tai.addEventListener('change', function () {
+                var chosenLayer = document.getElementById('tai').value;
+                map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
+                var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
+                for (var i = 0; i < unchosenLayer.length; i++) {
+                    map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
+                };
             });
         });
     </script>
