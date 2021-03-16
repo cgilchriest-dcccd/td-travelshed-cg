@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC DCP Travelshed</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #banner {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: auto;
+        }
+
+        #main {
+            position: absolute;
+            top: 4rem;
+            bottom: 0;
+            width: 100%;
+            height: auto;
+        }
+
+        img {
+            height: 3rem;
+            margin-left: 1rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid g-0">
+        <div class="row g-0" id="banner" style="background-color: #d96b27;">
+            <div class="col-auto">
+                <a href="http://www1.nyc.gov/site/planning/index.page">
+                    <img src="https://raw.githubusercontent.com/NYCPlanning/dcp-logo/master/dcp_logo_white_772.png">
+                </a>
+            </div>
+        </div>
+        <div class="row g-0" id="main">
+            <iframe src="https://nycplanning.github.io/td-travelshed/mapbox/from#9.8/40.7369/-73.8461"
+                allowfullscreen=true sandbox=allow-scripts>
+            </iframe>
+        </div>
+</body>
+
+</html>
