@@ -60,40 +60,19 @@
             font-weight: bold;
         }
 
-        .item1-input {
-            width: 0.9rem;
-            height: 0.9rem;
-            margin-right: 0.5rem;
-            vertical-align: -0.1rem;
-        }
-
-        .item1-label {
+        .form-select {
             font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        .itemgroup2 {
-            margin-left: 1.4rem;
-        }
-
-        .item2-input {
-            width: 0.8rem;
-            height: 0.8rem;
-            margin-right: 0.5rem;
-            vertical-align: -0.1rem;
-        }
-
-        .item2-label {
-            font-size: 0.8rem;
         }
 
         .key-fill {
-            width: 0.8rem;
-            height: 0.8rem;
-            margin-right: 0.5rem;
+            width: 2rem;
+            height: 2rem;
             border-radius: 0%;
             display: inline-block;
-            vertical-align: -0.1rem;
+        }
+
+        .key-label {
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -107,6 +86,23 @@
         <div class="container g-0">
             <div class="row g-0 justify-content-start">
                 <div class="col-auto" id="header"> Transit Access Index </div>
+            </div>
+            <div class="row g-0 justify-content-center">
+                <select class='form-select' id='tai'>
+                    <option value='job'> Access to Jobs </option>
+                    <option value='pop'> Access to Population </option>
+                    <option value='labor'> Access to Labor Force </option>
+                </select>
+            </div>
+            <div class="row g-0 justify-content-center">
+                <span class="key-fill" style="background-color: rgba(43, 131, 186, 0.8); border-style: none;"> </span>
+                <span class="key-fill" style="background-color: rgba(128, 191, 172, 0.8); border-style: none;"> </span>
+                <span class="key-fill" style="background-color: rgba(199, 233, 173, 0.8); border-style: none;"> </span>
+                <span class="key-fill" style="background-color: rgba(255, 255, 191, 0.8); border-style: none;"> </span>
+                <span class="key-fill" style="background-color: rgba(254, 201, 128, 0.8); border-style: none;"></span>
+                <span class="key-fill" style="background-color: rgba(241, 124, 74, 0.8); border-style: none;"></span>
+                <span class="key-fill" style="background-color: rgba(215, 25, 28, 0.8); border-style: none;"></span>
+                <span class="key-label"> -2.5 Std Dev </span>
             </div>
             <div class="row g-0 justify-content-start">
                 <div class="col-auto" id="legends"> </div>
@@ -391,102 +387,6 @@
                 map.getCanvas().style.cursor = '';
                 popup.remove()
             });
-
-
-
-            // Add layer selector and legend
-            var layerOrder = ['job', 'pop', 'labor']; // set layer order in the legend
-            var layerContentListOrder = []; // create ordered layer content list
-            for (var i = 0; i < layerOrder.length; i++) {
-                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
-            };
-
-            var filterLegend = document.getElementById('legends');
-            for (var i = 0; i < layerContentListOrder.length; i++) {
-                // Create layer selector
-                var itemgroup1 = document.createElement('div'); // create level-1 item group
-                itemgroup1.className = 'itemgroup1';
-                var item1 = document.createElement('div'); // create level-1 item
-                item1.className = 'item1';
-                var input1 = document.createElement('input'); // create level-1 checkbox
-                input1.type = 'checkbox';
-                input1.className = 'item1-input';
-                input1.id = layerContentListOrder[i]['layerid'];
-                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
-                    input1.checked = true;
-                } else {
-                    input1.checked = false;
-                };
-                var label1 = document.createElement('label'); // create level-1 checkbox label
-                label1.className = 'item1-label';
-                label1.setAttribute('for', layerContentListOrder[i]['layerid']);
-                label1.textContent = layerContentListOrder[i]['layername'];
-                item1.appendChild(input1);
-                item1.appendChild(label1);
-                itemgroup1.appendChild(item1);
-
-                // Create legend selector
-                var itemgroup2 = document.createElement('div'); // create level-2 item group
-                itemgroup2.className = 'itemgroup2';
-                itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
-                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
-                    itemgroup2.style.display = 'block';
-                } else {
-                    itemgroup2.style.display = 'none';
-                };
-                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
-                    var item2 = document.createElement('div'); // create level-2 item
-                    item2.className = 'item2';
-                    var input2 = document.createElement('input'); // create level-2 checkbox
-                    input2.type = 'checkbox';
-                    input2.className = 'item2-input';
-                    input2.id = layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j];
-                    input2.checked = true;
-                    var key2 = document.createElement('span'); // create level-2 key
-                    key2.className = 'key-' + layerContentListOrder[i]['layertype'];
-                    key2.style.backgroundColor = layerContentListOrder[i]['layercolor'][j];
-                    key2.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
-                    key2.style.borderStyle = 'solid';
-                    key2.style.borderWidth = 'thin';
-                    var label2 = document.createElement('label'); // create level-2 label
-                    label2.className = 'item2-label';
-                    label2.setAttribute('for', layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j]);
-                    label2.textContent = layerContentListOrder[i]['layercat'][j];
-                    item2.appendChild(input2);
-                    item2.appendChild(key2);
-                    item2.appendChild(label2);
-                    itemgroup2.appendChild(item2);
-
-                    // Create legend selector click event
-                    input2.addEventListener('click', function (e) {
-                        var clickedLayer = this.id.split('|')[0];
-                        var clickedLayerColname = this.id.split('|')[1];
-                        var catGroup = document.getElementById(clickedLayer + '-cat').getElementsByClassName('item2-input');
-                        var checkedFilter = ['any'];
-                        for (var k = 0; k < catGroup.length; k++) {
-                            if (catGroup[k]['checked'] === true) {
-                                checkedFilter.push(['==', clickedLayerColname, catGroup[k].id.split('|')[2]]);
-                            };
-                        };
-                        map.setFilter(clickedLayer, checkedFilter);
-                    });
-                };
-                itemgroup1.appendChild(itemgroup2);
-                filterLegend.appendChild(itemgroup1);
-
-                // Create layer selector click event
-                input1.addEventListener('click', function (e) {
-                    var clickedLayer = this.id;
-                    var vis = map.getLayoutProperty(clickedLayer, 'visibility');
-                    if (vis === 'visible') {
-                        map.setLayoutProperty(clickedLayer, 'visibility', 'none'); // set layer visibility
-                        document.getElementById(clickedLayer + '-cat').style.display = 'none'; // set legend visibility
-                    } else {
-                        map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
-                        document.getElementById(clickedLayer + '-cat').style.display = 'block';
-                    };
-                });
-            };
         });
     </script>
 
