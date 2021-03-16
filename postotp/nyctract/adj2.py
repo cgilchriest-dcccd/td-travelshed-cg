@@ -1247,49 +1247,55 @@ workctgravitypop.to_csv(path+'nyctract/workctgravitypop.csv',index=True)
 
 
 # Index Map
-pop=pd.read_csv(path+'nyctract/workctgravitypop.csv',dtype=str)
-pop['tractid']=[str(x)[4:15] for x in pop['Unnamed: 0']]
-pop['popindex']=pd.to_numeric(pop['GRAVITYPOP'])
-pop['popstd']=(pop['popindex']-np.mean(pop['popindex']))/np.std(pop['popindex'])
-pop['popstdcat']=np.where(pop['popstd']>2.5,'>+2.5STD',
-                 np.where(pop['popstd']>1.5,'+1.5STD~+2.5STD',
-                 np.where(pop['popstd']>0.5,'+0.5STD~+1.5STD',
-                 np.where(pop['popstd']>-0.5,'-0.5STD~+0.5STD',
-                 np.where(pop['popstd']>-1.5,'-1.5STD~-0.5STD',
-                 np.where(pop['popstd']>-2.5,'-2.5STD~-1.5STD','<-2.5STD'))))))
-pop=pop[['tractid','popindex','popstd','popstdcat']].reset_index(drop=True)
 job=pd.read_csv(path+'nyctract/resbkgravity3.csv',dtype=str)
 job['tractid']=[str(x)[3:14] for x in job['Unnamed: 0']]
 job['jobindex']=pd.to_numeric(job['GRAVITYWAC'])
 job['jobstd']=(job['jobindex']-np.mean(job['jobindex']))/np.std(job['jobindex'])
-job['jobstdcat']=np.where(job['jobstd']>2.5,'>+2.5STD',
-                 np.where(job['jobstd']>1.5,'+1.5STD~+2.5STD',
-                 np.where(job['jobstd']>0.5,'+0.5STD~+1.5STD',
-                 np.where(job['jobstd']>-0.5,'-0.5STD~+0.5STD',
-                 np.where(job['jobstd']>-1.5,'-1.5STD~-0.5STD',
-                 np.where(job['jobstd']>-2.5,'-2.5STD~-1.5STD','<-2.5STD'))))))
-job=job[['tractid','jobindex','jobstd','jobstdcat']].reset_index(drop=True)
+job['jobcat']=np.where(job['jobstd']>=2.5,'>=+2.5SD',
+              np.where(job['jobstd']>=1.5,'+1.5SD ~ +2.5SD',
+              np.where(job['jobstd']>=0.5,'+0.5SD ~ +1.5SD',
+              np.where(job['jobstd']>=-0.5,'-0.5SD ~ +0.5SD',
+              np.where(job['jobstd']>=-1.5,'-1.5SD ~ -0.5SD',
+              np.where(job['jobstd']>=-2.5,'-2.5SD ~ -1.5SD','<-2.5SD'))))))
+job['jobpct']=pd.qcut(job['jobindex'],100,labels=False)+1
+job=job[['tractid','jobindex','jobstd','jobcat','jobpct']].reset_index(drop=True)
+
+pop=pd.read_csv(path+'nyctract/workctgravitypop.csv',dtype=str)
+pop['tractid']=[str(x)[4:15] for x in pop['Unnamed: 0']]
+pop['popindex']=pd.to_numeric(pop['GRAVITYPOP'])
+pop['popstd']=(pop['popindex']-np.mean(pop['popindex']))/np.std(pop['popindex'])
+pop['popcat']=np.where(pop['popstd']>=2.5,'>=+2.5SD',
+              np.where(pop['popstd']>=1.5,'+1.5SD ~ +2.5SD',
+              np.where(pop['popstd']>=0.5,'+0.5SD ~ +1.5SD',
+              np.where(pop['popstd']>=-0.5,'-0.5SD ~ +0.5SD',
+              np.where(pop['popstd']>=-1.5,'-1.5SD ~ -0.5SD',
+              np.where(pop['popstd']>=-2.5,'-2.5SD ~ -1.5SD','<-2.5SD'))))))
+pop['poppct']=pd.qcut(pop['popindex'],100,labels=False)+1
+pop=pop[['tractid','popindex','popstd','popcat','poppct']].reset_index(drop=True)
+
 labor=pd.read_csv(path+'nyctract/workbkgravity3.csv',dtype=str)
 labor['tractid']=[str(x)[4:15] for x in labor['Unnamed: 0']]
 labor['laborindex']=pd.to_numeric(labor['GRAVITYRAC'])
 labor['laborstd']=(labor['laborindex']-np.mean(labor['laborindex']))/np.std(labor['laborindex'])
-labor['laborstdcat']=np.where(labor['laborstd']>2.5,'>+2.5STD',
-                     np.where(labor['laborstd']>1.5,'+1.5STD~+2.5STD',
-                     np.where(labor['laborstd']>0.5,'+0.5STD~+1.5STD',
-                     np.where(labor['laborstd']>-0.5,'-0.5STD~+0.5STD',
-                     np.where(labor['laborstd']>-1.5,'-1.5STD~-0.5STD',
-                     np.where(labor['laborstd']>-2.5,'-2.5STD~-1.5STD','<-2.5STD'))))))
-labor=labor[['tractid','laborindex','laborstd','laborstdcat']].reset_index(drop=True)
-accid=pd.merge(pop,job,how='inner',on='tractid')
-accid=pd.merge(accid,labor,how='inner',on='tractid')
-accid.to_csv(path+'nyctract/accessindex.csv',index=False)
-accid=pd.read_csv(path+'nyctract/accessindex.csv',dtype=float,converters={'tractid':str,'popstdcat':str,
-                                                                          'jobstdcat':str,'laborstdcat':str})
+labor['laborcat']=np.where(labor['laborstd']>=2.5,'>=+2.5SD',
+                  np.where(labor['laborstd']>=1.5,'+1.5SD ~ +2.5SD',
+                  np.where(labor['laborstd']>=0.5,'+0.5SD ~ +1.5SD',
+                  np.where(labor['laborstd']>=-0.5,'-0.5SD ~ +0.5SD',
+                  np.where(labor['laborstd']>=-1.5,'-1.5SD ~ -0.5SD',
+                  np.where(labor['laborstd']>=-2.5,'-2.5SD ~ -1.5SD','<-2.5SD'))))))
+labor['laborpct']=pd.qcut(labor['laborindex'],100,labels=False)+1
+labor=labor[['tractid','laborindex','laborstd','laborcat','laborpct']].reset_index(drop=True)
+
+tai=pd.merge(pop,job,how='inner',on='tractid')
+tai=pd.merge(tai,labor,how='inner',on='tractid')
+tai.to_csv(path+'nyctract/tai.csv',index=False)
+tai=pd.read_csv(path+'nyctract/tai.csv',dtype=float,converters={'tractid':str,'popcat':str,
+                                                                'jobcat':str,'laborcat':str})
 ct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-ct.crs={'init': 'epsg:4326'}
+ct.crs=4326
 ct=ct[['tractid','geometry']].reset_index(drop=True)
-accid=pd.merge(ct,accid,how='inner',on='tractid')
-accid.to_file(path+'nyctract/accessindex.shp')
+tai=pd.merge(ct,tai,how='inner',on='tractid')
+tai.to_file(path+'nyctract/tai.shp')
 
 
 

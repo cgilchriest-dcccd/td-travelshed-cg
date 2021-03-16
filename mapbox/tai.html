@@ -36,34 +36,64 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            width: 18rem;
+            width: auto;
             height: auto;
             max-height: 90%;
-            padding-top: 0rem;
+            padding-top: 0.5rem;
             padding-right: 1rem;
             padding-left: 1rem;
-            padding-bottom: 0rem;
+            padding-bottom: 1rem;
             color: rgba(0, 0, 0, 0.9);
             background-color: rgba(255, 255, 255, 0.9);
             font-family: sans-serif;
-            font-size: 0.9rem;
+            font-size: 1rem;
             overflow: auto;
             box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
             border-radius: 4px;
         }
 
         .row {
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
 
-        #legend strong {
-            margin-bottom: 0.5rem;
-            display: inline-block;
+        #header {
+            font-weight: bold;
         }
 
-        .form-select {
-            /* width: 15rem; */
+        .item1-input {
+            width: 0.9rem;
+            height: 0.9rem;
+            margin-right: 0.5rem;
+            vertical-align: -0.1rem;
+        }
+
+        .item1-label {
             font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .itemgroup2 {
+            margin-left: 1.4rem;
+        }
+
+        .item2-input {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            vertical-align: -0.1rem;
+        }
+
+        .item2-label {
+            font-size: 0.8rem;
+        }
+
+        .key-fill {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: -0.1rem;
         }
     </style>
 </head>
@@ -74,25 +104,14 @@
     <div id="mainmap"></div> <!-- placeholder for main map -->
 
     <nav id="legend">
-        <form>
-            <div class="container g-0">
-                <div class="row g-0 justify-content-center">
-                    <div class="col-12">
-                        <strong> Transit Access Index </strong>
-                    </div>
-                    <div class="col-12">
-                        <select class="form-select" id="tai">
-                            <option value="job"> Access to Jobs </option>
-                            <option value="pop"> Access to Population </option>
-                            <option value="labor"> Access to Labor Force </option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row g-0 justify-content-between">
-                    <hr>
-                </div>
+        <div class="container g-0">
+            <div class="row g-0 justify-content-start">
+                <div class="col-auto" id="header"> Transit Access Index </div>
             </div>
-        </form>
+            <div class="row g-0 justify-content-start">
+                <div class="col-auto" id="legends"> </div>
+            </div>
+        </div>
     </nav>
 
 
@@ -160,23 +179,23 @@
 
 
 
-            // Add access to jobs
+            // Add access to labor force
             // Set layer contents
             var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT * FROM dcptransportation.accessindex";
-            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            q += "SELECT nycct.*, tai.laborindex, tai.laborstd, tai.laborcat, tai.laborpct FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid";
+            q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
             var layerContent = {
-                'sourceid': 'job', // source id
+                'sourceid': 'labor', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': q, // data source
-                'layerid': 'job', // layer id
+                'layerid': 'labor', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Access to Jobs', // layer name for the legend
+                'layername': 'Access to Labor Force', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
-                'layercolname': 'jobstdcat', // category column name
-                'layercat': ['-1.5STD~-0.5STD', '-0.5STD~+0.5STD', '+0.5STD~+1.5STD', '+1.5STD~+2.5STD', '>+2.5STD'], // categories
-                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(171, 221, 164, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(253, 174, 97, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
-                'layeroutlinecolor': 'rgba(255, 255, 255, 0.3)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                'layercolname': 'laborcat', // category column name
+                'layercat': ['<-2.5SD', '-2.5SD ~ -1.5SD', '-1.5SD ~ -0.5SD', '-0.5SD ~ +0.5SD', '+0.5SD ~ +1.5SD', '+1.5SD ~ +2.5SD', '>=+2.5SD'], // categories
+                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(128, 191, 172, 0.8)', 'rgba(199, 233, 173, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(254, 201, 128, 0.8)', 'rgba(241, 124, 74, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
+                'layeroutlinecolor': 'rgba(0, 0, 0, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Generate layer colors
@@ -212,11 +231,11 @@
 
 
 
-            // Add access to populaiton
+            // Add access to population
             // Set layer contents
             var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT * FROM dcptransportation.accessindex";
-            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            q += "SELECT nycct.*, tai.popindex, tai.popstd, tai.popcat, tai.poppct FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid";
+            q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
             var layerContent = {
                 'sourceid': 'pop', // source id
                 'sourcetype': 'geojson', // source type
@@ -225,10 +244,10 @@
                 'layertype': 'fill', // symbology type
                 'layername': 'Access to Population', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
-                'layercolname': 'popstdcat', // category column name
-                'layercat': ['-1.5STD~-0.5STD', '-0.5STD~+0.5STD', '+0.5STD~+1.5STD', '+1.5STD~+2.5STD', '>+2.5STD'], // categories
-                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(171, 221, 164, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(253, 174, 97, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
-                'layeroutlinecolor': 'rgba(255, 255, 255, 0.3)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                'layercolname': 'popcat', // category column name
+                'layercat': ['<-2.5SD', '-2.5SD ~ -1.5SD', '-1.5SD ~ -0.5SD', '-0.5SD ~ +0.5SD', '+0.5SD ~ +1.5SD', '+1.5SD ~ +2.5SD', '>=+2.5SD'], // categories
+                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(128, 191, 172, 0.8)', 'rgba(199, 233, 173, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(254, 201, 128, 0.8)', 'rgba(241, 124, 74, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
+                'layeroutlinecolor': 'rgba(0, 0, 0, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Generate layer colors
@@ -264,23 +283,24 @@
 
 
 
-            // Add access to labor force
+            // Add access to jobs
             // Set layer contents
             var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT * FROM dcptransportation.accessindex";
-            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            q += "SELECT nycct.*, tai.jobindex, tai.jobstd, tai.jobcat, tai.jobpct FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid";
+            q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
+            console.log(q);
             var layerContent = {
-                'sourceid': 'labor', // source id
+                'sourceid': 'job', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': q, // data source
-                'layerid': 'labor', // layer id
+                'layerid': 'job', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Access to Labor Force', // layer name for the legend
+                'layername': 'Access to Jobs', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'laborstdca', // category column name
-                'layercat': ['-1.5STD~-0.5STD', '-0.5STD~+0.5STD', '+0.5STD~+1.5STD', '+1.5STD~+2.5STD', '>+2.5STD'], // categories
-                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(171, 221, 164, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(253, 174, 97, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
-                'layeroutlinecolor': 'rgba(255, 255, 255, 0.3)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+                'layercolname': 'jobcat', // category column name
+                'layercat': ['<-2.5SD', '-2.5SD ~ -1.5SD', '-1.5SD ~ -0.5SD', '-0.5SD ~ +0.5SD', '+0.5SD ~ +1.5SD', '+1.5SD ~ +2.5SD', '>=+2.5SD'], // categories
+                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(128, 191, 172, 0.8)', 'rgba(199, 233, 173, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(254, 201, 128, 0.8)', 'rgba(241, 124, 74, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
+                'layeroutlinecolor': 'rgba(0, 0, 0, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
 
             // Generate layer colors
@@ -315,29 +335,160 @@
             });
 
 
-            var layerOrder = ['job', 'pop', 'labor']; // set layer order in the legend
 
-            // Create click event
-            // Land use grouping
-            tai.addEventListener('change', function () {
-                var chosenLayer = document.getElementById('tai').value;
-                map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
-                // document.getElementsByClassName(chosenLayer)[0].style.display = 'block';
-                // var chosenLegendGroup = document.getElementsByClassName(chosenLayer + '-item');
-                // for (var i = 0; i < chosenLegendGroup.length; i++) {
-                //     chosenLegendGroup[i].style.display = 'block';
-                // };
-                var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
-                for (var i = 0; i < unchosenLayer.length; i++) {
-                    map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
-                    // document.getElementsByClassName(unchosenLayer[i])[0].style.display = 'none';
-                    // var unchosenLegendGroup = document.getElementsByClassName(unchosenLayer[i] + '-item');
-                    // for (var j = 0; j < unchosenLegendGroup.length; j++) {
-                    //     unchosenLegendGroup[j].style.display = 'none';
-                    // };
-                };
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: false, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content              
             });
 
+            // Add access to labor force popup
+            // Add hover events
+            map.on('mousemove', 'labor', function (e) {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                description += "<b>Access to Labor Force Index: </b><span>" + e.features[0].properties.laborindex.toFixed(2) + "</span><br>";
+                description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.laborstd.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.laborpct + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            map.on('mouseleave', 'labor', function () {
+                map.getCanvas().style.cursor = '';
+                popup.remove()
+            });
+
+            // Add access to population popup
+            // Add hover event
+            map.on('mousemove', 'pop', function (e) {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                description += "<b>Access to Population Index: </b><span>" + e.features[0].properties.popindex.toFixed(2) + "</span><br>";
+                description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.popstd.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.poppct + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            map.on('mouseleave', 'pop', function () {
+                map.getCanvas().style.cursor = '';
+                popup.remove()
+            });
+
+            // Add access to jobs popup
+            // Add hover event
+            map.on('mousemove', 'job', function (e) {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                description += "<b>Access to Jobs Index: </b><span>" + e.features[0].properties.jobindex.toFixed(2) + "</span><br>";
+                description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.jobstd.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.jobpct + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            map.on('mouseleave', 'job', function () {
+                map.getCanvas().style.cursor = '';
+                popup.remove()
+            });
+
+
+
+            // Add layer selector and legend
+            var layerOrder = ['job', 'pop', 'labor']; // set layer order in the legend
+            var layerContentListOrder = []; // create ordered layer content list
+            for (var i = 0; i < layerOrder.length; i++) {
+                layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
+            };
+
+            var filterLegend = document.getElementById('legends');
+            for (var i = 0; i < layerContentListOrder.length; i++) {
+                // Create layer selector
+                var itemgroup1 = document.createElement('div'); // create level-1 item group
+                itemgroup1.className = 'itemgroup1';
+                var item1 = document.createElement('div'); // create level-1 item
+                item1.className = 'item1';
+                var input1 = document.createElement('input'); // create level-1 checkbox
+                input1.type = 'checkbox';
+                input1.className = 'item1-input';
+                input1.id = layerContentListOrder[i]['layerid'];
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                    input1.checked = true;
+                } else {
+                    input1.checked = false;
+                };
+                var label1 = document.createElement('label'); // create level-1 checkbox label
+                label1.className = 'item1-label';
+                label1.setAttribute('for', layerContentListOrder[i]['layerid']);
+                label1.textContent = layerContentListOrder[i]['layername'];
+                item1.appendChild(input1);
+                item1.appendChild(label1);
+                itemgroup1.appendChild(item1);
+
+                // Create legend selector
+                var itemgroup2 = document.createElement('div'); // create level-2 item group
+                itemgroup2.className = 'itemgroup2';
+                itemgroup2.id = layerContentListOrder[i]['layerid'] + '-cat';
+                if (layerContentListOrder[i]['layervisibility'] === 'visible') {
+                    itemgroup2.style.display = 'block';
+                } else {
+                    itemgroup2.style.display = 'none';
+                };
+                for (var j = 0; j < layerContentListOrder[i]['layercat'].length; j++) {
+                    var item2 = document.createElement('div'); // create level-2 item
+                    item2.className = 'item2';
+                    var input2 = document.createElement('input'); // create level-2 checkbox
+                    input2.type = 'checkbox';
+                    input2.className = 'item2-input';
+                    input2.id = layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j];
+                    input2.checked = true;
+                    var key2 = document.createElement('span'); // create level-2 key
+                    key2.className = 'key-' + layerContentListOrder[i]['layertype'];
+                    key2.style.backgroundColor = layerContentListOrder[i]['layercolor'][j];
+                    key2.style.borderColor = layerContentListOrder[i]['layeroutlinecolor'];
+                    key2.style.borderStyle = 'solid';
+                    key2.style.borderWidth = 'thin';
+                    var label2 = document.createElement('label'); // create level-2 label
+                    label2.className = 'item2-label';
+                    label2.setAttribute('for', layerContentListOrder[i]['layerid'] + '|' + layerContentListOrder[i]['layercolname'] + '|' + layerContentListOrder[i]['layercat'][j]);
+                    label2.textContent = layerContentListOrder[i]['layercat'][j];
+                    item2.appendChild(input2);
+                    item2.appendChild(key2);
+                    item2.appendChild(label2);
+                    itemgroup2.appendChild(item2);
+
+                    // Create legend selector click event
+                    input2.addEventListener('click', function (e) {
+                        var clickedLayer = this.id.split('|')[0];
+                        var clickedLayerColname = this.id.split('|')[1];
+                        var catGroup = document.getElementById(clickedLayer + '-cat').getElementsByClassName('item2-input');
+                        var checkedFilter = ['any'];
+                        for (var k = 0; k < catGroup.length; k++) {
+                            if (catGroup[k]['checked'] === true) {
+                                checkedFilter.push(['==', clickedLayerColname, catGroup[k].id.split('|')[2]]);
+                            };
+                        };
+                        map.setFilter(clickedLayer, checkedFilter);
+                    });
+                };
+                itemgroup1.appendChild(itemgroup2);
+                filterLegend.appendChild(itemgroup1);
+
+                // Create layer selector click event
+                input1.addEventListener('click', function (e) {
+                    var clickedLayer = this.id;
+                    var vis = map.getLayoutProperty(clickedLayer, 'visibility');
+                    if (vis === 'visible') {
+                        map.setLayoutProperty(clickedLayer, 'visibility', 'none'); // set layer visibility
+                        document.getElementById(clickedLayer + '-cat').style.display = 'none'; // set legend visibility
+                    } else {
+                        map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+                        document.getElementById(clickedLayer + '-cat').style.display = 'block';
+                    };
+                });
+            };
         });
     </script>
 
