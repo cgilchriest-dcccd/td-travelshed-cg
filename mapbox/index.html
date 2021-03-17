@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYC DCP Travelshed</title>
+    <title>NYC DCP Transit Travelshed</title>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
@@ -130,6 +130,10 @@
             vertical-align: -0.15rem;
         }
 
+        .datasource {
+            font-size: 0.8rem;
+        }
+
         .btn {
             margin-bottom: 1rem;
         }
@@ -209,6 +213,10 @@
                     <span>Total jobs within 60 minutes: </span>
                     <span id="totaljob"></span>
                 </div>
+                <div class="col-auto datasource">
+                    <span> (Data Source: Census Bureau LEHD 2017) </span>
+                    <span id="totaljob"></span>
+                </div>
             </div>
             <div class="row g-0 justify-content-center">
                 <hr>
@@ -231,13 +239,13 @@
                 <ul class="navbar-nav p-0">
                     <a class="nav-link"></a>
                     <a class="nav-link active" href="https://nycplanning.github.io/td-travelshed/mapbox/index.html">
-                        Travelshed from Tract </a>
-                    <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/to.html"> Travelshed to
-                        Tract </a>
+                        Transit Travelshed FROM a Census Tract </a>
+                    <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/to.html"> Transit
+                        Travelshed TO a Census Tract </a>
                     <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/tai.html"> Transit
                         Access Index </a>
                     <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/iso.html?"> Isochrone
-                        Generator </a>
+                        Generator (DCP Only) </a>
                 </ul>
             </div>
         </nav>
@@ -257,7 +265,8 @@
             container: 'mainmap', // same as the div id to place the map
             style: 'mapbox://styles/mapbox/light-v10', // light base map
             hash: true, // make sure it's on to get the url with map view
-            attributionControl: false, // show the credit bar
+            attributionControl: true, // show the credit bar
+            customAttribution: '<b><span>Click </span><a href="https://github.com/NYCPlanning/td-travelshed/blob/master/Transit%20Travelshed.pdf" target="_blank">HERE</a><span> for detailed methodology</span><b>', // add overall credit to the beggining
             preserveDrawingBuffer: true, // make sure it's on to allow printing
             center: [-73.9469, 40.7121], // testing to get the centroid of bounds
             zoom: 9.5, // set the initial zoom of the map view
