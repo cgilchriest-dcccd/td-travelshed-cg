@@ -33,7 +33,7 @@
             background-color: rgba(217, 107, 39, 1);
         }
 
-        img {
+        #dcplogo {
             height: 3rem;
         }
 
@@ -215,7 +215,6 @@
                 </div>
                 <div class="col-auto datasource">
                     <span> (Data Source: Census Bureau LEHD 2017) </span>
-                    <span id="totaljob"></span>
                 </div>
             </div>
             <div class="row g-0 justify-content-center">
@@ -230,7 +229,8 @@
     <div class="container-fluid g-0" id="banner">
         <nav class="navbar navbar-expand-lg navbar-dark p-0 m-0">
             <a class="navbar-brand p-0" href="http://www1.nyc.gov/site/planning/index.page">
-                <img src="https://raw.githubusercontent.com/NYCPlanning/dcp-logo/master/dcp_logo_white_772.png">
+                <img src="https://raw.githubusercontent.com/NYCPlanning/dcp-logo/master/dcp_logo_white_772.png"
+                    id="dcplogo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bannertoggle">
                 <span class="navbar-toggler-icon"></span>
@@ -266,7 +266,7 @@
             style: 'mapbox://styles/mapbox/light-v10', // light base map
             hash: true, // make sure it's on to get the url with map view
             attributionControl: true, // show the credit bar
-            customAttribution: '<b><span>Click </span><a href="https://github.com/NYCPlanning/td-travelshed/blob/master/Transit%20Travelshed.pdf" target="_blank">HERE</a><span> for detailed methodology</span><b>', // add overall credit to the beggining
+            customAttribution: '<span>Click </span><a href="https://github.com/NYCPlanning/td-travelshed/blob/master/Transit%20Travelshed.pdf" target="_blank"><b>HERE</b></a><span> for detailed methodology</span>', // add overall credit to the beggining
             preserveDrawingBuffer: true, // make sure it's on to allow printing
             center: [-73.9469, 40.7121], // testing to get the centroid of bounds
             zoom: 9.5, // set the initial zoom of the map view

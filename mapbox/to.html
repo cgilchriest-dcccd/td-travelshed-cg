@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYC DCP Travelshed</title>
+    <title>NYC DCP Transit Travelshed</title>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
@@ -33,7 +33,7 @@
             background-color: rgba(217, 107, 39, 1);
         }
 
-        img {
+        #dcplogo {
             height: 3rem;
         }
 
@@ -130,6 +130,10 @@
             vertical-align: -0.15rem;
         }
 
+        .datasource {
+            font-size: 0.8rem;
+        }
+
         .btn {
             margin-bottom: 1rem;
         }
@@ -205,18 +209,24 @@
                 <hr>
                 <div class="col-auto" id="plotlypop">
                 </div>
-                <div class="col-12">
+                <div class="col-auto">
                     <span>Total population within 60 minutes: </span>
                     <span id="totalpop"></span>
+                </div>
+                <div class="col-auto datasource">
+                    <span> (Data Source: Census Bureau ACS 2014-2018) </span>
                 </div>
             </div>
             <div class="row g-0 justify-content-center">
                 <hr>
                 <div class="col-auto" id="plotlylabor">
                 </div>
-                <div class="col-12">
+                <div class="col-auto">
                     <span>Total labor force within 60 minutes: </span>
                     <span id="totallabor"></span>
+                </div>
+                <div class="col-auto datasource">
+                    <span> (Data Source: Census Bureau LEHD 2017) </span>
                 </div>
             </div>
             <div class="row g-0 justify-content-center">
@@ -231,7 +241,8 @@
     <div class="container-fluid g-0" id="banner">
         <nav class="navbar navbar-expand-lg navbar-dark p-0 m-0">
             <a class="navbar-brand p-0" href="http://www1.nyc.gov/site/planning/index.page">
-                <img src="https://raw.githubusercontent.com/NYCPlanning/dcp-logo/master/dcp_logo_white_772.png">
+                <img src="https://raw.githubusercontent.com/NYCPlanning/dcp-logo/master/dcp_logo_white_772.png"
+                    id="dcplogo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bannertoggle">
                 <span class="navbar-toggler-icon"></span>
@@ -240,20 +251,20 @@
                 <ul class="navbar-nav p-0">
                     <a class="nav-link"></a>
                     <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/index.html">
-                        Travelshed from Tract </a>
+                        Transit Travelshed FROM a Census Tract </a>
                     <a class="nav-link active" href="https://nycplanning.github.io/td-travelshed/mapbox/to.html">
-                        Travelshed to Tract </a>
+                        Transit Travelshed TO a Census Tract </a>
                     <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/tai.html"> Transit
                         Access Index </a>
-                    <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/iso.html"> Isochrone
-                        Generator </a>
+                    <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/iso.html?"> Isochrone
+                        Generator (DCP Only) </a>
                 </ul>
             </div>
         </nav>
     </div>
 
 
-    
+
     <script>
         'use strict';
         // Set MapBox token
@@ -266,7 +277,8 @@
             container: 'mainmap', // same as the div id to place the map
             style: 'mapbox://styles/mapbox/light-v10', // light base map
             hash: true, // make sure it's on to get the url with map view
-            attributionControl: false, // show the credit bar
+            attributionControl: true, // show the credit bar
+            customAttribution: '<span>Click </span><a href="https://github.com/NYCPlanning/td-travelshed/blob/master/Transit%20Travelshed.pdf" target="_blank"><b>HERE</b></a><span> for detailed methodology</span>', // add overall credit to the beggining
             preserveDrawingBuffer: true, // make sure it's on to allow printing
             center: [-73.9469, 40.7121], // testing to get the centroid of bounds
             zoom: 9.5, // set the initial zoom of the map view
