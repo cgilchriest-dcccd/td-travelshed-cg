@@ -130,6 +130,7 @@
             width: 7rem;
             font-size: 0.9rem;
             margin-bottom: 1rem;
+            padding: 0.5;
         }
     </style>
 </head>
@@ -194,10 +195,18 @@
                 <div class="row g-0 justify-content-between">
                     <hr>
                     <div class="col-auto">
-                        <button class="btn btn-primary" id="submit"> Submit </button>
+                        <button class="btn btn-primary" id="submit" type="submit" style="display: inline-block"> Submit
+                        </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary" id="reset"> Reset </button>
+                        <button class="btn btn-primary" id="loading" type="button" disabled style="display: none">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary" id="reset" type="reset" style="display: inline-block"> Reset
+                        </button>
                     </div>
                 </div>
             </div>
@@ -264,7 +273,6 @@
         // Add layers
         map.on('load', function () {
 
-            var layerContentList = []; // store all the layer contents
 
             // Add full screen control
             map.addControl(new mapboxgl.FullscreenControl({
@@ -281,127 +289,143 @@
             }),
                 'bottom-left', // control position
             );
+        });
 
+        var layerContentList = []; // store all the layer contents
 
-            // Add click events
-            submit.addEventListener('click', function () {
-                // From point
-                var fromLat = marker.getLngLat().lat;
-                var fromLong = marker.getLngLat().lng;
+        // Add click events
+        submit.addEventListener('click', function () {
+            document.getElementById('submit').style.display = "none";
+            document.getElementById('loading').style.display = "inline-block";
 
-                // Mode
-                var modes = ['walk', 'bus', 'subway', 'rail', 'ferry', 'citibike'];
-                var selectedModes = [];
-                var selectedModesPop = [];
-                for (var i = 0; i < modes.length; ++i) {
-                    if (document.getElementById(modes[i]).checked) {
-                        selectedModes.push(document.getElementById(modes[i]).value);
-                        selectedModesPop.push(document.getElementById(modes[i]).labels[0].textContent.trim());
-                    };
+            // From point
+            var fromLat = marker.getLngLat().lat;
+            var fromLong = marker.getLngLat().lng;
+
+            // Mode
+            var modes = ['walk', 'bus', 'subway', 'rail', 'ferry', 'citibike'];
+            var selectedModes = [];
+            var selectedModesPop = [];
+            for (var i = 0; i < modes.length; ++i) {
+                if (document.getElementById(modes[i]).checked) {
+                    selectedModes.push(document.getElementById(modes[i]).value);
+                    selectedModesPop.push(document.getElementById(modes[i]).labels[0].textContent.trim());
                 };
-                selectedModes = selectedModes.join(',');
-                selectedModesPop = selectedModesPop.join(', ');
+            };
+            selectedModes = selectedModes.join(',');
+            selectedModesPop = selectedModesPop.join(', ');
 
-                // Departure time
-                var selectedTime = document.getElementById('dptt').value;
+            // Departure time
+            var selectedTime = document.getElementById('dptt').value;
 
-                // Max travel time
-                var maxTravelTime = document.getElementById('maxtt').value;
-                var cutOffs = [];
-                for (var i = 0; i < maxTravelTime / 5; ++i) {
-                    cutOffs.push('&cutoffSec=' + 300 * (i + 1));
-                };
-                cutOffs = cutOffs.join('');
+            // Max travel time
+            var maxTravelTime = document.getElementById('maxtt').value;
+            var cutOffs = [];
+            for (var i = 0; i < maxTravelTime / 5; ++i) {
+                cutOffs.push('&cutoffSec=' + 300 * (i + 1));
+            };
+            cutOffs = cutOffs.join('');
 
-                // Generate query
-                var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
-                q += "&date=2018/06/06&clampInitialWait=0&maxTransfers=3&maxWalkDistance=805";
-                q += "&fromPlace=" + fromLat + "," + fromLong;
-                q += "&mode=" + selectedModes;
-                q += "&time=" + selectedTime;
-                q += cutOffs;
+            // Generate query
+            var q = "http://159.65.64.166:8801/otp/routers/default/isochrone?batch=true";
+            q += "&date=2018/06/06&clampInitialWait=0&maxTransfers=3&maxWalkDistance=805";
+            q += "&fromPlace=" + fromLat + "," + fromLong;
+            q += "&mode=" + selectedModes;
+            q += "&time=" + selectedTime;
+            q += cutOffs;
 
-                // Remove previous isochrones
-                if (map.getLayer('isochrone')) {
-                    map.removeLayer('isochrone');
-                    map.removeSource('isochrone');
-                };
+            // Remove previous isochrones
+            if (map.getLayer('isochrone')) {
+                map.removeLayer('isochrone');
+                map.removeSource('isochrone');
+            };
 
-                // Add isochrones
-                // Set layer contents
-                var layerContent = {
-                    'sourceid': 'isochrone', // source id
-                    'sourcetype': 'geojson', // source type
-                    'sourcedata': q, // data source
-                    'layerid': 'isochrone', // layer id
-                    'layertype': 'fill', // symbology type
-                    'layername': 'Isochrone', // layer name for the legend
-                    'layervisibility': 'visible', // visibility of the layer
-                    'layercolor': 'rgba(217, 107, 39, 0.2)', // color for each category; use rgba
-                    'layeroutlinecolor': 'rgba(255, 255, 255, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
-                };
+            // Add isochrones
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'isochrone', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'isochrone', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Isochrone', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': 'rgba(217, 107, 39, 0.2)', // color for each category; use rgba
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
 
-                // Add layer content to the overall layer content list
-                layerContentList.push(layerContent);
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
 
-                // Add data source
-                map.addSource(layerContent['sourceid'], {
-                    'type': layerContent['sourcetype'],
-                    'data': layerContent['sourcedata'],
-                });
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
 
-                // Add fill layer
-                map.addLayer({
-                    'id': layerContent['layerid'],
-                    'type': layerContent['layertype'],
-                    'source': layerContent['sourceid'],
-                    'layout': {
-                        'visibility': layerContent['layervisibility'],
-                    },
-                    'paint': {
-                        'fill-color': layerContent['layercolor'],
-                        'fill-outline-color': layerContent['layeroutlinecolor'],
-                    },
-                });
-
-
-
-                //Add popup
-                var popup = new mapboxgl.Popup({
-                    closeButton: false, // close button
-                    closeOnClick: false, // close if click on map
-                    closeOnMove: false, // close if move the map
-                    anchor: 'bottom', // anchor of the popup
-                    offset: 0, // offset from the feature
-                    maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
-                });
-                // Add hover events
-                map.on('mousemove', 'isochrone', function (e) {
-                    map.getCanvas().style.cursor = 'pointer';
-                    var coordinates = e.lngLat; // get pointer coordinates
-                    var description = "<b>From: </b><span>" + fromLat.toFixed(4) + ", " + fromLong.toFixed(4) + "</span><br>";
-                    description += "<b>Modes: </b><span>" + selectedModesPop + "</span><br>";
-                    description += "<b>Departure Time: </b><span>" + selectedTime + "</span><br>";
-                    description += "<b>Travel Time: </b><span>" + (e.features[0].properties.time / 60 - 5) + "-" + e.features[0].properties.time / 60 + " mins</span><br>";
-                    popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-                });
-                map.on('mouseleave', 'isochrone', function (e) {
-                    map.getCanvas().style.cursor = '';
-                    popup.remove()
-                });
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'],
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
             });
 
 
 
-            // Add reset event
-            reset.addEventListener('click', function () {
-                document.getElementById('subway').defaultValue;
-                // Remove previous isochrones
-                if (map.getLayer('isochrone')) {
-                    map.removeLayer('isochrone');
-                    map.removeSource('isochrone');
-                };
+            //Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: false, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content                
             });
+            // Add hover events
+            map.on('mousemove', 'isochrone', function (e) {
+                map.getCanvas().style.cursor = 'pointer';
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>From: </b><span>" + fromLat.toFixed(4) + ", " + fromLong.toFixed(4) + "</span><br>";
+                description += "<b>Modes: </b><span>" + selectedModesPop + "</span><br>";
+                description += "<b>Departure Time: </b><span>" + selectedTime + "</span><br>";
+                description += "<b>Travel Time: </b><span>" + (e.features[0].properties.time / 60 - 5) + "-" + e.features[0].properties.time / 60 + " mins</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            map.on('mouseleave', 'isochrone', function (e) {
+                map.getCanvas().style.cursor = '';
+                popup.remove()
+            });
+
+
+            
+            //Add loading
+            map.on("render", function () {
+                if (map.loaded()) {
+                    document.getElementById('submit').style.display = "inline-block";
+                    document.getElementById('loading').style.display = "none";
+                }
+            });
+        });
+
+
+
+
+
+        // Add reset event
+        reset.addEventListener('click', function () {
+            document.getElementById('subway').defaultValue;
+            // Remove previous isochrones
+            if (map.getLayer('isochrone')) {
+                map.removeLayer('isochrone');
+                map.removeSource('isochrone');
+            };
         });
     </script>
 
