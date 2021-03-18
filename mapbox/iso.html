@@ -418,6 +418,7 @@
 
         // Add reset event
         reset.addEventListener('click', function () {
+            document.getElementsByTagName('output')[0].textContent=30;
             // Remove previous isochrones
             if (map.getLayer('isochrone')) {
                 map.removeLayer('isochrone');
