@@ -213,30 +213,28 @@
         </form>
     </div>
 
-    <div class="container-fluid g-0" id="banner">
-        <nav class="navbar navbar-expand-lg navbar-dark p-0 m-0">
-            <a class="navbar-brand p-0" href="http://www1.nyc.gov/site/planning/index.page">
-                <img src="https://raw.githubusercontent.com/NYCPlanning/dcp-logo/master/dcp_logo_white_772.png"
-                    id="dcplogo">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bannertoggle">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse p-0 justify-content-start" id="bannertoggle">
-                <ul class="navbar-nav p-0">
-                    <a class="nav-link"></a>
-                    <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/index.html">
-                        Transit Travelshed FROM a Census Tract </a>
-                    <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/to.html"> Transit
-                        Travelshed TO a Census Tract </a>
-                    <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/tai.html"> Transit
-                        Access Index </a>
-                    <a class="nav-link active" href="https://nycplanning.github.io/td-travelshed/mapbox/iso.html?">
-                        Isochrone Generator (DCP Only) </a>
-                </ul>
-            </div>
-        </nav>
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark g-0 p-0 m-0" id="banner">
+        <a class="navbar-brand p-0" href="http://www1.nyc.gov/site/planning/index.page">
+            <img src="https://raw.githubusercontent.com/NYCPlanning/dcp-logo/master/dcp_logo_white_772.png"
+                id="dcplogo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bannertoggle">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse p-0 justify-content-start" id="bannertoggle">
+            <ul class="navbar-nav p-0">
+                <a class="nav-link"></a>
+                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/index.html">
+                    Transit Travelshed FROM a Census Tract </a>
+                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/to.html"> Transit
+                    Travelshed TO a Census Tract </a>
+                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/tai.html"> Transit
+                    Access Index </a>
+                <a class="nav-link active" href="https://nycplanning.github.io/td-travelshed/mapbox/iso.html?">
+                    Isochrone Generator (DCP Only) </a>
+            </ul>
+        </div>
+    </nav>
 
 
 
@@ -404,7 +402,7 @@
             });
 
 
-            
+
             //Add loading
             map.on("render", function () {
                 if (map.loaded()) {
