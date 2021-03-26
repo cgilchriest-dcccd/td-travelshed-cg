@@ -195,17 +195,17 @@
                 <div class="row g-0 justify-content-between">
                     <hr>
                     <div class="col-auto">
-                        <button class="btn btn-primary" id="submit" type="submit" style="display: inline-block"> Submit
+                        <button class="btn btn-primary" id="sbm" type="submit" style="display: inline-block"> Submit
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary" id="loading" type="button" disabled style="display: none">
+                        <button class="btn btn-primary" id="ldg" type="button" disabled style="display: none">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Loading...
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary" id="reset" type="reset" style="display: inline-block"> Reset
+                        <button class="btn btn-primary" id="rst" type="reset" style="display: inline-block"> Reset
                         </button>
                     </div>
                 </div>
@@ -292,9 +292,9 @@
         var layerContentList = []; // store all the layer contents
 
         // Add click events
-        submit.addEventListener('click', function () {
-            document.getElementById('submit').style.display = "none";
-            document.getElementById('loading').style.display = "inline-block";
+        sbm.addEventListener('click', function () {
+            document.getElementById('sbm').style.display = "none";
+            document.getElementById('ldg').style.display = "inline-block";
 
             // From point
             var fromLat = marker.getLngLat().lat;
@@ -406,8 +406,8 @@
             //Add loading
             map.on("render", function () {
                 if (map.loaded()) {
-                    document.getElementById('submit').style.display = "inline-block";
-                    document.getElementById('loading').style.display = "none";
+                    document.getElementById('sbm').style.display = "inline-block";
+                    document.getElementById('ldg').style.display = "none";
                 }
             });
         });
@@ -417,7 +417,7 @@
 
 
         // Add reset event
-        reset.addEventListener('click', function () {
+        rst.addEventListener('click', function () {
             document.getElementsByTagName('output')[0].textContent=30;
             // Remove previous isochrones
             if (map.getLayer('isochrone')) {

@@ -15,7 +15,6 @@
         integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
         crossorigin="anonymous"></script>
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-    <script src='https://unpkg.com/shp-write@latest/shpwrite.js'></script>
 
 
 
@@ -218,10 +217,13 @@
                     <span> (Data Source: Census Bureau LEHD 2017) </span>
                 </div>
             </div>
-            <div class="row g-0 justify-content-center">
+            <div class="row g-0 justify-content-between">
                 <hr>
                 <div class="col-auto">
                     <button type="button" class="btn btn-primary btn-sm" id="reset"> Reset </button>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-primary btn-sm" id="exp"> Export </button>
                 </div>
             </div>
         </div>
@@ -669,6 +671,13 @@
                 map.setLayoutProperty('resct', 'visibility', 'none');
                 document.getElementById('legend1').style.display = 'flex';
                 document.getElementById('legend2').style.display = 'none';
+            });
+
+
+
+
+            exp.addEventListener('click', function () {
+                console.log('');
             });
         });
     </script>
