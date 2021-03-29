@@ -17,6 +17,9 @@
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 
 
+    <script src='http://html2canvas.hertzen.com/dist/html2canvas.min.js'></script>
+
+
 
     <style>
         body {
@@ -143,6 +146,7 @@
 
 
 <body>
+    <div class="container p-0" style="position:absolute;top:0;left:0;z-index:1000" id="flowimg"></div>
     <div class="container-fluid p-0" id="mainmap"> </div> <!-- placeholder for main map -->
 
     <div id="legend1" style="display: flex">
@@ -223,7 +227,10 @@
                     <button type="button" class="btn btn-primary btn-sm" id="reset"> Reset </button>
                 </div>
                 <div class="col-auto">
-                    <button type="button" class="btn btn-primary btn-sm" id="exp"> Export </button>
+                    <a class="btn btn-primary btn-sm" id="exp" download> Export </a>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-primary btn-sm" id="expimg"> Image </button>
                 </div>
             </div>
         </div>
@@ -517,6 +524,7 @@
                     document.getElementById('legend1').style.display = 'none';
                     document.getElementById('legend2').style.display = 'flex';
                     document.getElementById('selectedtract').textContent = sl;
+                    document.getElementById('exp').href = q;
                     var p = "https://dcptransportation.carto.com/api/v2/sql?q=";
                     p += "SELECT * FROM dcptransportation.resbkgravity WHERE restractid=";
                     p += sl;
@@ -675,9 +683,16 @@
 
 
 
+            expimg.addEventListener('click', function () {
+                // var f = document.getElementById('flowimg');
+                // var h = html2canvas(document.getElementsByTagName("BODY")[0]);
+                // console.log(f);
+                // console.log(h);
+                // document.getElementById('flowimg')[0].appendChild(h);
 
-            exp.addEventListener('click', function () {
-                console.log('');
+                html2canvas(document.documentElement).then(canvas => {
+                    document.getElementById('flowimg').appendChild(canvas);
+                });
             });
         });
     </script>
