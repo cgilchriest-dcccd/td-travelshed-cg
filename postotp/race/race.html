@@ -73,7 +73,8 @@
         }
 
         #colorbar {
-            width: 15rem;
+            width: 20rem;
+            height: 7rem;
         }
     </style>
 </head>
@@ -86,30 +87,30 @@
     <div id="legend">
         <div class="container g-0">
             <div class="row g-0 justify-content-start">
-                <div class="col-auto header"> Race </div>
+                <div class="col-auto header"> Residence Place by Race </div>
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-12">
                     <select class='form-select' id='race'>
-                        <option value='white'> White alone </option>
-                        <option value='black'> Black or African American alone </option>
-                        <option value='native'> American Indian and Alaska Native alone </option>
-                        <option value='asian'> Asian alone </option>
-                        <option value='pacific'> Native Hawaiian and Other Pacific Islander alone </option>
-                        <option value='other1'> Some other race alone </option>
-                        <option value='other2'> Two or more races </option>
+                        <option value='white'> White Alone </option>
+                        <option value='black'> Black or African American Alone </option>
+                        <option value='native'> American Indian and Alaska Native Alone </option>
+                        <option value='asian'> Asian Alone </option>
+                        <option value='pacific'> Native Hawaiian and Other Pacific Islander Alone </option>
+                        <option value='other1'> Some Other Race Alone </option>
+                        <option value='other2'> Two or More Races </option>
                     </select>
                 </div>
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-12">
-                    <span class="key-circle" style="background-color: rgba(0, 0, 0, 8);"></span>
+                    <span class="key-circle" style="background-color: rgba(0, 0, 0, 0.8);"></span>
                     <label> 1 dot represents 100 people </label>
                 </div>
             </div>
             <hr>
             <div class="row g-0 justify-content-start">
-                <div class="col-auto header"> Access to Jobs Index </div>
+                <div class="col-auto header"> Transit Access to Jobs Index </div>
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-auto">
@@ -580,73 +581,42 @@
 
 
 
+            // Add popup
+            var popup = new mapboxgl.Popup({
+                closeButton: true, // close button
+                closeOnClick: false, // close if click on map
+                closeOnMove: false, // close if move the map
+                anchor: 'bottom', // anchor of the popup
+                offset: 0, // offset from the feature
+                maxWidth: 'none', // max width of the popoup; 'none' to fit to the content              
+            });
 
-
-
-
-
-
-
-
-
-            // // Add popup
-            // var popup = new mapboxgl.Popup({
-            //     closeButton: false, // close button
-            //     closeOnClick: false, // close if click on map
-            //     closeOnMove: false, // close if move the map
-            //     anchor: 'bottom', // anchor of the popup
-            //     offset: 0, // offset from the feature
-            //     maxWidth: 'none', // max width of the popoup; 'none' to fit to the content              
-            // });
-
-            // // Add access to labor force popup
-            // // Add hover events
-            // map.on('mousemove', 'labor', function (e) {
-            //     map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            //     var coordinates = e.lngLat; // get pointer coordinates
-            //     var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
-            //     description += "<b>Access to Labor Force Index: </b><span>" + e.features[0].properties.laborindex.toFixed(2) + "</span><br>";
-            //     description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.laborstd.toFixed(2) + "</span><br>";
-            //     description += "<b>Percentile: </b><span>" + e.features[0].properties.laborpct + "%</span><br>";
-            //     popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            // });
-            // map.on('mouseleave', 'labor', function () {
-            //     map.getCanvas().style.cursor = '';
-            //     popup.remove()
-            // });
-
-            // // Add access to population popup
-            // // Add hover event
-            // map.on('mousemove', 'pop', function (e) {
-            //     map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            //     var coordinates = e.lngLat; // get pointer coordinates
-            //     var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
-            //     description += "<b>Access to Population Index: </b><span>" + e.features[0].properties.popindex.toFixed(2) + "</span><br>";
-            //     description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.popstd.toFixed(2) + "</span><br>";
-            //     description += "<b>Percentile: </b><span>" + e.features[0].properties.poppct + "%</span><br>";
-            //     popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            // });
-            // map.on('mouseleave', 'pop', function () {
-            //     map.getCanvas().style.cursor = '';
-            //     popup.remove()
-            // });
-
-            // // Add access to jobs popup
-            // // Add hover event
-            // map.on('mousemove', 'job', function (e) {
-            //     map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
-            //     var coordinates = e.lngLat; // get pointer coordinates
-            //     var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
-            //     description += "<b>Access to Jobs Index: </b><span>" + e.features[0].properties.jobindex.toFixed(2) + "</span><br>";
-            //     description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.jobstd.toFixed(2) + "</span><br>";
-            //     description += "<b>Percentile: </b><span>" + e.features[0].properties.jobpct + "%</span><br>";
-            //     popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
-            // });
-            // map.on('mouseleave', 'job', function () {
-            //     map.getCanvas().style.cursor = '';
-            //     popup.remove()
-            // });
-
+            // Add access to jobs popup
+            // Add hover event
+            map.on('click', 'job', function (e) {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                description += "<b>Total Population: </b><span>" + e.features[0].properties.TOTAL.toLocaleString() + "</span><br>";
+                description += "<b>White Alone: </b><span>" + e.features[0].properties.WHITE.toLocaleString() + "</span><br>";
+                description += "<b>Black or African American Alone: </b><span>" + e.features[0].properties.BLACK.toLocaleString() + "</span><br>";
+                description += "<b>American Indian and Alaska Native Alone: </b><span>" + e.features[0].properties.NATIVE.toLocaleString() + "</span><br>";
+                description += "<b>Asian Alone: </b><span>" + e.features[0].properties.ASIAN.toLocaleString() + "</span><br>";
+                description += "<b>Native Hawaiian and Other Pacific Islander Alone: </b><span>" + e.features[0].properties.PACIFIC.toLocaleString() + "</span><br>";
+                description += "<b>Some Other Race Alone: </b><span>" + e.features[0].properties.OTHER1.toLocaleString() + "</span><br>";
+                description += "<b>Two or More Races : </b><span>" + e.features[0].properties.OTHER2.toLocaleString() + "</span><br>";
+                description += "<b>Transit Access to Jobs Index: </b><span>" + e.features[0].properties.GRAVITYWAC.toFixed(2) + "</span><br>";
+                description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.JOBSTD.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.JOBPCT + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'job', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'job', function () {
+                map.getCanvas().style.cursor = '';
+            });
 
 
             // Create click event
