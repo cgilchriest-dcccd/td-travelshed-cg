@@ -55,14 +55,14 @@
             margin-top: 1rem;
         }
 
-        #header {
+        .header {
             font-weight: bold;
         }
 
         .form-select {
             font-size: 0.9rem;
         }
-        
+
         .key-circle {
             width: 0.3rem;
             height: 0.3rem;
@@ -86,7 +86,7 @@
     <div id="legend">
         <div class="container g-0">
             <div class="row g-0 justify-content-start">
-                <div class="col-auto" id="header"> Race </div>
+                <div class="col-auto header"> Race </div>
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-12">
@@ -104,12 +104,12 @@
             <div class="row g-0 justify-content-center">
                 <div class="col-12">
                     <span class="key-circle" style="background-color: rgba(0, 0, 0, 8);"></span>
-                    <label> 1 dot represents 100 people </label> 
+                    <label> 1 dot represents 100 people </label>
                 </div>
             </div>
             <hr>
             <div class="row g-0 justify-content-start">
-                <div class="col-auto" id="header"> Access to Jobs Index </div>
+                <div class="col-auto header"> Access to Jobs Index </div>
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-auto">
@@ -167,19 +167,18 @@
 
             // Add access to jobs
             // Set layer contents
-            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT nycct.*, tai.jobindex, tai.jobstd, tai.jobcat, tai.jobpct FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid";
-            q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
             var layerContent = {
                 'sourceid': 'job', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': q, // data source
+                // 'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/race.geojson', // data source
+                'sourcedata': 'race.geojson', // data source
                 'layerid': 'job', // layer id
                 'layertype': 'fill', // symbology type
                 'layername': 'Access to Jobs', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
-                'layercolname': 'jobcat', // category column name
-                'layercat': ['<-2.5SD', '-2.5SD ~ -1.5SD', '-1.5SD ~ -0.5SD', '-0.5SD ~ +0.5SD', '+0.5SD ~ +1.5SD', '+1.5SD ~ +2.5SD', '>=+2.5SD'], // categories
+                'layercolname': 'JOBCAT', // category column name
+                // 'layercat': ['<-0.5SD', '-0.5SD ~ +0.5SD', '+0.5SD ~ +1.5SD', '+1.5SD ~ +2.5SD', '+2.5SD ~ +3.5SD', '+3.5SD ~ +4.5SD', '>=+4.5SD'], // categories
+                'layercat': ['<-0.5SD', '-0.5SD ~ 0SD', '0SD ~ +0.5SD', '+0.5SD ~ +1SD', '+1SD ~ +1.5SD', '+1.5SD ~ +2SD', '>=+2SD'], // categories
                 'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(128, 191, 172, 0.8)', 'rgba(199, 233, 173, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(254, 201, 128, 0.8)', 'rgba(241, 124, 74, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
@@ -223,7 +222,6 @@
                 'sourceid': 'white', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/white.geojson', // data source
-                // 'sourcedata': 'white.geojson', // data source
                 'layerid': 'white', // layer id
                 'layertype': 'circle', // symbology type
                 'layername': 'white', // layer name for the legend
