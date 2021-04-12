@@ -13,16 +13,16 @@ pio.renderers.default = "browser"
 
 race=pd.read_csv(path+'race/race.csv')
 race['tractid']=[x[3:] for x in race['CT']]
-quadstatectclipped=gpd.read_file(path+'shp/quadstatectclipped.shp')
-race=pd.merge(quadstatectclipped,race,how='inner',on='tractid')
-race.to_file(path+'race/race.shp')
-
-
 df=pd.read_csv(path+'nyctract/resbkgravity3.csv')
 df['tractid']=[x[3:] for x in df['Unnamed: 0']]
+race=pd.merge(race,df,how='inner',on='tractid')
 quadstatectclipped=gpd.read_file(path+'shp/quadstatectclipped.shp')
-df=pd.merge(quadstatectclipped,df,how='inner',on='tractid')
-df.to_file(path+'race/df.shp')
+quadstatectclipped.crs=4326
+race=pd.merge(quadstatectclipped,race,how='inner',on='tractid')
+race=race[['tractid','TOTAL','WHITE','BLACK','NATIVE','ASIAN','PACIFIC','OTHER1','OTHER2','GRAVITYWAC','geometry']].reset_index(drop=True)
+race.to_file(path+'race/race.shp')
+race.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/postotp/race/race.geojson',driver='GeoJSON')
+
 
 
 df=pd.read_csv(path+'nyctract/resbkgravity3.csv')
