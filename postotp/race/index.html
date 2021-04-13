@@ -86,11 +86,22 @@
     <div id="legend">
         <div class="container g-0">
             <div class="row g-0 justify-content-start">
-                <div class="col-auto header"> Residence Place by Race </div>
+                <div class="col-auto header"> Category </div>
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-12">
-                    <select class='form-select' id='race'>
+                    <select class='form-select' id='cat'>
+                        <option value='race'> Race </option>
+                        <option value='income'> Household Income </option>
+                    </select>
+                </div>
+            </div>
+            <div class="row g-0 justify-content-start">
+                <div class="col-auto header"> Subcategory </div>
+            </div>
+            <div class="row g-0 justify-content-center">
+                <div class="col-12">
+                    <select class='form-select' id='race' style='display:block'>
                         <option value='white'> White Alone </option>
                         <option value='black'> Black or African American Alone </option>
                         <option value='native'> American Indian and Alaska Native Alone </option>
@@ -99,12 +110,29 @@
                         <option value='other1'> Some Other Race Alone </option>
                         <option value='other2'> Two or More Races </option>
                     </select>
+                    <select class='form-select' id='income' style='display:none'>
+                        <option value='inc01'> Less Than $5,000 </option>
+                        <option value='inc02'> $5,000 to $9,999 </option>
+                        <option value='inc03'> $10,000 to $14,999 </option>
+                        <option value='inc04'> $15,000 to $19,999 </option>
+                        <option value='inc05'> $20,000 to $24,999 </option>
+                        <option value='inc06'> $25,000 to $34,999 </option>
+                        <option value='inc07'> $35,000 to $49,999 </option>
+                        <option value='inc08'> $50,000 to $74,999 </option>
+                        <option value='inc09'> $75,000 to $99,999 </option>
+                        <option value='inc10'> $100,000 to $149,999 </option>
+                        <option value='inc11'> $150,000 or More </option>
+                    </select>
                 </div>
             </div>
-            <div class="row g-0 justify-content-center">
-                <div class="col-12">
-                    <span class="key-circle" style="background-color: rgba(0, 0, 0, 0.8);"></span>
+            <div class="row g-0 justify-content-start">
+                <div class="col-auto" id='racenote' style='display:block'>
+                    <span class="key-circle" style="background-color: rgba(100, 0, 100, 0.8);"></span>
                     <label> 1 dot represents 100 people </label>
+                </div>
+                <div class="col-auto" id='incomenote' style='display:none'>
+                    <span class="key-circle" style="background-color: rgba(100, 0, 100, 0.8);"></span>
+                    <label> 1 dot represents 50 households </label>
                 </div>
             </div>
             <hr>
@@ -165,15 +193,15 @@
             );
 
 
-            // Add access to jobs
+            // Add race
             // Set layer contents
             var layerContent = {
-                'sourceid': 'job', // source id
+                'sourceid': 'race', // source id
                 'sourcetype': 'geojson', // source type
                 'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/race.geojson', // data source
-                'layerid': 'job', // layer id
+                'layerid': 'race', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Access to Jobs', // layer name for the legend
+                'layername': 'race', // layer name for the legend
                 'layervisibility': 'visible', // visibility of the layer
                 'layercolname': 'JOBCAT', // category column name
                 'layercat': ['<-0.5SD', '-0.5SD ~ 0SD', '0SD ~ +0.5SD', '+0.5SD ~ +1SD', '+1SD ~ +1.5SD', '+1.5SD ~ +2SD', '>=+2SD'], // categories
@@ -214,6 +242,54 @@
 
 
 
+            // Add income
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'income', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/income.geojson', // data source
+                'layerid': 'income', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'income', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'JOBCAT', // category column name
+                'layercat': ['<-0.5SD', '-0.5SD ~ 0SD', '0SD ~ +0.5SD', '+0.5SD ~ +1SD', '+1SD ~ +1.5SD', '+1.5SD ~ +2SD', '>=+2SD'], // categories
+                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(128, 191, 172, 0.8)', 'rgba(199, 233, 173, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(254, 201, 128, 0.8)', 'rgba(241, 124, 74, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    // 'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
             // Add white
             // Set layer contents
             var layerContent = {
@@ -227,9 +303,9 @@
                 'layerblur': 0, // blur circle
                 'layercolname': '', // category column name
                 'layercat': [''], // categories
-                'layercolor': ['rgba(0, 0, 0, 0.2)'], // color for each category; use rgba
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': 1.5, // circle radius; change size based on zoom level
+                'layerradius': 2, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
                 'layerstrokeopacity': 0, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
@@ -279,9 +355,9 @@
                 'layerblur': 0, // blur circle
                 'layercolname': '', // category column name
                 'layercat': [''], // categories
-                'layercolor': ['rgba(0, 0, 0, 0.2)'], // color for each category; use rgba
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': 1.5, // circle radius; change size based on zoom level
+                'layerradius': 2, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
                 'layerstrokeopacity': 0, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
@@ -331,9 +407,9 @@
                 'layerblur': 0, // blur circle
                 'layercolname': '', // category column name
                 'layercat': [''], // categories
-                'layercolor': ['rgba(0, 0, 0, 0.2)'], // color for each category; use rgba
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': 1.5, // circle radius; change size based on zoom level
+                'layerradius': 2, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
                 'layerstrokeopacity': 0, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
@@ -383,9 +459,9 @@
                 'layerblur': 0, // blur circle
                 'layercolname': '', // category column name
                 'layercat': [''], // categories
-                'layercolor': ['rgba(0, 0, 0, 0.2)'], // color for each category; use rgba
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': 1.5, // circle radius; change size based on zoom level
+                'layerradius': 2, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
                 'layerstrokeopacity': 0, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
@@ -435,9 +511,9 @@
                 'layerblur': 0, // blur circle
                 'layercolname': '', // category column name
                 'layercat': [''], // categories
-                'layercolor': ['rgba(0, 0, 0, 0.2)'], // color for each category; use rgba
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': 1.5, // circle radius; change size based on zoom level
+                'layerradius': 2, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
                 'layerstrokeopacity': 0, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
@@ -487,9 +563,9 @@
                 'layerblur': 0, // blur circle
                 'layercolname': '', // category column name
                 'layercat': [''], // categories
-                'layercolor': ['rgba(0, 0, 0, 0.2)'], // color for each category; use rgba
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': 1.5, // circle radius; change size based on zoom level
+                'layerradius': 2, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
                 'layerstrokeopacity': 0, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
@@ -539,9 +615,581 @@
                 'layerblur': 0, // blur circle
                 'layercolname': '', // category column name
                 'layercat': [''], // categories
-                'layercolor': ['rgba(0, 0, 0, 0.2)'], // color for each category; use rgba
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
                 'layeropacity': 1, // circle opacity
-                'layerradius': 1.5, // circle radius; change size based on zoom level
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc01
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc01', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc01.geojson', // data source
+                'layerid': 'inc01', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc01', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc02
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc02', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc02.geojson', // data source
+                'layerid': 'inc02', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc02', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc03
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc03', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc03.geojson', // data source
+                'layerid': 'inc03', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc03', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc04
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc04', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc04.geojson', // data source
+                'layerid': 'inc04', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc04', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc05
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc05', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc05.geojson', // data source
+                'layerid': 'inc05', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc05', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc06
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc06', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc06.geojson', // data source
+                'layerid': 'inc06', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc06', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc07
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc07', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc07.geojson', // data source
+                'layerid': 'inc07', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc07', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc08
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc08', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc08.geojson', // data source
+                'layerid': 'inc08', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc08', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc09
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc09', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc09.geojson', // data source
+                'layerid': 'inc09', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc09', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc10
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc10', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc10.geojson', // data source
+                'layerid': 'inc10', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc10', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
+                'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
+                'layerstrokeopacity': 0, // circle stroke opacity
+                'layerstrokewidth': 0.5, // circle stroke width
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0)',  // outline color; for legend purpose only
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add circle layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'circle-blur': layerContent['layerblur'],
+                    'circle-color': layerContent['layercolor'][0],
+                    'circle-opacity': layerContent['layeropacity'],
+                    'circle-radius': layerContent['layerradius'],
+                    'circle-stroke-color': layerContent['layerstrokecolor'],
+                    'circle-stroke-opacity': layerContent['layerstrokeopacity'],
+                    'circle-stroke-width': layerContent['layerstrokewidth'],
+                },
+            });
+
+
+
+            // Add inc11
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'inc11', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/race/inc11.geojson', // data source
+                'layerid': 'inc11', // layer id
+                'layertype': 'circle', // symbology type
+                'layername': 'inc11', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layerblur': 0, // blur circle
+                'layercolname': '', // category column name
+                'layercat': [''], // categories
+                'layercolor': ['rgba(100, 0, 100, 0.2)'], // color for each category; use rgba
+                'layeropacity': 1, // circle opacity
+                'layerradius': 2, // circle radius; change size based on zoom level
                 'layerstrokecolor': 'rgba(255, 255, 255, 0)', // circle stroke color
                 'layerstrokeopacity': 0, // circle stroke opacity
                 'layerstrokewidth': 0.5, // circle stroke width
@@ -590,9 +1238,9 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content              
             });
 
-            // Add access to jobs popup
+            // Add race popup
             // Add hover event
-            map.on('click', 'job', function (e) {
+            map.on('click', 'race', function (e) {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
@@ -603,29 +1251,92 @@
                 description += "<b>Asian Alone: </b><span>" + e.features[0].properties.ASIAN.toLocaleString() + "</span><br>";
                 description += "<b>Native Hawaiian and Other Pacific Islander Alone: </b><span>" + e.features[0].properties.PACIFIC.toLocaleString() + "</span><br>";
                 description += "<b>Some Other Race Alone: </b><span>" + e.features[0].properties.OTHER1.toLocaleString() + "</span><br>";
-                description += "<b>Two or More Races : </b><span>" + e.features[0].properties.OTHER2.toLocaleString() + "</span><br>";
+                description += "<b>Two or More Races: </b><span>" + e.features[0].properties.OTHER2.toLocaleString() + "</span><br>";
                 description += "<b>Transit Access to Jobs Index: </b><span>" + e.features[0].properties.GRAVITYWAC.toFixed(2) + "</span><br>";
                 description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.JOBSTD.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.JOBPCT + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
-            map.on('mouseenter', 'job', function () {
+            map.on('mouseenter', 'race', function () {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
             });
-            map.on('mouseleave', 'job', function () {
+            map.on('mouseleave', 'race', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            // Add income popup
+            // Add hover event
+            map.on('click', 'income', function (e) {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                description += "<b>Total Occupied Housing Units: </b><span>" + e.features[0].properties.TOTAL.toLocaleString() + "</span><br>";
+                description += "<b>Less Than $5,000: </b><span>" + e.features[0].properties.INC01.toLocaleString() + "</span><br>";
+                description += "<b>$5,000 to $9,999: </b><span>" + e.features[0].properties.INC02.toLocaleString() + "</span><br>";
+                description += "<b>$10,000 to $14,999 </b><span>" + e.features[0].properties.INC03.toLocaleString() + "</span><br>";
+                description += "<b>$15,000 to $19,999: </b><span>" + e.features[0].properties.INC04.toLocaleString() + "</span><br>";
+                description += "<b>$20,000 to $24,999: </b><span>" + e.features[0].properties.INC05.toLocaleString() + "</span><br>";
+                description += "<b>$25,000 to $34,999: </b><span>" + e.features[0].properties.INC06.toLocaleString() + "</span><br>";
+                description += "<b>$35,000 to $49,999: </b><span>" + e.features[0].properties.INC07.toLocaleString() + "</span><br>";
+                description += "<b>$50,000 to $74,999: </b><span>" + e.features[0].properties.INC08.toLocaleString() + "</span><br>";
+                description += "<b>$75,000 to $99,999: </b><span>" + e.features[0].properties.INC09.toLocaleString() + "</span><br>";
+                description += "<b>$100,000 to $149,999: </b><span>" + e.features[0].properties.INC10.toLocaleString() + "</span><br>";
+                description += "<b>$150,000 or More: </b><span>" + e.features[0].properties.INC11.toLocaleString() + "</span><br>";
+                description += "<b>Transit Access to Jobs Index: </b><span>" + e.features[0].properties.GRAVITYWAC.toFixed(2) + "</span><br>";
+                description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.JOBSTD.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.JOBPCT + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            // Add hover events
+            map.on('mouseenter', 'income', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
+            map.on('mouseleave', 'income', function () {
                 map.getCanvas().style.cursor = '';
             });
 
 
+
+
+
             // Create click event
-            var layerOrder = ['white', 'black', 'native', 'asian', 'pacific', 'other1', 'other2']; // set layer order in the legend
+            var catList = ['race', 'income']; // set category list
+            var subcatList = ['white', 'black', 'native', 'asian', 'pacific', 'other1', 'other2', 'inc01', 'inc02', 'inc03', 'inc04', 'inc05', 'inc06', 'inc07', 'inc08', 'inc09', 'inc10', 'inc11']; // set subcategory list
+            cat.addEventListener('change', function () {
+                var chosenCat = document.getElementById('cat').value;
+                var chosenSubcat = document.getElementById(chosenCat).value;
+                document.getElementById(chosenCat).style.display = 'block';
+                document.getElementById(chosenCat + 'note').style.display = 'block';
+                map.setLayoutProperty(chosenCat, 'visibility', 'visible'); // set layer visibility
+                map.setLayoutProperty(chosenSubcat, 'visibility', 'visible'); // set layer visibility
+                var unchosenCat = catList.filter(function (x) { return x !== chosenCat; });
+                var unchosenSubcat = subcatList.filter(function (x) { return x !== chosenSubcat; });
+                for (var i = 0; i < unchosenCat.length; i++) {
+                    document.getElementById(unchosenCat[i]).style.display = 'none';
+                    document.getElementById(unchosenCat[i] + 'note').style.display = 'none';
+                    map.setLayoutProperty(unchosenCat[i], 'visibility', 'none'); // set layer visibility
+                };
+                for (var i = 0; i < unchosenSubcat.length; i++) {
+                    map.setLayoutProperty(unchosenSubcat[i], 'visibility', 'none'); // set layer visibility
+                };
+            });
+
             race.addEventListener('change', function () {
-                var chosenLayer = document.getElementById('race').value;
-                map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
-                var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
-                for (var i = 0; i < unchosenLayer.length; i++) {
-                    map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
+                var chosenSubcat = document.getElementById('race').value;
+                map.setLayoutProperty(chosenSubcat, 'visibility', 'visible'); // set layer visibility
+                var unchosenSubcat = subcatList.filter(function (x) { return x !== chosenSubcat; });
+                for (var i = 0; i < unchosenSubcat.length; i++) {
+                    map.setLayoutProperty(unchosenSubcat[i], 'visibility', 'none'); // set layer visibility
+                };
+            });
+
+            income.addEventListener('change', function () {
+                var chosenSubcat = document.getElementById('income').value;
+                map.setLayoutProperty(chosenSubcat, 'visibility', 'visible'); // set layer visibility
+                var unchosenSubcat = subcatList.filter(function (x) { return x !== chosenSubcat; });
+                for (var i = 0; i < unchosenSubcat.length; i++) {
+                    map.setLayoutProperty(unchosenSubcat[i], 'visibility', 'none'); // set layer visibility
                 };
             });
         });
