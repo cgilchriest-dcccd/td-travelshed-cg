@@ -10,7 +10,7 @@ pd.set_option('display.max_columns', None)
 path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
 pio.renderers.default = "browser"
 
-
+# race
 race=pd.read_csv(path+'race/race.csv')
 race['tractid']=[x[3:] for x in race['CT']]
 df=pd.read_csv(path+'nyctract/resbkgravity3.csv')
@@ -30,6 +30,37 @@ race['JOBCAT']=np.where(race['JOBSTD']>=2,'>=+2SD',
                np.where(race['JOBSTD']>=-0.5,'-0.5SD ~ 0SD','<-0.5SD'))))))
 race['JOBPCT']=pd.qcut(race['GRAVITYWAC'],100,labels=False)+1
 race.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/postotp/race/race.geojson',driver='GeoJSON')
+
+
+# income
+income=pd.read_csv(path+'race/income.csv')
+income['tractid']=[x[3:] for x in income['CT']]
+df=pd.read_csv(path+'nyctract/resbkgravity3.csv')
+df['tractid']=[x[3:] for x in df['Unnamed: 0']]
+income=pd.merge(income,df,how='inner',on='tractid')
+quadstatectclipped=gpd.read_file(path+'shp/quadstatectclipped.shp')
+quadstatectclipped.crs=4326
+income=pd.merge(quadstatectclipped,income,how='inner',on='tractid')
+
+income=income[['tractid','TOTAL','INC01','INC02','INC03','INC04','INC05','INC06','INC07','INC08','INC09','INC10','INC11','GRAVITYWAC','geometry']].reset_index(drop=True)
+income.to_file(path+'race/income.shp')
+income['JOBSTD']=(income['GRAVITYWAC']-np.mean(income['GRAVITYWAC']))/np.std(income['GRAVITYWAC'])
+income['JOBCAT']=np.where(income['JOBSTD']>=2,'>=+2SD',
+                 np.where(income['JOBSTD']>=1.5,'+1.5SD ~ +2SD',
+                 np.where(income['JOBSTD']>=1,'+1SD ~ +1.5SD',
+                 np.where(income['JOBSTD']>=0.5,'+0.5SD ~ +1SD',
+                 np.where(income['JOBSTD']>=0,'0SD ~ +0.5SD',
+                 np.where(income['JOBSTD']>=-0.5,'-0.5SD ~ 0SD','<-0.5SD'))))))
+income['JOBPCT']=pd.qcut(income['GRAVITYWAC'],100,labels=False)+1
+income.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/postotp/race/income.geojson',driver='GeoJSON')
+
+
+
+
+
+
+
+
 
 
 
