@@ -233,6 +233,56 @@
 
 
 
+            // Add high percentile
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT nycct.*, tai.laborpct, CASE WHEN laborpct>98 THEN '99%25 ~ 100%25' when tai.laborpct>96 then '97%25 ~ 98%25' when tai.laborpct>94 then '95%25 ~ 96%25' when tai.laborpct>92 then '93%25 ~ 94%25' ELSE '91%25 ~ 92%25' END AS pctcat FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid WHERE tai.laborpct>90";
+            q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
+            var layerContent = {
+                'sourceid': 'highpct', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'highpct', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': '>90% Tracts', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'pctcat', // category column name
+                'layercat': ['91% ~ 92%', '93% ~ 94%', '95% ~ 96%', '97% ~ 98%', '99% ~ 100%'], // categories
+                'layercolor': ['rgba(209, 227, 243, 1)', 'rgba(154, 200, 225, 1)', 'rgba(82, 157, 204, 1)', 'rgba(28, 108, 177, 1)', 'rgba(8, 48, 107, 1)'], // color for each category; use rgba
+                'layeroutlinecolor': 'rgba(255, 255, 255, 0.5)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
 
 
             // Add soho
@@ -326,7 +376,7 @@
 
 
             // Add layer selector and legend
-            var layerOrder = ['labor', 'soho']; // set layer order in the legend
+            var layerOrder = ['labor', 'highpct', 'soho']; // set layer order in the legend
             var layerContentListOrder = []; // create ordered layer content list
             for (var i = 0; i < layerOrder.length; i++) {
                 layerContentListOrder.push(layerContentList.filter(e => e.layerid == layerOrder[i])[0]);
