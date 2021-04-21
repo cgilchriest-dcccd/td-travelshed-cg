@@ -236,7 +236,7 @@
             // Add high percentile
             // Set layer contents
             var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT nycct.*, tai.laborpct, CASE WHEN laborpct>98 THEN '99%25 ~ 100%25' when tai.laborpct>96 then '97%25 ~ 98%25' when tai.laborpct>94 then '95%25 ~ 96%25' when tai.laborpct>92 then '93%25 ~ 94%25' ELSE '91%25 ~ 92%25' END AS pctcat FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid WHERE tai.laborpct>90";
+            q += "SELECT nycct.*, tai.laborpct, CASE WHEN laborpct>98 THEN '98%25 ~ 99%25' when tai.laborpct>96 then '96%25 ~ 97%25' when tai.laborpct>94 then '94%25 ~ 95%25' when tai.laborpct>92 then '92%25 ~ 93%25' ELSE '90%25 ~ 91%25' END AS pctcat FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid WHERE tai.laborpct>90";
             q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
             var layerContent = {
                 'sourceid': 'highpct', // source id
@@ -244,10 +244,10 @@
                 'sourcedata': q, // data source
                 'layerid': 'highpct', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': '>90% Tracts', // layer name for the legend
+                'layername': '>=90% Tracts', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'pctcat', // category column name
-                'layercat': ['91% ~ 92%', '93% ~ 94%', '95% ~ 96%', '97% ~ 98%', '99% ~ 100%'], // categories
+                'layercat': ['90% ~ 91%', '92% ~ 93%', '94% ~ 95%', '96% ~ 97%', '98% ~ 99%'], // categories
                 'layercolor': ['rgba(209, 227, 243, 1)', 'rgba(154, 200, 225, 1)', 'rgba(82, 157, 204, 1)', 'rgba(28, 108, 177, 1)', 'rgba(8, 48, 107, 1)'], // color for each category; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0.5)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
@@ -360,7 +360,7 @@
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Access to Labor Force Index: </b><span>" + e.features[0].properties.laborindex.toFixed(2) + "</span><br>";
                 description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.laborstd.toFixed(2) + "</span><br>";
-                description += "<b>Percentile: </b><span>" + e.features[0].properties.laborpct + "%</span><br>";
+                description += "<b>Percentile: </b><span>" + (e.features[0].properties.laborpct-1) + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
             // Add hover events
