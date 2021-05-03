@@ -315,6 +315,7 @@
             var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
             q += "SELECT nycct.*, tai.jobindex, tai.jobstd, tai.jobcat, tai.jobpct FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid";
             q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
+            console.log(q);
             var layerContent = {
                 'sourceid': 'job', // source id
                 'sourcetype': 'geojson', // source type
