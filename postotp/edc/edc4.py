@@ -21,8 +21,6 @@ trips=trips[['trip_id','route_id','shape_id','trip_headsign','direction_id']].dr
 # routes=routes[['route_id','route_short_name','route_long_name','route_desc']].drop_duplicates(keep='first').reset_index(drop=True)
 routes=routes[['route_id','route_short_name','route_long_name']].drop_duplicates(keep='first').reset_index(drop=True)
 
-
-
 # Stops
 stops2=pd.merge(stops,stoptimes,how='left',on='stop_id')
 stops2=pd.merge(stops2,trips,how='left',on='trip_id')
@@ -60,7 +58,7 @@ df=[]
 rd=pd.read_csv(path+'nyctract/resbk3.csv',dtype=float,converters={'blockid':str},chunksize=10000)
 for ck in rd:   
     tp=pd.melt(ck,id_vars=['blockid'])
-    tp=tp[tp['value']<=60].reset_index(drop=True)
+    tp=tp[tp['value']<=40].reset_index(drop=True)
     tp['orgct']=[x.replace('RES','') for x in tp['variable']]
     tp['destbk']=tp['blockid'].copy()
     tp['time']=tp['value'].copy()
@@ -71,10 +69,6 @@ df=pd.concat(df,axis=0,ignore_index=True)
 df=pd.merge(df,lehd,how='inner',left_on='destbk',right_on='blockid')
 df=df.groupby(['orgct'],as_index=False).agg({'jobs':'sum'}).reset_index(drop=True)
 df.to_csv(path+'edc/edc4/ctjobs.csv',index=False)
-
-
-
-
 
 apikey=pd.read_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-acsapi/apikey.csv',header=None).loc[0,0]
 nyc=['36005','36047','36061','36081','36085']
@@ -90,12 +84,6 @@ for i in nyc:
     pop+=[rs]
 pop=pd.concat(pop,axis=0,ignore_index=True)
 pop.to_csv(path+'edc/edc4/pop.csv',index=False)
-
-
-
-
-
-
 
 df=pd.read_csv(path+'edc/edc4/ctjobs.csv',dtype=float,converters={'orgct':str})
 pop=pd.read_csv(path+'edc/edc4/pop.csv',dtype=float,converters={'CT':str})
@@ -114,3 +102,55 @@ df=pd.merge(nta,df,how='inner',on='NTACode')
 df.to_file(path+'edc/edc4/ntajobs.geojson',driver='GeoJSON')
 df=df[['NTACode','NTAName','Jobs']].reset_index(drop=True)
 df.to_csv(path+'edc/edc4/ntajobs.csv',index=False)
+
+
+
+
+
+
+
+locations=pd.read_csv(path+'edc/edc4/locations.csv',dtype=str)
+locations['facid']=range(1,len(locations)+1)
+walkshed=gpd.read_file(path+'edc/edc4/walksheds/walksheds.shp')
+walkshed.crs=4326
+walkshed=pd.merge(walkshed,locations,how='inner',left_on='FacilityID',right_on='facid')
+walkshed.to_file(path+'edc/edc4/walksheds/walksheds.geojson',driver='GeoJSON')
+
+walkshed=gpd.read_file(path+'edc/edc4/walksheds/walksheds.geojson')
+walkshed.crs=4326
+walkshed['dist']=3960
+walkshed=walkshed.dissolve(by='dist').reset_index(drop=False)
+walkshed=walkshed[['dist','geometry']].reset_index(drop=True)
+walkshed.to_file(path+'edc/edc4/walksheds/walkshedsdis.geojson',driver='GeoJSON')
+
+walkshed=gpd.read_file(path+'edc/edc4/walksheds/walkshedsdis.geojson')
+walkshed.crs=4326
+walkshed=walkshed.to_crs(6539)
+ct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+ct.crs=4326
+ct=ct.to_crs(6539)
+ct['county']=[str(x)[0:5] for x in ct['tractid']]
+ct=ct[np.isin(ct['county'],['36005','36047','36061','36081','36085'])].reset_index(drop=True)
+df=gpd.overlay(ct,walkshed,how='intersection')
+df['area']=[x.area for x in df['geometry']]
+df=df.groupby(['tractid'],as_index=False).agg({'area':'sum'}).reset_index(drop=True)
+df=pd.merge(ct,df,how='left',on='tractid')
+df['totalarea']=[x.area for x in df['geometry']]
+df['pct']=df['area']/df['totalarea']
+pop=pd.read_csv(path+'edc/edc4/pop.csv',dtype=float,converters={'CT':str})
+geoxwalk=pd.read_csv('C:/Users/mayij/Desktop/DOC/DCP2021/TRAVEL DEMAND MODEL/POP/GEOIDCROSSWALK.csv',dtype=str)
+df=pd.merge(df,pop,how='inner',left_on='tractid',right_on='CT')
+df['pop']=df['pct']*df['TT']
+df['totalpop']=df['TT'].copy()
+df=pd.merge(df,geoxwalk,how='inner',left_on='tractid',right_on='CensusTract2010')
+df=df.groupby(['NTA'],as_index=False).agg({'pop':'sum','totalpop':'sum'}).reset_index(drop=True)
+df['pct']=df['pop']/df['totalpop']
+df=df[~np.isin(df['NTA'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99'])].reset_index(drop=True)
+df=df[['NTA','pop','totalpop','pct']].reset_index(drop=True)
+df.columns=['NTACode','TransitPop','TotalPop','Pct']
+nta=gpd.read_file('C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/SUBWAY/TURNSTILE/ntaclippedadj.shp')
+nta.crs=4326
+df=pd.merge(nta,df,how='inner',on='NTACode')
+df.to_file(path+'edc/edc4/ntatransitpop.geojson',driver='GeoJSON')
+df=df[['NTACode','NTAName','TransitPop','TotalPop','Pct']].reset_index(drop=True)
+df.to_csv(path+'edc/edc4/ntatransitpop.csv',index=False)
