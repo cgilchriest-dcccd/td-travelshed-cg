@@ -251,7 +251,7 @@ if __name__=='__main__':
     wtbk=wtbk.replace(999,np.nan)
     loclist=wtbk.columns[1:]
     wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
-    wtbk=wtbk.groupby(['tractid'])[loclist].median(skipna=True)
+    wtbk=wtbk.groupby(['tractid'])[loclist].median()
     wtbk=wtbk.replace(np.nan,999)
     wtbk=wtbk.reset_index()
     wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
