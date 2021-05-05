@@ -22,7 +22,7 @@ start=datetime.datetime.now()
 
 pd.set_option('display.max_columns', None)
 path='/home/mayijun/TRAVELSHED/'
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2018/TRAVELSHEDREVAMP/'
+#path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
 #path='C:/Users/Y_Ma2/Desktop/amazon/'
 #doserver='http://142.93.21.138:8801/'
 doserver='http://localhost:8801/'
