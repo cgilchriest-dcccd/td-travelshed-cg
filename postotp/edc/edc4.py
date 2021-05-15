@@ -21,8 +21,11 @@ for i in ['ct','nj','ny','pa']:
     lehd+=[pd.read_csv(path+'edc/edc4/'+i+'_wac_S000_JT00_2018.csv',dtype=float,converters={'w_geocode':str})]
 lehd=pd.concat(lehd,axis=0,ignore_index=True)
 lehd['blockid']=lehd['w_geocode'].copy()
+lehd['inc1']=lehd['CE01'].copy()
+lehd['inc2']=lehd['CE02'].copy()
+lehd['inc3']=lehd['CE03'].copy()
 lehd['jobs']=lehd['C000'].copy()
-lehd=lehd[['blockid','jobs']].reset_index(drop=True)
+lehd=lehd[['blockid','inc1','inc2','inc3','jobs']].reset_index(drop=True)
 
 df=[]
 rd=pd.read_csv(path+'nyctract/resbk3.csv',dtype=float,converters={'blockid':str},chunksize=10000)
@@ -37,7 +40,7 @@ for ck in rd:
 df=pd.concat(df,axis=0,ignore_index=True)
 
 df=pd.merge(df,lehd,how='inner',left_on='destbk',right_on='blockid')
-df=df.groupby(['orgct'],as_index=False).agg({'jobs':'sum'}).reset_index(drop=True)
+df=df.groupby(['orgct'],as_index=False).agg({'inc1':'sum','inc2':'sum','inc3':'sum','jobs':'sum'}).reset_index(drop=True)
 df.to_csv(path+'edc/edc4/ctjobs.csv',index=False)
 
 apikey=pd.read_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-acsapi/apikey.csv',header=None).loc[0,0]
@@ -60,17 +63,24 @@ pop=pd.read_csv(path+'edc/edc4/pop.csv',dtype=float,converters={'CT':str})
 geoxwalk=pd.read_csv('C:/Users/mayij/Desktop/DOC/DCP2021/TRAVEL DEMAND MODEL/POP/GEOIDCROSSWALK.csv',dtype=str)
 df=pd.merge(df,pop,how='inner',left_on='orgct',right_on='CT')
 df=pd.merge(df,geoxwalk[['CensusTract2010','NTA','NTAName']].drop_duplicates(keep='first'),how='inner',left_on='orgct',right_on='CensusTract2010')
+df['inc1tt']=df['inc1']*df['TT']
+df['inc2tt']=df['inc2']*df['TT']
+df['inc3tt']=df['inc3']*df['TT']
 df['jobstt']=df['jobs']*df['TT']
-df=df.groupby(['NTA'],as_index=False).agg({'jobstt':'sum','TT':'sum'}).reset_index(drop=True)
+df=df.groupby(['NTA'],as_index=False).agg({'inc1tt':'sum','inc2tt':'sum','inc3tt':'sum',
+                                           'jobstt':'sum','TT':'sum'}).reset_index(drop=True)
+df['Inc1']=df['inc1tt']/df['TT']
+df['Inc2']=df['inc2tt']/df['TT']
+df['Inc3']=df['inc3tt']/df['TT']
 df['Jobs']=df['jobstt']/df['TT']
 df=df[~np.isin(df['NTA'],['BK99','BX98','BX99','MN99','QN98','QN99','SI99'])].reset_index(drop=True)
-df=df[['NTA','Jobs']].reset_index(drop=True)
-df.columns=['NTACode','Jobs']
+df=df[['NTA','Inc1','Inc2','Inc3','Jobs']].reset_index(drop=True)
+df.columns=['NTACode','Inc1','Inc2','Inc3','Jobs']
 nta=gpd.read_file('C:/Users/mayij/Desktop/DOC/DCP2020/COVID19/SUBWAY/TURNSTILE/ntaclippedadj.shp')
 nta.crs=4326
 df=pd.merge(nta,df,how='inner',on='NTACode')
 df.to_file(path+'edc/edc4/ntajobs.geojson',driver='GeoJSON')
-df=df[['NTACode','NTAName','Jobs']].reset_index(drop=True)
+df=df[['NTACode','NTAName','Inc1','Inc2','Inc3','Jobs']].reset_index(drop=True)
 df.to_csv(path+'edc/edc4/ntajobs.csv',index=False)
 
 
