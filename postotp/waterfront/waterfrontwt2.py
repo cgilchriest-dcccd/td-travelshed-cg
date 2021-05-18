@@ -152,7 +152,7 @@ def travelshedwt(arrt):
     else:
         print(destination.loc[i,'id']+' '+arrt+' '+str(cut[0])+'-minute isochrone has no geometry!')
     bk['T'+arrt[0:2]+arrt[3:5]]=bk['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
-    bk=bk.drop(['lat','long','geometry'],axis=1)
+    bk=bk.drop(['geometry'],axis=1)
     bk=bk.set_index('blockid')
     return bk
 
