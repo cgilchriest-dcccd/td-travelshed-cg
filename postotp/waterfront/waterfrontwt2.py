@@ -105,7 +105,7 @@ maxWalkDistance=805 # in meters
 # Set cut off points between 0-120 mins
 cutoffinterval=2 # in minutes
 cutoffstart=0
-cutoffend=90
+cutoffend=60
 cutoffincrement=cutoffstart
 cutoff=''
 while cutoffincrement<cutoffend:
@@ -183,7 +183,7 @@ if __name__=='__main__':
     location['id']=['SITE'+str(x).zfill(4) for x in location['siteid']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['lat'],location['long'])]
     # destination=location.loc[0:max(location.count())-1,['id','parkid','name','direction','latlong']].reset_index(drop=True)
-    destination=location.loc[10:max(location.count())-1,['id','parkid','name','direction','latlong']].reset_index(drop=True)
+    destination=location.loc[0:max(location.count())-1,['id','parkid','name','direction','latlong']].reset_index(drop=True)
     # Create travel time table for each site
     for i in destination.index:
         df=parallelize(arrivaltime,travelshedwt)
@@ -196,7 +196,7 @@ if __name__=='__main__':
     # wtbk.crs=4326
     # wtbk=wtbk.drop(['lat','long'],axis=1)
     # for i in destination.index:
-    #     tp=pd.read_csv(path+'waterfront2/'+destination.loc[i,'id']+'wt.csv',dtype=float,converters={'blockid':str})
+    #     tp=pd.read_csv(path+'waterfront2/wt/'+destination.loc[i,'id']+'wt.csv',dtype=float,converters={'blockid':str})
     #     wtbk=wtbk.merge(tp,on='blockid')
     # wtbk.to_file(path+'waterfront2/wtbk.shp')        
     # wtbk=wtbk.drop('geometry',axis=1)
@@ -254,25 +254,25 @@ if __name__=='__main__':
     #                                           wtbkmap[destination.loc[i,'id']].astype(int).astype(str),
     #                                 hoverinfo='text'))
     #     p=p.add_trace(go.Scattermapbox(lat=[pd.to_numeric(destination.loc[i,'latlong'].split(',')[0])],
-    #                    lon=[pd.to_numeric(destination.loc[i,'latlong'].split(',')[-1])],
-    #                    mode='markers',
-    #                    marker={'size':5,
-    #                            'color':'black'},
-    #                    hoverinfo='none'))
+    #                     lon=[pd.to_numeric(destination.loc[i,'latlong'].split(',')[-1])],
+    #                     mode='markers',
+    #                     marker={'size':5,
+    #                             'color':'black'},
+    #                     hoverinfo='none'))
     #     p.update_layout(mapbox={'style':'carto-positron',
     #                             'center':{'lat':np.mean([min(wtbkmap.bounds['miny']),max(wtbkmap.bounds['maxy'])]),
     #                                     'lon':np.mean([min(wtbkmap.bounds['minx']),max(wtbkmap.bounds['maxx'])])},
     #                             'zoom':8.5},
     #                     title={'text':'<b>90-min Transit Travelshed from '+destination.loc[i,'id']+'</b>',
-    #                            'font_size':20},
+    #                             'font_size':20},
     #                     template='ggplot2',
     #                     font={'family':'arial',
     #                           'color':'black'},
     #                     margin={'r':0,'t':40,'l':0,'b':0})
     #     p.write_image(path+'waterfront2/'+destination.loc[i,'id']+'wtbk.jpeg',width=1600,height=900)
     #     p.write_html(path+'waterfront2/'+destination.loc[i,'id']+'wtbk.html',
-    #                  include_plotlyjs='cdn',
-    #                  config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
+    #                   include_plotlyjs='cdn',
+    #                   config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
     #     # Create tract level map
     #     wtctmap=wtct.loc[wtct[destination.loc[i,'id']]<=90,['tractid',destination.loc[i,'id'],'geometry']].reset_index(drop=True)
     #     wtctgjs=json.loads(wtctmap.to_json())
@@ -307,93 +307,104 @@ if __name__=='__main__':
     #                                           wtctmap[destination.loc[i,'id']].astype(int).astype(str),
     #                                 hoverinfo='text'))
     #     p=p.add_trace(go.Scattermapbox(lat=[pd.to_numeric(destination.loc[i,'latlong'].split(',')[0])],
-    #                    lon=[pd.to_numeric(destination.loc[i,'latlong'].split(',')[-1])],
-    #                    mode='markers',
-    #                    marker={'size':5,
-    #                            'color':'black'},
-    #                    hoverinfo='none'))
+    #                     lon=[pd.to_numeric(destination.loc[i,'latlong'].split(',')[-1])],
+    #                     mode='markers',
+    #                     marker={'size':5,
+    #                             'color':'black'},
+    #                     hoverinfo='none'))
     #     p.update_layout(mapbox={'style':'carto-positron',
     #                             'center':{'lat':np.mean([min(wtctmap.bounds['miny']),max(wtctmap.bounds['maxy'])]),
     #                                     'lon':np.mean([min(wtctmap.bounds['minx']),max(wtctmap.bounds['maxx'])])},
     #                             'zoom':8.5},
     #                     title={'text':'<b>90-min Transit Travelshed from '+destination.loc[i,'id']+'</b>',
-    #                            'font_size':20},
+    #                             'font_size':20},
     #                     template='ggplot2',
     #                     font={'family':'arial',
     #                           'color':'black'},
     #                     margin={'r':0,'t':40,'l':0,'b':0})
     #     p.write_image(path+'waterfront2/'+destination.loc[i,'id']+'wtct.jpeg',width=1600,height=900)
     #     p.write_html(path+'waterfront2/'+destination.loc[i,'id']+'wtct.html',
-    #                  include_plotlyjs='cdn',
-    #                  config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
-    print(datetime.datetime.now()-start)    
-#    # Join park travelsheds to block shapefile
-#    wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
-#    wtbk.crs={'init': 'epsg:4326'}
-#    wtbk=wtbk[['blockid','geometry']]    
-#    for i in destination.index:
-#        tp=pd.read_csv(path+'waterfront/'+destination.loc[i,'id']+'wt.csv',dtype=str)
-#        tp.iloc[:,1]=pd.to_numeric(tp.iloc[:,1])
-#        wtbk=wtbk.merge(tp,on='blockid')
-#    for i in destination['parkid'].unique():
-#        sites=list(destination.loc[destination['parkid']==i,'id'])
-#        wtbk[i]=wtbk[sites].min(axis=1)
-#    wtbk=wtbk[['blockid']+list(destination['parkid'].unique())+['geometry']]
-#    wtbk.to_file(path+'waterfront/wtbk.shp')
-#    wtbk=wtbk.drop('geometry',axis=1)
-#    wtbk.to_csv(path+'waterfront/wtbk.csv',index=False)
-#    # Join park travelsheds to tract shapefile
-#    wtbk=wtbk.replace(999,np.nan)
-#    loclist=wtbk.columns[1:]
-#    wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
-#    wtbk=wtbk.groupby(['tractid'])[loclist].median(skipna=True)
-#    wtbk=wtbk.replace(np.nan,999)
-#    wtbk=wtbk.reset_index()
-#    wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-#    wtct.crs={'init': 'epsg:4326'}
-#    wtct=wtct[['tractid','geometry']]
-#    wtct=wtct.merge(wtbk,on='tractid')
-#    wtct.to_file(path+'waterfront/wtct.shp')
-#    wtct=wtct.drop('geometry',axis=1)
-#    wtct.to_csv(path+'waterfront/wtct.csv',index=False)
-#    # Create map for each park
-#    wtbk=gpd.read_file(path+'waterfront/wtbk.shp')
-#    wtbk.crs={'init': 'epsg:4326'}
-#    wtct=gpd.read_file(path+'waterfront/wtct.shp')
-#    wtct.crs={'init': 'epsg:4326'}
-#    for i in destination['parkid'].unique():
-#        # Create block level map
-#        wtbkmap=wtbk.loc[wtbk[i]<=60,[i,'geometry']]
-#        wtbkmap=wtbkmap.to_crs(epsg=3857)
-#        fig,ax=plt.subplots(1,figsize=(11,8.5))
-#        plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
-#        ax=wtbkmap.plot(figsize=(11,8.5),edgecolor=None,column=i,cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
-#        add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
-#        ax.set_axis_off()
-#        ax.set_title('Saturday Midday Transit Travel Time (Minutes) to '+destination.loc[destination['parkid']==i,'name'].unique()[0],fontdict={'fontsize':'16','fontweight':'10'})
-#        sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=60))
-#        sm._A=[]
-#        divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
-#        cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
-#        cbar=fig.colorbar(sm,cax=cax)
-#        fig.tight_layout()
-#        fig.savefig(path+'waterfront/'+i+'bk.jpg', dpi=300)
-#        # Create tract level map
-#        wtctmap=wtct.loc[wtct[i]<=60,[i,'geometry']]
-#        wtctmap=wtctmap.to_crs(epsg=3857)
-#        fig,ax=plt.subplots(1,figsize=(11,8.5))
-#        plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
-#        ax=wtctmap.plot(figsize=(11,8.5),edgecolor=None,column=i,cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
-#        add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
-#        ax.set_title('Saturday Midday Transit Travel Time (Minutes) to '+destination.loc[destination['parkid']==i,'name'].unique()[0],fontdict={'fontsize':'16','fontweight':'10'})
-#        sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=60))
-#        sm._A=[]
-#        divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
-#        cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
-#        cbar=fig.colorbar(sm,cax=cax)
-#        fig.tight_layout()
-#        fig.savefig(path+'waterfront/'+i+'ct.jpg', dpi=300)
-#    print(datetime.datetime.now()-start)
+    #                   include_plotlyjs='cdn',
+    #                   config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
+    # print(datetime.datetime.now()-start)    
+    # # Join park travelsheds to block shapefile
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
+    # wtbk.crs={'init': 'epsg:4326'}
+    # wtbk=wtbk[['blockid','geometry']]    
+    # for i in destination.index:
+    #     tp=pd.read_csv(path+'waterfront/'+destination.loc[i,'id']+'wt.csv',dtype=str)
+    #     tp.iloc[:,1]=pd.to_numeric(tp.iloc[:,1])
+    #     wtbk=wtbk.merge(tp,on='blockid')
+    # for i in destination['parkid'].unique():
+    #     sites=list(destination.loc[destination['parkid']==i,'id'])
+    #     wtbk[i]=wtbk[sites].min(axis=1)
+    # wtbk=wtbk[['blockid']+list(destination['parkid'].unique())+['geometry']]
+    # wtbk.to_file(path+'waterfront/wtbk.shp')
+    # wtbk=wtbk.drop('geometry',axis=1)
+    # wtbk.to_csv(path+'waterfront/wtbk.csv',index=False)
+    # # Join park travelsheds to tract shapefile
+    # wtbk=wtbk.replace(999,np.nan)
+    # loclist=wtbk.columns[1:]
+    # wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
+    # wtbk=wtbk.groupby(['tractid'])[loclist].median(skipna=True)
+    # wtbk=wtbk.replace(np.nan,999)
+    # wtbk=wtbk.reset_index()
+    # wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+    # wtct.crs={'init': 'epsg:4326'}
+    # wtct=wtct[['tractid','geometry']]
+    # wtct=wtct.merge(wtbk,on='tractid')
+    # wtct.to_file(path+'waterfront/wtct.shp')
+    # wtct=wtct.drop('geometry',axis=1)
+    # wtct.to_csv(path+'waterfront/wtct.csv',index=False)
+    # # Create map for each park
+    # wtbk=gpd.read_file(path+'waterfront/wtbk.shp')
+    # wtbk.crs={'init': 'epsg:4326'}
+    # wtct=gpd.read_file(path+'waterfront/wtct.shp')
+    # wtct.crs={'init': 'epsg:4326'}
+    # for i in destination['parkid'].unique():
+    #     # Create block level map
+    #     wtbkmap=wtbk.loc[wtbk[i]<=60,[i,'geometry']]
+    #     wtbkmap=wtbkmap.to_crs(epsg=3857)
+    #     fig,ax=plt.subplots(1,figsize=(11,8.5))
+    #     plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
+    #     ax=wtbkmap.plot(figsize=(11,8.5),edgecolor=None,column=i,cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
+    #     add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
+    #     ax.set_axis_off()
+    #     ax.set_title('Saturday Midday Transit Travel Time (Minutes) to '+destination.loc[destination['parkid']==i,'name'].unique()[0],fontdict={'fontsize':'16','fontweight':'10'})
+    #     sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=60))
+    #     sm._A=[]
+    #     divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
+    #     cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
+    #     cbar=fig.colorbar(sm,cax=cax)
+    #     fig.tight_layout()
+    #     fig.savefig(path+'waterfront/'+i+'bk.jpg', dpi=300)
+    #     # Create tract level map
+    #     wtctmap=wtct.loc[wtct[i]<=60,[i,'geometry']]
+    #     wtctmap=wtctmap.to_crs(epsg=3857)
+    #     fig,ax=plt.subplots(1,figsize=(11,8.5))
+    #     plt.subplots_adjust(left=0.05,right=0.95,top=0.95,bottom=0.05)
+    #     ax=wtctmap.plot(figsize=(11,8.5),edgecolor=None,column=i,cmap='Spectral',linewidth=0.2,ax=ax,alpha=0.7)
+    #     add_basemap(ax,zoom=11,url=ctx.sources.ST_TONER_LITE)
+    #     ax.set_title('Saturday Midday Transit Travel Time (Minutes) to '+destination.loc[destination['parkid']==i,'name'].unique()[0],fontdict={'fontsize':'16','fontweight':'10'})
+    #     sm=plt.cm.ScalarMappable(cmap='Spectral',norm=plt.Normalize(vmin=1,vmax=60))
+    #     sm._A=[]
+    #     divider=mpl_toolkits.axes_grid1.make_axes_locatable(ax)
+    #     cax=divider.append_axes("right",size="3%",pad=0.2,aspect=25)
+    #     cbar=fig.colorbar(sm,cax=cax)
+    #     fig.tight_layout()
+    #     fig.savefig(path+'waterfront/'+i+'ct.jpg', dpi=300)
+    # print(datetime.datetime.now()-start)
     # #Summary of block level park access
     # wtbk=pd.read_csv(path+'waterfront/'+destination.loc[0,'id']+'wt.csv',dtype=str)
     # wtbk=wtbk.loc[[str(x)[0:5] in nyc for x in wtbk['blockid']],:]
