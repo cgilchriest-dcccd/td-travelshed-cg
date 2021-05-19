@@ -272,9 +272,9 @@ if __name__=='__main__':
                               'color':'black'},
                         margin={'r':0,'t':40,'l':0,'b':0})
         p.write_image(path+'waterfront2/jpeg/'+destination.loc[i,'id']+'wtbk.jpeg',width=1600,height=900)
-        p.write_html(path+'waterfront2/html/'+destination.loc[i,'id']+'wtbk.html',
-                      include_plotlyjs='cdn',
-                      config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
+        # p.write_html(path+'waterfront2/html/'+destination.loc[i,'id']+'wtbk.html',
+        #               include_plotlyjs='cdn',
+        #               config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
         # Create tract level map
         wtctmap=wtct.loc[wtct[destination.loc[i,'id']]<=60,['tractid',destination.loc[i,'id'],'geometry']].reset_index(drop=True)
         wtctgjs=json.loads(wtctmap.to_json())
@@ -325,10 +325,9 @@ if __name__=='__main__':
                               'color':'black'},
                         margin={'r':0,'t':40,'l':0,'b':0})
         p.write_image(path+'waterfront2/jpeg/'+destination.loc[i,'id']+'wtct.jpeg',width=1600,height=900)
-        p.write_html(path+'waterfront2/html/'+destination.loc[i,'id']+'wtct.html',
-                      include_plotlyjs='cdn',
-                      config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
-    print(datetime.datetime.now()-start)
+        # p.write_html(path+'waterfront2/html/'+destination.loc[i,'id']+'wtct.html',
+        #               include_plotlyjs='cdn',
+        #               config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
     
     # Join park travelsheds to block shapefile
     wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
@@ -413,9 +412,9 @@ if __name__=='__main__':
                               'color':'black'},
                         margin={'r':0,'t':40,'l':0,'b':0})
         p.write_image(path+'waterfront2/jpeg/'+i+'wtbk.jpeg',width=1600,height=900)
-        p.write_html(path+'waterfront2/html/'+i+'wtbk.html',
-                      include_plotlyjs='cdn',
-                      config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
+        # p.write_html(path+'waterfront2/html/'+i+'wtbk.html',
+        #               include_plotlyjs='cdn',
+        #               config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
         # Create tract level map
         wtctmap=wtct.loc[wtct[i]<=60,['tractid',i,'geometry']].reset_index(drop=True)
         wtctgjs=json.loads(wtctmap.to_json())
@@ -466,7 +465,7 @@ if __name__=='__main__':
                               'color':'black'},
                         margin={'r':0,'t':40,'l':0,'b':0})
         p.write_image(path+'waterfront2/jpeg/'+i+'wtct.jpeg',width=1600,height=900)
-        p.write_html(path+'waterfront2/html/'+i+'wtct.html',
-                      include_plotlyjs='cdn',
-                      config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
+        # p.write_html(path+'waterfront2/html/'+i+'wtct.html',
+        #               include_plotlyjs='cdn',
+        #               config={'displaylogo':False,'modeBarButtonsToRemove':['select2d','lasso2d']})
     print(datetime.datetime.now()-start)
