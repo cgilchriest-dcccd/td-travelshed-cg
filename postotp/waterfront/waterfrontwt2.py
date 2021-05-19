@@ -183,8 +183,7 @@ if __name__=='__main__':
     location['id']=['SITE'+str(x).zfill(4) for x in location['siteid']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['lat'],location['long'])]
     # destination=location.loc[0:max(location.count())-1,['id','parkid','name','direction','latlong']].reset_index(drop=True)
-    destination=location.loc[0:max(location.count())-1,['id','parkid','name','direction','latlong']].reset_index(drop=True)
-    destination=location.loc[0:3,['id','parkid','name','direction','latlong']].reset_index(drop=True)
+    destination=location.loc[0:7,['id','parkid','name','direction','latlong']].reset_index(drop=True)
     # Create travel time table for each site
     for i in destination.index:
         df=parallelize(arrivaltime,travelshedwt)
