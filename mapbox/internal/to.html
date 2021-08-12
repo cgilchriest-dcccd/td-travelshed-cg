@@ -136,6 +136,7 @@
 
         .btn {
             margin-bottom: 1rem;
+            width: 8rem;
         }
     </style>
 </head>
@@ -229,10 +230,13 @@
                     <span> (Data Source: Census Bureau LEHD 2017) </span>
                 </div>
             </div>
-            <div class="row g-0 justify-content-center">
+            <div class="row g-0 justify-content-between">
                 <hr>
                 <div class="col-auto">
                     <button type="button" class="btn btn-primary btn-sm" id="rst"> Reset </button>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-primary btn-sm" id="exp" download> Export </a>
                 </div>
             </div>
         </div>
@@ -255,7 +259,8 @@
                     Transit Travelshed TO a Census Tract </a>
                 <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/tai.html"> Transit
                     Access Index </a>
-                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/iso.html?"> Isochrone
+                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/iso.html?">
+                    Isochrone
                     Generator (DCP Only) </a>
             </ul>
         </div>
@@ -526,6 +531,7 @@
                     document.getElementById('legend1').style.display = 'none';
                     document.getElementById('legend2').style.display = 'flex';
                     document.getElementById('selectedtract').textContent = sl;
+                    document.getElementById('exp').href = q;
                     var p = "https://dcptransportation.carto.com/api/v2/sql?q=";
                     p += "SELECT * FROM dcptransportation.workctgravitypop WHERE worktractid=";
                     p += sl;

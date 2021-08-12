@@ -126,11 +126,9 @@
             height: 0rem;
         }
 
-        .btn-primary {
-            width: 7rem;
-            font-size: 0.9rem;
+        .btn {
+            width: 5rem;
             margin-bottom: 1rem;
-            padding: 0.5;
         }
     </style>
 </head>
@@ -195,17 +193,16 @@
                 <div class="row g-0 justify-content-between">
                     <hr>
                     <div class="col-auto">
-                        <button class="btn btn-primary" id="sbm" type="submit" style="display: inline-block"> Submit
+                        <button class="btn btn-primary btn-sm" id="sbm" type="submit" style="display: inline-block"> Submit
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary" id="ldg" type="button" disabled style="display: none">
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            Loading...
+                        <button class="btn btn-primary btn-sm" id="rst" type="reset" style="display: inline-block"> Reset
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary" id="rst" type="reset" style="display: inline-block"> Reset
+                        <button class="btn btn-primary btn-sm" id="exp" type="button" style="display: inline-block" disabled download>
+                            Export
                         </button>
                     </div>
                 </div>
@@ -293,8 +290,7 @@
 
         // Add click events
         sbm.addEventListener('click', function () {
-            document.getElementById('sbm').style.display = "none";
-            document.getElementById('ldg').style.display = "inline-block";
+            document.getElementById('sbm').innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
             // From point
             var fromLat = marker.getLngLat().lat;
@@ -331,6 +327,8 @@
             q += "&mode=" + selectedModes;
             q += "&time=" + selectedTime;
             q += cutOffs;
+            document.getElementById('exp').href = q;
+            document.getElementById('exp').disabled=false;
 
             // Remove previous isochrones
             if (map.getLayer('isochrone')) {
@@ -406,8 +404,7 @@
             //Add loading
             map.on("render", function () {
                 if (map.loaded()) {
-                    document.getElementById('sbm').style.display = "inline-block";
-                    document.getElementById('ldg').style.display = "none";
+                    document.getElementById('sbm').innerHTML = "Submit";
                 }
             });
         });
@@ -418,12 +415,13 @@
 
         // Add reset event
         rst.addEventListener('click', function () {
-            document.getElementsByTagName('output')[0].textContent=30;
+            document.getElementsByTagName('output')[0].textContent = 30;
             // Remove previous isochrones
             if (map.getLayer('isochrone')) {
                 map.removeLayer('isochrone');
                 map.removeSource('isochrone');
             };
+            document.getElementById('exp').disabled=true;
         });
     </script>
 

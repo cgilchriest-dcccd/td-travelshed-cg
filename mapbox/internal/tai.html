@@ -83,7 +83,7 @@
             padding-top: 0rem;
             padding-right: 1rem;
             padding-left: 1rem;
-            padding-bottom: 1rem;
+            padding-bottom: 0rem;
             color: rgba(0, 0, 0, 0.9);
             background-color: rgba(255, 255, 255, 0.9);
             font-size: 0.9rem;
@@ -106,6 +106,11 @@
 
         #colorbar {
             width: 15rem;
+        }
+
+        .btn {
+            margin-bottom: 1rem;
+            width: 8rem;
         }
     </style>
 </head>
@@ -136,6 +141,15 @@
                         id="colorbar">
                 </div>
             </div>
+            <div class="row g-0 justify-content-center">
+                <hr>
+                <div class="col-auto">
+                    <a class="btn btn-primary btn-sm" id="exp"
+                        href="https://dcptransportation.carto.com/api/v2/sql?q=SELECT nycct.*, tai.jobindex, tai.jobstd, tai.jobcat, tai.jobpct FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"
+                        download> Export </a>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -156,7 +170,8 @@
                     Travelshed TO a Census Tract </a>
                 <a class="nav-link active" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/tai.html">
                     Transit Access Index </a>
-                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/iso.html?"> Isochrone
+                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/iso.html?">
+                    Isochrone
                     Generator (DCP Only) </a>
             </ul>
         </div>
@@ -429,6 +444,7 @@
             tai.addEventListener('change', function () {
                 var chosenLayer = document.getElementById('tai').value;
                 map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
+                document.getElementById('exp').href = map.getSource(chosenLayer)._data;
                 var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
                 for (var i = 0; i < unchosenLayer.length; i++) {
                     map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility
