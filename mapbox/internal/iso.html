@@ -130,6 +130,10 @@
             width: 5rem;
             margin-bottom: 1rem;
         }
+
+        #expa {
+            color: rgba(255, 255, 255, 1)
+        }
     </style>
 </head>
 
@@ -201,8 +205,10 @@
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary btn-sm" id="exp" download disabled>
-                            Export
+                        <button class="btn btn-primary btn-sm" id="exp" disabled>
+                            <a id="expa" style="text-decoration:none" target="_blank" disabled>
+                                Export
+                            </a>
                         </button>
                     </div>
                 </div>
@@ -403,10 +409,11 @@
             map.on("render", function () {
                 if (map.loaded()) {
                     document.getElementById('sbm').innerHTML = "Submit";
-                    console.log(map.getSource('isochrone')._data);
-                    document.getElementById('exp').href = map.getSource('isochrone')._data;
+                };
+                if (map.getLayer('isochrone')) {
                     document.getElementById('exp').disabled = false;
-                }
+                    document.getElementById('expa').href = q;
+                };
             });
         });
 
@@ -417,12 +424,12 @@
         // Add reset event
         rst.addEventListener('click', function () {
             document.getElementsByTagName('output')[0].textContent = 30;
+            document.getElementById('exp').disabled = true;
             // Remove previous isochrones
             if (map.getLayer('isochrone')) {
                 map.removeLayer('isochrone');
                 map.removeSource('isochrone');
             };
-            document.getElementById('exp').disabled = true;
         });
     </script>
 
