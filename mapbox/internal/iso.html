@@ -132,7 +132,10 @@
         }
 
         #expa {
-            color: rgba(255, 255, 255, 1)
+            color: rgba(255, 255, 255, 1);
+            /* height: 100%;
+            width: 100%;
+            display: block; */
         }
     </style>
 </head>
@@ -197,19 +200,17 @@
                 <div class="row g-0 justify-content-between">
                     <hr>
                     <div class="col-auto">
-                        <button class="btn btn-primary btn-sm" id="sbm"> Submit
-                        </button>
+                        <a class="btn btn-primary btn-sm" id="sbm"> Submit
+                        </a>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary btn-sm" id="rst"> Reset
-                        </button>
+                        <a class="btn btn-primary btn-sm" id="rst"> Reset
+                        </a>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary btn-sm" id="exp" disabled>
-                            <a id="expa" style="text-decoration:none" target="_blank" disabled>
-                                Export
-                            </a>
-                        </button>
+                        <a class="btn btn-primary btn-sm disabled" id="exp" target="_blank">
+                            Export
+                        </a>
                     </div>
                 </div>
             </div>
@@ -411,8 +412,8 @@
                     document.getElementById('sbm').innerHTML = "Submit";
                 };
                 if (map.getLayer('isochrone')) {
-                    document.getElementById('exp').disabled = false;
-                    document.getElementById('expa').href = q;
+                    document.getElementById('exp').className = "btn btn-primary btn-sm";
+                    document.getElementById('exp').href = q;
                 };
             });
         });
@@ -424,7 +425,7 @@
         // Add reset event
         rst.addEventListener('click', function () {
             document.getElementsByTagName('output')[0].textContent = 30;
-            document.getElementById('exp').disabled = true;
+            document.getElementById('exp').className = "btn btn-primary btn-sm disabled";
             // Remove previous isochrones
             if (map.getLayer('isochrone')) {
                 map.removeLayer('isochrone');
