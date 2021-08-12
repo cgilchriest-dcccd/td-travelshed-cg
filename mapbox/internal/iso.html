@@ -193,15 +193,15 @@
                 <div class="row g-0 justify-content-between">
                     <hr>
                     <div class="col-auto">
-                        <button class="btn btn-primary btn-sm" id="sbm" type="submit" style="display: inline-block"> Submit
+                        <button class="btn btn-primary btn-sm" id="sbm"> Submit
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary btn-sm" id="rst" type="reset" style="display: inline-block"> Reset
+                        <button class="btn btn-primary btn-sm" id="rst"> Reset
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary btn-sm" id="exp" type="button" style="display: inline-block" disabled download>
+                        <button class="btn btn-primary btn-sm" id="exp" download disabled>
                             Export
                         </button>
                     </div>
@@ -327,8 +327,6 @@
             q += "&mode=" + selectedModes;
             q += "&time=" + selectedTime;
             q += cutOffs;
-            document.getElementById('exp').href = q;
-            document.getElementById('exp').disabled=false;
 
             // Remove previous isochrones
             if (map.getLayer('isochrone')) {
@@ -405,6 +403,9 @@
             map.on("render", function () {
                 if (map.loaded()) {
                     document.getElementById('sbm').innerHTML = "Submit";
+                    console.log(map.getSource('isochrone')._data);
+                    document.getElementById('exp').href = map.getSource('isochrone')._data;
+                    document.getElementById('exp').disabled = false;
                 }
             });
         });
@@ -421,7 +422,7 @@
                 map.removeLayer('isochrone');
                 map.removeSource('isochrone');
             };
-            document.getElementById('exp').disabled=true;
+            document.getElementById('exp').disabled = true;
         });
     </script>
 
