@@ -21,7 +21,7 @@ pd.set_option('display.max_columns', None)
 pio.renderers.default='browser'
 path='/home/mayijun/TRAVELSHED/'
 # path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
-doserver='http://159.65.64.166:8801/'
+# doserver='http://159.65.64.166:8801/'
 doserver='http://localhost:8801/'
 
 
@@ -115,26 +115,32 @@ if __name__=='__main__':
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
     location['direction']='from'
     location['acre60']=0
-    destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong','acre60']].reset_index(drop=True)
+    destination=location[['tractid','direction','latlong','acre60']].reset_index(drop=True)
+    destination.to_csv(path+'mobility/isofrom.csv',index=False)
+    
+    destination=pd.read_csv(path+'mobility/isofrom.csv',dtype=str)
     for i in destination.index:
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=list(df['TTMEDIAN'])[0]
         destination.loc[i,'acre60']=df
-    destination['std']=(destination['acre60']-np.mean(destination['acre60']))/np.std(destination['acre60'])
-    destination['stdcat']=np.where(destination['std']>=2.5,'>=+2.5SD',
-                          np.where(destination['std']>=1.5,'+1.5SD ~ +2.5SD',
-                          np.where(destination['std']>=0.5,'+0.5SD ~ +1.5SD',
-                          np.where(destination['std']>=-0.5,'-0.5SD ~ +0.5SD',
-                          np.where(destination['std']>=-1.5,'-1.5SD ~ -0.5SD',
-                          np.where(destination['std']>=-2.5,'-2.5SD ~ -1.5SD','<-2.5SD'))))))
-    destination['pct']=pd.qcut(destination['acre60'],100,labels=False)
-    destination=destination[['tractid','acre60','std','stdcat','pct']].reset_index(drop=True)
-    destination.to_csv(path+'mobility/isofrom.csv',index=False)
-    ct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-    ct.crs=4326
-    ct=ct[['tractid','geometry']].reset_index(drop=True)
-    destination=pd.merge(ct,destination,how='inner',on='tractid')
-    destination.to_file(path+'mobility/isofrom.shp')
+        destination.to_csv(path+'mobility/isofrom.csv',index=False)
+        print(i)
+    
+    # destination['std']=(destination['acre60']-np.mean(destination['acre60']))/np.std(destination['acre60'])
+    # destination['stdcat']=np.where(destination['std']>=2.5,'>=+2.5SD',
+    #                       np.where(destination['std']>=1.5,'+1.5SD ~ +2.5SD',
+    #                       np.where(destination['std']>=0.5,'+0.5SD ~ +1.5SD',
+    #                       np.where(destination['std']>=-0.5,'-0.5SD ~ +0.5SD',
+    #                       np.where(destination['std']>=-1.5,'-1.5SD ~ -0.5SD',
+    #                       np.where(destination['std']>=-2.5,'-2.5SD ~ -1.5SD','<-2.5SD'))))))
+    # destination['pct']=pd.qcut(destination['acre60'],100,labels=False)
+    # destination=destination[['tractid','acre60','std','stdcat','pct']].reset_index(drop=True)
+    # destination.to_csv(path+'mobility/isofrom.csv',index=False)
+    # ct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+    # ct.crs=4326
+    # ct=ct[['tractid','geometry']].reset_index(drop=True)
+    # destination=pd.merge(ct,destination,how='inner',on='tractid')
+    # destination.to_file(path+'mobility/isofrom.shp')
     print(datetime.datetime.now()-start)
 
