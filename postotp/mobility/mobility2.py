@@ -115,7 +115,7 @@ if __name__=='__main__':
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
     location['direction']='from'
     location['acre60']=0
-    destination=location.loc[2000:max(location.count())-1,['tractid','direction','latlong','acre60']].reset_index(drop=True)
+    destination=location.loc[2160:max(location.count())-1,['tractid','direction','latlong','acre60']].reset_index(drop=True)
     for i in destination.index:
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
