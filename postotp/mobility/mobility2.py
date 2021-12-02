@@ -61,7 +61,7 @@ while cutoffincrement<cutoffend:
 
 # Definie res travelshed function to generate isochrones and spatial join to Census Blocks
 def travelshedwt(arrt):
-    tp=destination.loc[[i],['id']].reset_index(drop=True)   
+    tp=destination.loc[[i],['tractid']].reset_index(drop=True)   
     if destination.loc[i,'direction']=='to':
         url=doserver+'otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
         url+='&fromPlace='+destination.loc[i,'latlong']+'&toPlace='+destination.loc[i,'latlong']
@@ -73,7 +73,7 @@ def travelshedwt(arrt):
         url+='&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
         url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=0'+cutoff
     else:
-        print(destination.loc[i,'id']+' has no direction!')
+        print(destination.loc[i,'tractid']+' has no direction!')
     headers={'Accept':'application/json'}
     req=requests.get(url=url,headers=headers)
     js=req.json()
@@ -85,11 +85,11 @@ def travelshedwt(arrt):
         try:
             tp['T'+arrt[0:2]+arrt[3:5]]=iso.loc[0,'geometry'].area/43560
         except:
-            print(destination.loc[i,'id']+' '+arrt+' '+str(cut[0])+'-minute isochrone has no Census Block in it!')
+            print(destination.loc[i,'tractid']+' '+arrt+' '+str(cut[0])+'-minute isochrone has no Census Block in it!')
     else:
-        print(destination.loc[i,'id']+' '+arrt+' '+str(cut[0])+'-minute isochrone has no geometry!')
+        print(destination.loc[i,'tractid']+' '+arrt+' '+str(cut[0])+'-minute isochrone has no geometry!')
     tp['T'+arrt[0:2]+arrt[3:5]]=tp['T'+arrt[0:2]+arrt[3:5]].replace(999,np.nan)
-    tp=tp.set_index('id')
+    tp=tp.set_index('tractid')
     return tp
 
 
@@ -111,17 +111,30 @@ def parallelize(data, func):
 # Multiprocessing travelshed function for sites
 if __name__=='__main__':
     location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycrestractptadjfinal',dtype=str)
-    location['id']=['RES'+str(x).zfill(4) for x in location['censustract']]
+    location['tractid']=location['censustract'].copy()
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
     location['direction']='from'
     location['acre60']=0
-    destination=location.loc[0:10,['id','direction','latlong','acre60']].reset_index(drop=True)
-    # Create travel time table for each site
+    destination=location.loc[2000:max(location.count())-1,['tractid','direction','latlong','acre60']].reset_index(drop=True)
     for i in destination.index:
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=list(df['TTMEDIAN'])[0]
         destination.loc[i,'acre60']=df
-    destination.to_csv(path+'mobility/test.csv',index=False)
+    destination['std']=(destination['acre60']-np.mean(destination['acre60']))/np.std(destination['acre60'])
+    destination['stdcat']=np.where(destination['std']>=2.5,'>=+2.5SD',
+                          np.where(destination['std']>=1.5,'+1.5SD ~ +2.5SD',
+                          np.where(destination['std']>=0.5,'+0.5SD ~ +1.5SD',
+                          np.where(destination['std']>=-0.5,'-0.5SD ~ +0.5SD',
+                          np.where(destination['std']>=-1.5,'-1.5SD ~ -0.5SD',
+                          np.where(destination['std']>=-2.5,'-2.5SD ~ -1.5SD','<-2.5SD'))))))
+    destination['pct']=pd.qcut(destination['acre60'],100,labels=False)
+    destination=destination[['tractid','acre60','std','stdcat','pct']].reset_index(drop=True)
+    destination.to_csv(path+'mobility/isofrom.csv',index=False)
+    ct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+    ct.crs=4326
+    ct=ct[['tractid','geometry']].reset_index(drop=True)
+    destination=pd.merge(ct,destination,how='inner',on='tractid')
+    destination.to_file(path+'mobility/isofrom.shp')
     print(datetime.datetime.now()-start)
 
