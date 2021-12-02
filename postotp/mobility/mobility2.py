@@ -50,9 +50,9 @@ maxTransfers=3 # 4 boardings
 maxWalkDistance=805 # in meters
 
 # Set cut off points between 0-120 mins
-cutoffinterval=60 # in minutes
+cutoffinterval=45 # in minutes
 cutoffstart=0
-cutoffend=60
+cutoffend=45
 cutoffincrement=cutoffstart
 cutoff=''
 while cutoffincrement<cutoffend:
