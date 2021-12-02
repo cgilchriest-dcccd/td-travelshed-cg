@@ -50,9 +50,9 @@ maxTransfers=3 # 4 boardings
 maxWalkDistance=805 # in meters
 
 # Set cut off points between 0-120 mins
-cutoffinterval=45 # in minutes
+cutoffinterval=60 # in minutes
 cutoffstart=0
-cutoffend=45
+cutoffend=60
 cutoffincrement=cutoffstart
 cutoff=''
 while cutoffincrement<cutoffend:
@@ -115,7 +115,7 @@ if __name__=='__main__':
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
     location['direction']='from'
     location['acre60']=0
-    destination=location.loc[2160:max(location.count())-1,['tractid','direction','latlong','acre60']].reset_index(drop=True)
+    destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong','acre60']].reset_index(drop=True)
     for i in destination.index:
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
