@@ -119,7 +119,7 @@ if __name__=='__main__':
     # destination.to_csv(path+'mobility/isofrom.csv',index=False)
     
     destination=pd.read_csv(path+'mobility/isofrom.csv',dtype=str)
-    for i in destination.index[1380:]:
+    for i in destination.index[1430:]:
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=list(df['TTMEDIAN'])[0]
