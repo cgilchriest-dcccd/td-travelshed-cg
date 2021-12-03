@@ -110,16 +110,16 @@ def parallelize(data, func):
 
 # Multiprocessing travelshed function for sites
 if __name__=='__main__':
-    location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycrestractptadjfinal',dtype=str)
-    location['tractid']=location['censustract'].copy()
-    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
-    location['direction']='from'
-    location['acre60']=0
-    destination=location[['tractid','direction','latlong','acre60']].reset_index(drop=True)
-    destination.to_csv(path+'mobility/isofrom.csv',index=False)
+    # location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycrestractptadjfinal',dtype=str)
+    # location['tractid']=location['censustract'].copy()
+    # location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
+    # location['direction']='from'
+    # location['acre60']=0
+    # destination=location[['tractid','direction','latlong','acre60']].reset_index(drop=True)
+    # destination.to_csv(path+'mobility/isofrom.csv',index=False)
     
     destination=pd.read_csv(path+'mobility/isofrom.csv',dtype=str)
-    for i in destination.index:
+    for i in destination.index[1380:]:
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=list(df['TTMEDIAN'])[0]
