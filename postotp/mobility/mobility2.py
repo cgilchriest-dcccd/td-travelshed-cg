@@ -162,4 +162,20 @@ if __name__=='__main__':
         destination.to_csv(path+'mobility/isoto.csv',index=False)
         print(i)
 
-
+    destination=pd.read_csv(path+'mobility/isoto.csv',dtype={'tractid':str})
+    destination['std']=(destination['acre60']-np.mean(destination['acre60']))/np.std(destination['acre60'])
+    destination['std'].hist(bins=100)
+    destination['stdcat']=np.where(destination['std']>=2.5,'>=+2.5SD',
+                          np.where(destination['std']>=1.5,'+1.5SD ~ +2.5SD',
+                          np.where(destination['std']>=0.5,'+0.5SD ~ +1.5SD',
+                          np.where(destination['std']>=-0.5,'-0.5SD ~ +0.5SD',
+                          np.where(destination['std']>=-1.5,'-1.5SD ~ -0.5SD',
+                          np.where(destination['std']>=-2.5,'-2.5SD ~ -1.5SD','<-2.5SD'))))))
+    destination['pct']=pd.qcut(destination['acre60'],100,labels=False)
+    destination=destination[['tractid','acre60','std','stdcat','pct']].reset_index(drop=True)
+    ct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+    ct.crs=4326
+    ct=ct[['tractid','geometry']].reset_index(drop=True)
+    destination=pd.merge(ct,destination,how='inner',on='tractid')
+    destination.to_file(path+'mobility/isoto.shp')
+    print(datetime.datetime.now()-start)
