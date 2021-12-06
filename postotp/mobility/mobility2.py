@@ -50,7 +50,7 @@ maxTransfers=3 # 4 boardings
 maxWalkDistance=805 # in meters
 
 # Set cut off points between 0-120 mins
-cutoffinterval=60 # in minutes
+cutoffinterval=2 # in minutes
 cutoffstart=0
 cutoffend=60
 cutoffincrement=cutoffstart
@@ -180,6 +180,7 @@ if __name__=='__main__':
     destination.to_file(path+'mobility/isoto.shp')
     print(datetime.datetime.now()-start)
     
+    # Mobility Example
     df=pd.read_csv(path+'mobility/isofrom.csv',dtype={'tractid':str})
     df=df.loc[df['tractid']=='36061000700'].reset_index(drop=True)
     for i in arrivaltime:
@@ -191,7 +192,55 @@ if __name__=='__main__':
         req=requests.get(url=url,headers=headers)
         js=req.json()
         iso=gpd.GeoDataFrame.from_features(js,crs=4326)
-        iso.to_file(path+'mobility/example/T'+i.replace(':','')[0:4]+'.geojson',driver='GeoJSON')
+        iso.to_file(path+'mobility/example/mobility/T'+i.replace(':','')[0:4]+'.geojson',driver='GeoJSON')
 
+    # Access Example
+    df=pd.read_csv(path+'mobility/isofrom.csv',dtype={'tractid':str})
+    df=df.loc[df['tractid']=='36061011900'].reset_index(drop=True)
+    url=doserver+'otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
+    url+='&fromPlace='+df.loc[0,'latlong']
+    url+='&date='+typicaldate+'&time='+arrivaltime[0]+'&maxTransfers='+str(maxTransfers)
+    url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=0'+cutoff
+    headers={'Accept':'application/json'}
+    req=requests.get(url=url,headers=headers)
+    js=req.json()
+    iso=gpd.GeoDataFrame.from_features(js,crs=4326)
+    iso.to_file(path+'mobility/example/access/T'+arrivaltime[0].replace(':','')[0:4]+'.geojson',driver='GeoJSON')
+            
+    hd=pd.DataFrame(columns=['orgct','destbk','time'])
+    hd.to_csv(path+'mobility/example/access/from.csv',mode='w',index=False,header=True)
+    rd=pd.read_csv(path+'nyctract/resbk3.csv',dtype=float,converters={'blockid':str},chunksize=10000)
+    for ck in rd:
+        tp=pd.melt(ck,id_vars=['blockid'])
+        tp=tp.loc[tp['variable']=='RES36061011900'].reset_index(drop=True)
+        tp=tp[tp['value']<=60].reset_index(drop=True)
+        tp['orgct']=[x.replace('RES','') for x in tp['variable']]
+        tp['destbk']=tp['blockid'].copy()
+        tp['time']=tp['value'].copy()
+        tp=tp[['orgct','destbk','time']].reset_index(drop=True)
+        tp.to_csv(path+'mobility/example/access/from.csv',mode='a',index=False,header=False)
+    df=pd.read_csv(path+'mobility/example/access/from.csv',dtype=str,converters={'time':float})
+    df['blockid']=df['destbk'].copy()
+    bk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
+    bk.crs=4326
+    bk=bk[['blockid','geometry']].reset_index(drop=True)
+    df=pd.merge(bk,df,how='inner',on='blockid')
+    df=df[['blockid','time','geometry']].reset_index(drop=True)
+    df.to_file(path+'mobility/example/access/from.shp')
 
+    wac=pd.DataFrame()
+    for i in ['ct','nj','ny','pa']:
+        tp=pd.read_csv(path+'lehd/'+str(i)+'_wac_S000_JT03_2017.csv',dtype=str)
+        tp=tp[['w_geocode','C000']]
+        wac=pd.concat([wac,tp],axis=0)
+    wac.columns=['blockid','wac']
+    wac['wac']=pd.to_numeric(wac['wac'])
+    df=gpd.read_file(path+'mobility/example/access/from.shp')
+    df.crs=4326
+    df=pd.merge(df,wac,how='inner',on='blockid')
+    df.to_file(path+'mobility/example/access/wac.shp')
 
+        
+        
+        
+        
