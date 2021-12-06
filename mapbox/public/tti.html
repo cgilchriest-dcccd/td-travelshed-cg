@@ -83,7 +83,7 @@
             padding-top: 0rem;
             padding-right: 1rem;
             padding-left: 1rem;
-            padding-bottom: 1rem;
+            padding-bottom: 0rem;
             color: rgba(0, 0, 0, 0.9);
             background-color: rgba(255, 255, 255, 0.9);
             font-size: 0.9rem;
@@ -105,7 +105,12 @@
         }
 
         #colorbar {
-            width: 17rem;
+            width: 15rem;
+        }
+
+        .btn {
+            margin-bottom: 1rem;
+            width: 8rem;
         }
     </style>
 </head>
@@ -118,14 +123,15 @@
     <div id="legend">
         <div class="container g-0">
             <div class="row g-0 justify-content-start">
-                <div class="col-auto" id="header"> Transit Access Index </div>
+                <div class="col-auto" id="header"> Transit Travelshed Index </div>
             </div>
             <div class="row g-0 justify-content-center">
                 <div class="col-12">
-                    <select class='form-select' id='tai'>
-                        <option value='job'> Access to Jobs </option>
+                    <select class='form-select' id='tti'>
+                        <option value='mob'> Transit Mobility </option>
                         <option value='pop'> Access to Population </option>
-                        <option value='labor'> Access to Labor Force </option>
+                        <option value='job'> Access to Jobs </option>
+                        <option value='lab'> Access to Labor Force </option>
                     </select>
                 </div>
             </div>
@@ -136,6 +142,17 @@
                         id="colorbar">
                 </div>
             </div>
+            <div class="row g-0 justify-content-center">
+                <hr>
+                <div class="col-auto">
+                    <a class="btn btn-primary btn-sm" id="exp"
+                        href="https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/tti.geojson"
+                        target="blank">
+                        Export
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -154,8 +171,8 @@
                     Transit Travelshed FROM a Census Tract </a>
                 <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/public/to.html"> Transit
                     Travelshed TO a Census Tract </a>
-                <a class="nav-link active" href="https://nycplanning.github.io/td-travelshed/mapbox/public/tai.html">
-                    Transit Access Index </a>
+                <a class="nav-link active" href="https://nycplanning.github.io/td-travelshed/mapbox/public/tti.html">
+                    Transit Travelshed Index </a>
             </ul>
         </div>
     </nav>
@@ -206,21 +223,20 @@
 
 
 
-            // Add access to labor force
+
+
+            // Add transit mobility
             // Set layer contents
-            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT nycct.*, tai.laborindex, tai.laborstd, tai.laborcat, tai.laborpct, case when laborstd<-2 then '<-2SD' when laborstd<-1 then '-2SD ~ -1SD' when laborstd<0 then '-1SD ~ 0SD' when laborstd<1 then '0SD ~ 1SD' when laborstd<2 then '1SD ~ 2SD' when laborstd<3 then '2SD ~ 3SD' else '>=3SD' end as laborcat FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid";
-            q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
             var layerContent = {
-                'sourceid': 'labor', // source id
+                'sourceid': 'mob', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': q, // data source
-                'layerid': 'labor', // layer id
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/tti.geojson', // data source
+                'layerid': 'mob', // layer id
                 'layertype': 'fill', // symbology type
-                'layername': 'Access to Labor Force', // layer name for the legend
-                'layervisibility': 'none', // visibility of the layer
-                'layercolname': 'laborcat', // category column name
-                'layercat': ['<-2SD', '-2SD ~ -1SD', '-1SD ~ 0SD', '0SD ~ 1SD', '1SD ~ 2SD', '2SD ~ 3SD', '>=3SD'], // categories
+                'layername': 'Transit Mobility', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolname': 'mobcat', // category column name
+                'layercat': ['<-2.5SD', '-2.5SD ~ -1.5SD', '-1.5SD ~ -0.5SD', '-0.5SD ~ +0.5SD', '+0.5SD ~ +1.5SD', '+1.5SD ~ +2.5SD', '>=+2.5SD'], // categories
                 'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(128, 191, 172, 0.8)', 'rgba(199, 233, 173, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(254, 201, 128, 0.8)', 'rgba(241, 124, 74, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
                 'layeroutlinecolor': 'rgba(0, 0, 0, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
@@ -260,19 +276,16 @@
 
             // Add access to population
             // Set layer contents
-            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT nycct.*, tai.popindex, tai.popstd, tai.popcat, tai.poppct, case when popstd<-2 then '<-2SD' when popstd<-1 then '-2SD ~ -1SD' when popstd<0 then '-1SD ~ 0SD' when popstd<1 then '0SD ~ 1SD' when popstd<2 then '1SD ~ 2SD' when popstd<3 then '2SD ~ 3SD' else '>=3SD' end as popcat FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid";
-            q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
             var layerContent = {
                 'sourceid': 'pop', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': q, // data source
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/tti.geojson', // data source
                 'layerid': 'pop', // layer id
                 'layertype': 'fill', // symbology type
                 'layername': 'Access to Population', // layer name for the legend
                 'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'popcat', // category column name
-                'layercat': ['<-2SD', '-2SD ~ -1SD', '-1SD ~ 0SD', '0SD ~ 1SD', '1SD ~ 2SD', '2SD ~ 3SD', '>=3SD'], // categories
+                'layercat': ['<-2.5SD', '-2.5SD ~ -1.5SD', '-1.5SD ~ -0.5SD', '-0.5SD ~ +0.5SD', '+0.5SD ~ +1.5SD', '+1.5SD ~ +2.5SD', '>=+2.5SD'], // categories
                 'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(128, 191, 172, 0.8)', 'rgba(199, 233, 173, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(254, 201, 128, 0.8)', 'rgba(241, 124, 74, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
                 'layeroutlinecolor': 'rgba(0, 0, 0, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
@@ -312,19 +325,16 @@
 
             // Add access to jobs
             // Set layer contents
-            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT nycct.*, tai.jobindex, tai.jobstd, tai.jobcat, tai.jobpct, case when jobstd<-0.5 then '<-0.5SD' when jobstd<0.5 then '-0.5SD ~ 0.5SD' when jobstd<1.5 then '0.5SD ~ 1.5SD' when jobstd<2.5 then '1.5SD ~ 2.5SD' when jobstd<3.5 then '2.5SD ~ 3.5SD' when jobstd<4.5 then '3.5SD ~ 4.5SD' else '>=4.5SD' end as jobcat FROM dcptransportation.nycct JOIN dcptransportation.tai ON tai.tractid=nycct.tractid";
-            q += "&format=GeoJSON&api_key=YSGpiGOzF4AfKocoB7yqww"; // Carto API
             var layerContent = {
                 'sourceid': 'job', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': q, // data source
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/tti.geojson', // data source
                 'layerid': 'job', // layer id
                 'layertype': 'fill', // symbology type
                 'layername': 'Access to Jobs', // layer name for the legend
-                'layervisibility': 'visible', // visibility of the layer
+                'layervisibility': 'none', // visibility of the layer
                 'layercolname': 'jobcat', // category column name
-                'layercat': ['<-0.5SD', '-0.5SD ~ 0.5SD', '0.5SD ~ 1.5SD', '1.5SD ~ 2.5SD', '2.5SD ~ 3.5SD', '3.5SD ~ 4.5SD', '>=4.5SD'], // categories
+                'layercat': ['<-2.5SD', '-2.5SD ~ -1.5SD', '-1.5SD ~ -0.5SD', '-0.5SD ~ +0.5SD', '+0.5SD ~ +1.5SD', '+1.5SD ~ +2.5SD', '>=+2.5SD'], // categories
                 'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(128, 191, 172, 0.8)', 'rgba(199, 233, 173, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(254, 201, 128, 0.8)', 'rgba(241, 124, 74, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
                 'layeroutlinecolor': 'rgba(0, 0, 0, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
@@ -362,6 +372,57 @@
 
 
 
+            // Add access to labor force
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'lab', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/tti.geojson', // data source
+                'layerid': 'lab', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'Access to Labor Force', // layer name for the legend
+                'layervisibility': 'none', // visibility of the layer
+                'layercolname': 'labcat', // category column name
+                'layercat': ['<-2.5SD', '-2.5SD ~ -1.5SD', '-1.5SD ~ -0.5SD', '-0.5SD ~ +0.5SD', '+0.5SD ~ +1.5SD', '+1.5SD ~ +2.5SD', '>=+2.5SD'], // categories
+                'layercolor': ['rgba(43, 131, 186, 0.8)', 'rgba(128, 191, 172, 0.8)', 'rgba(199, 233, 173, 0.8)', 'rgba(255, 255, 191, 0.8)', 'rgba(254, 201, 128, 0.8)', 'rgba(241, 124, 74, 0.8)', 'rgba(215, 25, 28, 0.8)'], // fill color; use rgba
+                'layeroutlinecolor': 'rgba(0, 0, 0, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
+            };
+
+            // Generate layer colors
+            var layerColor = ['match', ['get', layerContent['layercolname']]];
+            for (var i = 0; i < layerContent.layercat.length; i++) {
+                layerColor.push(layerContent.layercat[i]);
+                layerColor.push(layerContent.layercolor[i]);
+            };
+            layerColor.push('#000000');
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerColor,
+                    'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+
+
             // Add popup
             var popup = new mapboxgl.Popup({
                 closeButton: false, // close button
@@ -372,18 +433,18 @@
                 maxWidth: 'none', // max width of the popoup; 'none' to fit to the content              
             });
 
-            // Add access to labor force popup
+            // Add transit mobility popup
             // Add hover events
-            map.on('mousemove', 'labor', function (e) {
+            map.on('mousemove', 'mob', function (e) {
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
-                description += "<b>Access to Labor Force Index: </b><span>" + e.features[0].properties.laborindex.toFixed(2) + "</span><br>";
-                description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.laborstd.toFixed(2) + "</span><br>";
-                description += "<b>Percentile: </b><span>" + e.features[0].properties.laborpct + "%</span><br>";
+                description += "<b>Transit Mobility Index: </b><span>" + e.features[0].properties.mobindex.toFixed(0) + "</span><br>";
+                description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.mobstd.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.mobpct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
-            map.on('mouseleave', 'labor', function () {
+            map.on('mouseleave', 'mob', function () {
                 map.getCanvas().style.cursor = '';
                 popup.remove()
             });
@@ -394,7 +455,7 @@
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
-                description += "<b>Access to Population Index: </b><span>" + e.features[0].properties.popindex.toFixed(2) + "</span><br>";
+                description += "<b>Access to Population Index: </b><span>" + e.features[0].properties.popindex.toFixed(0) + "</span><br>";
                 description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.popstd.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.poppct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
@@ -410,7 +471,7 @@
                 map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
-                description += "<b>Access to Jobs Index: </b><span>" + e.features[0].properties.jobindex.toFixed(2) + "</span><br>";
+                description += "<b>Access to Jobs Index: </b><span>" + e.features[0].properties.jobindex.toFixed(0) + "</span><br>";
                 description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.jobstd.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.jobpct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
@@ -420,13 +481,30 @@
                 popup.remove()
             });
 
+            // Add access to labor force popup
+            // Add hover events
+            map.on('mousemove', 'lab', function (e) {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+                var coordinates = e.lngLat; // get pointer coordinates
+                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                description += "<b>Access to Labor Force Index: </b><span>" + e.features[0].properties.labindex.toFixed(0) + "</span><br>";
+                description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.labstd.toFixed(2) + "</span><br>";
+                description += "<b>Percentile: </b><span>" + e.features[0].properties.labpct + "%</span><br>";
+                popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
+            });
+            map.on('mouseleave', 'lab', function () {
+                map.getCanvas().style.cursor = '';
+                popup.remove()
+            });
+
 
 
             // Create click event
-            var layerOrder = ['job', 'pop', 'labor']; // set layer order in the legend
-            tai.addEventListener('change', function () {
-                var chosenLayer = document.getElementById('tai').value;
+            var layerOrder = ['mob', 'pop', 'job', 'lab']; // set layer order in the legend
+            tti.addEventListener('change', function () {
+                var chosenLayer = document.getElementById('tti').value;
                 map.setLayoutProperty(chosenLayer, 'visibility', 'visible'); // set layer visibility
+                document.getElementById('exp').href = map.getSource(chosenLayer)._data;
                 var unchosenLayer = layerOrder.filter(function (x) { return x !== chosenLayer; });
                 for (var i = 0; i < unchosenLayer.length; i++) {
                     map.setLayoutProperty(unchosenLayer[i], 'visibility', 'none'); // set layer visibility

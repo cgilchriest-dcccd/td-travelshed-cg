@@ -136,6 +136,7 @@
 
         .btn {
             margin-bottom: 1rem;
+            width: 8rem;
         }
     </style>
 </head>
@@ -217,10 +218,13 @@
                     <span> (Data Source: Census Bureau LEHD 2017) </span>
                 </div>
             </div>
-            <div class="row g-0 justify-content-center">
+            <div class="row g-0 justify-content-between">
                 <hr>
                 <div class="col-auto">
-                    <button type="button" class="btn btn-primary btn-sm" id="rst"> Reset </button>
+                    <a class="btn btn-primary btn-sm" id="rst"> Reset </a>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-primary btn-sm" id="exp"> Export </a>
                 </div>
             </div>
         </div>
@@ -237,12 +241,13 @@
         <div class="collapse navbar-collapse p-0 justify-content-start" id="bannertoggle">
             <ul class="navbar-nav p-0">
                 <a class="nav-link"></a>
-                <a class="nav-link active" href="https://nycplanning.github.io/td-travelshed/mapbox/public/index.html">
+                <a class="nav-link active"
+                    href="https://nycplanning.github.io/td-travelshed/mapbox/public/index.html">
                     Transit Travelshed FROM a Census Tract </a>
                 <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/public/to.html"> Transit
                     Travelshed TO a Census Tract </a>
-                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/public/tai.html"> Transit
-                    Access Index </a>
+                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/public/tti.html"> Transit
+                    Travelshed Index </a>
             </ul>
         </div>
     </nav>
@@ -512,6 +517,7 @@
                     document.getElementById('legend1').style.display = 'none';
                     document.getElementById('legend2').style.display = 'flex';
                     document.getElementById('selectedtract').textContent = sl;
+                    document.getElementById('exp').href = q;
                     var p = "https://dcptransportation.carto.com/api/v2/sql?q=";
                     p += "SELECT * FROM dcptransportation.resbkgravity WHERE restractid=";
                     p += sl;
