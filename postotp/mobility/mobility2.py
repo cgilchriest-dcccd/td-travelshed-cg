@@ -161,7 +161,7 @@ if __name__=='__main__':
         destination.loc[i,'acre60']=df
         destination.to_csv(path+'mobility/isoto.csv',index=False)
         print(i)
-
+        
     destination=pd.read_csv(path+'mobility/isoto.csv',dtype={'tractid':str})
     destination['std']=(destination['acre60']-np.mean(destination['acre60']))/np.std(destination['acre60'])
     destination['std'].hist(bins=100)
@@ -179,3 +179,19 @@ if __name__=='__main__':
     destination=pd.merge(ct,destination,how='inner',on='tractid')
     destination.to_file(path+'mobility/isoto.shp')
     print(datetime.datetime.now()-start)
+    
+    df=pd.read_csv(path+'mobility/isofrom.csv',dtype={'tractid':str})
+    df=df.loc[df['tractid']=='36061000700'].reset_index(drop=True)
+    for i in arrivaltime:
+        url=doserver+'otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
+        url+='&fromPlace='+df.loc[0,'latlong']
+        url+='&date='+typicaldate+'&time='+i+'&maxTransfers='+str(maxTransfers)
+        url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=0'+cutoff
+        headers={'Accept':'application/json'}
+        req=requests.get(url=url,headers=headers)
+        js=req.json()
+        iso=gpd.GeoDataFrame.from_features(js,crs=4326)
+        iso.to_file(path+'mobility/example/T'+i.replace(':','')[0:4]+'.geojson',driver='GeoJSON')
+
+
+
