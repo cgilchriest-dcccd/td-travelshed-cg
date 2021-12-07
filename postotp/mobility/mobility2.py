@@ -20,8 +20,8 @@ import json
 pd.set_option('display.max_columns', None)
 pio.renderers.default='browser'
 path='/home/mayijun/TRAVELSHED/'
-# path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
-# doserver='http://159.65.64.166:8801/'
+path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
+doserver='http://159.65.64.166:8801/'
 doserver='http://localhost:8801/'
 
 
@@ -239,7 +239,14 @@ if __name__=='__main__':
     df.crs=4326
     df=pd.merge(df,wac,how='inner',on='blockid')
     df.to_file(path+'mobility/example/access/wac.shp')
-
+    df['cat']=np.where(df['time']<=10,'WAC1-10',
+          np.where(df['time']<=20,'WAC11-20',
+          np.where(df['time']<=30,'WAC21-30',
+          np.where(df['time']<=40,'WAC31-40',
+          np.where(df['time']<=50,'WAC41-50',
+          np.where(df['time']<=60,'WAC51-60',''))))))
+    df=df.groupby(['cat'],as_index=False).agg({'wac':'sum'}).reset_index(drop=True)
+    df.to_csv(path+'mobility/example/access/wac.csv',index=False)
         
         
         
