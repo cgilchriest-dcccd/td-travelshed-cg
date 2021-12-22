@@ -450,8 +450,8 @@
             });
 
             // Add transit mobility popup
-             // Add click event
-             map.on('click', 'mob', function (e) {
+            // Add click event
+            map.on('click', 'mob', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Transit Mobility Index: </b><span>" + e.features[0].properties.mobindex.toFixed(0) + "</span><br>";
@@ -468,9 +468,8 @@
             });
 
             // Add access to population popup
-            // Add hover event
-            map.on('mousemove', 'pop', function (e) {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            // Add click event
+            map.on('click', 'pop', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Access to Population Index: </b><span>" + e.features[0].properties.popindex.toFixed(0) + "</span><br>";
@@ -478,15 +477,17 @@
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.poppct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
+            // Add hover events
+            map.on('mouseenter', 'pop', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
             map.on('mouseleave', 'pop', function () {
                 map.getCanvas().style.cursor = '';
-                popup.remove()
             });
 
             // Add access to jobs popup
-            // Add hover event
-            map.on('mousemove', 'job', function (e) {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            // Add click event
+            map.on('click', 'job', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Access to Jobs Index: </b><span>" + e.features[0].properties.jobindex.toFixed(0) + "</span><br>";
@@ -494,15 +495,17 @@
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.jobpct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
+            // Add hover events
+            map.on('mouseenter', 'job', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
             map.on('mouseleave', 'job', function () {
                 map.getCanvas().style.cursor = '';
-                popup.remove()
             });
 
             // Add access to labor force popup
-            // Add hover events
-            map.on('mousemove', 'lab', function (e) {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            // Add click event
+            map.on('click', 'lab', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Access to Labor Force Index: </b><span>" + e.features[0].properties.labindex.toFixed(0) + "</span><br>";
@@ -510,9 +513,12 @@
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.labpct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
+            // Add hover events
+            map.on('mouseenter', 'lab', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
             map.on('mouseleave', 'lab', function () {
                 map.getCanvas().style.cursor = '';
-                popup.remove()
             });
 
 
