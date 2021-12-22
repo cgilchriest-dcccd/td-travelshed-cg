@@ -441,7 +441,7 @@
 
             // Add popup
             var popup = new mapboxgl.Popup({
-                closeButton: false, // close button
+                closeButton: true, // close button
                 closeOnClick: false, // close if click on map
                 closeOnMove: false, // close if move the map
                 anchor: 'bottom', // anchor of the popup
@@ -450,9 +450,8 @@
             });
 
             // Add transit mobility popup
-            // Add hover events
-            map.on('mousemove', 'mob', function (e) {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+             // Add click event
+             map.on('click', 'mob', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
                 var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Transit Mobility Index: </b><span>" + e.features[0].properties.mobindex.toFixed(0) + "</span><br>";
@@ -460,9 +459,12 @@
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.mobpct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
+            // Add hover events
+            map.on('mouseenter', 'mob', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
             map.on('mouseleave', 'mob', function () {
                 map.getCanvas().style.cursor = '';
-                popup.remove()
             });
 
             // Add access to population popup
