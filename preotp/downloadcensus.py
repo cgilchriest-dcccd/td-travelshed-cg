@@ -3,6 +3,7 @@
 # OpenTripPlanner Guide: http://docs.opentripplanner.org/en/latest/
 # OpenTripPlanner API Doc: http://dev.opentripplanner.org/apidoc/1.0.0/index.html
 
+
 import urllib.request
 import shutil
 import zipfile
@@ -12,82 +13,85 @@ import shapely
 import os
 import time
 
+
 pd.set_option('display.max_columns', None)
-
-path='/home/mayijun/TRAVELSHED/'
-#path='C:/Users/Yijun Ma/Desktop/D/DOCUMENT/DCP2018/TRAVELSHEDREVAMP/'
+# path='/home/mayijun/TRAVELSHED/'
+path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
 #path='E:/'
-
 
 
 # Census Block
 # Download Census Block shapefiles
 # Connecticut
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/TABBLOCK/tl_2017_09_tabblock10.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/TABBLOCK20/tl_2021_09_tabblock20.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_09_tabblock10.zip', "wb")
+file=open(path+'shp/tl_2021_09_tabblock20.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_09_tabblock10.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_09_tabblock10')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_09_tabblock20.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_09_tabblock20')
 zip_ref.close()
-ctbk=gpd.read_file(path+'shp/tl_2017_09_tabblock10/tl_2017_09_tabblock10.shp')
 time.sleep(10)
 
 # New Jersey
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/TABBLOCK/tl_2017_34_tabblock10.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/TABBLOCK20/tl_2021_34_tabblock20.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_34_tabblock10.zip', "wb")
+file=open(path+'shp/tl_2021_34_tabblock20.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_34_tabblock10.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_34_tabblock10')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_34_tabblock20.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_34_tabblock20')
 zip_ref.close()
-njbk=gpd.read_file(path+'shp/tl_2017_34_tabblock10/tl_2017_34_tabblock10.shp')
 time.sleep(10)
 
 # New York
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/TABBLOCK/tl_2017_36_tabblock10.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/TABBLOCK20/tl_2021_36_tabblock20.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_36_tabblock10.zip', "wb")
+file = open(path+'shp/tl_2021_36_tabblock20.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_36_tabblock10.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_36_tabblock10')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_36_tabblock20.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_36_tabblock20')
 zip_ref.close()
-nybk=gpd.read_file(path+'shp/tl_2017_36_tabblock10/tl_2017_36_tabblock10.shp')
 time.sleep(10)
 
 # Pennsylvania
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/TABBLOCK/tl_2017_42_tabblock10.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/TABBLOCK20/tl_2021_42_tabblock20.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_42_tabblock10.zip', "wb")
+file = open(path+'shp/tl_2021_42_tabblock20.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_42_tabblock10.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_42_tabblock10')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_42_tabblock20.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_42_tabblock20')
 zip_ref.close()
-pabk=gpd.read_file(path+'shp/tl_2017_42_tabblock10/tl_2017_42_tabblock10.shp')
 time.sleep(10)
 
 # Merge Quadstate Census Blocks
-bk=gpd.GeoDataFrame()
-bk=bk.append(ctbk,ignore_index=True)
-bk=bk.append(njbk,ignore_index=True)
-bk=bk.append(nybk,ignore_index=True)
-bk=bk.append(pabk,ignore_index=True)
-bk['blockid']=bk['GEOID10']
-bk['lat']=pd.to_numeric(bk['INTPTLAT10'])
-bk['long']=pd.to_numeric(bk['INTPTLON10'])
-bk=bk[['blockid','lat','long','geometry']]
-bk=bk.to_crs({'init': 'epsg:4326'})
-bk.to_file(filename=path+'shp/quadstatebk.shp',driver='ESRI Shapefile')
+ctbk=gpd.read_file(path+'shp/tl_2021_09_tabblock20/tl_2021_09_tabblock20.shp')
+ctbk.crs=4269
+ctbk=ctbk.to_crs(4326)
+njbk=gpd.read_file(path+'shp/tl_2021_34_tabblock20/tl_2021_34_tabblock20.shp')
+njbk.crs=4269
+njbk=njbk.to_crs(4326)
+nybk=gpd.read_file(path+'shp/tl_2021_36_tabblock20/tl_2021_36_tabblock20.shp')
+nybk.crs=4269
+nybk=nybk.to_crs(4326)
+pabk=gpd.read_file(path+'shp/tl_2021_42_tabblock20/tl_2021_42_tabblock20.shp')
+pabk.crs=4269
+pabk=pabk.to_crs(4326)
+bk=pd.concat([ctbk,njbk,nybk,pabk],axis=0,ignore_index=True)
+bk['blockid20']=bk['GEOID20']
+bk['lat']=pd.to_numeric(bk['INTPTLAT20'])
+bk['long']=pd.to_numeric(bk['INTPTLON20'])
+bk=bk[['blockid20','lat','long','geometry']].reset_index(drop=True)
+bk.to_file(filename=path+'shp/quadstatebk20.shp',driver='ESRI Shapefile')
 
 # Convert polygons to centroids
-bk=gpd.read_file(path+'shp/quadstatebk.shp')
-bkpt=bk[['blockid','lat','long']]
-bkpt=gpd.GeoDataFrame(bkpt,crs={'init': 'epsg:4326'},geometry=[shapely.geometry.Point(xy) for xy in zip(bkpt.long, bkpt.lat)])
-bkpt.to_file(filename=path+'shp/quadstatebkpt.shp',driver='ESRI Shapefile')
+bk=gpd.read_file(path+'shp/quadstatebk20.shp')
+bk.crs=4326
+bkpt=bk[['blockid20','lat','long']].reset_index(drop=True)
+bkpt=gpd.GeoDataFrame(bkpt,crs=4326,geometry=[shapely.geometry.Point(xy) for xy in zip(bkpt.long, bkpt.lat)])
+bkpt.to_file(filename=path+'shp/quadstatebkpt20.shp',driver='ESRI Shapefile')
 
 # Clip water
 bk=gpd.read_file(path+'shp/quadstatebk.shp')
