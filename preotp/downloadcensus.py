@@ -94,13 +94,12 @@ bkpt=gpd.GeoDataFrame(bkpt,crs=4326,geometry=[shapely.geometry.Point(xy) for xy 
 bkpt.to_file(filename=path+'shp/quadstatebkpt20.shp',driver='ESRI Shapefile')
 
 # Clip water
-bk=gpd.read_file(path+'shp/quadstatebk.shp')
-bk.crs={'init': 'epsg:4326'}
-water=gpd.read_file(path+'water/water.shp')
-water.crs={'init': 'epsg:4326'}
+bk=gpd.read_file(path+'shp/quadstatebk20.shp')
+bk.crs=4326
+water=gpd.read_file(path+'water/water20.shp')
+water.crs=4326
 bkclip=gpd.overlay(bk,water,how='difference')
-bkclip.crs={'init': 'epsg:4326'}
-bkclip.to_file(filename=path+'shp/quadstatebkclipped.shp',driver='ESRI Shapefile')
+bkclip.to_file(filename=path+'shp/quadstatebkclipped20.shp',driver='ESRI Shapefile')
 
 # Remove downloaded files
 os.remove(path+'shp/tl_2017_09_tabblock10.zip')
