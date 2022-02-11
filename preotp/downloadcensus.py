@@ -116,168 +116,176 @@ shutil.rmtree(path+'shp/tl_2017_42_tabblock10')
 # Census Block Group
 # Download Census Block Group shapefiles
 # Connecticut
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/BG/tl_2017_09_bg.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/BG/tl_2021_09_bg.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_09_bg.zip', "wb")
+file = open(path+'shp/tl_2021_09_bg.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_09_bg.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_09_bg')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_09_bg.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_09_bg')
 zip_ref.close()
-ctbkgp=gpd.read_file(path+'shp/tl_2017_09_bg/tl_2017_09_bg.shp')
 time.sleep(10)
 
 # New Jersey
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/BG/tl_2017_34_bg.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/BG/tl_2021_34_bg.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_34_bg.zip', "wb")
+file = open(path+'shp/tl_2021_34_bg.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_34_bg.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_34_bg')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_34_bg.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_34_bg')
 zip_ref.close()
-njbkgp=gpd.read_file(path+'shp/tl_2017_34_bg/tl_2017_34_bg.shp')
 time.sleep(10)
 
 # New York
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/BG/tl_2017_36_bg.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/BG/tl_2021_36_bg.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_36_bg.zip', "wb")
+file = open(path+'shp/tl_2021_36_bg.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_36_bg.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_36_bg')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_36_bg.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_36_bg')
 zip_ref.close()
-nybkgp=gpd.read_file(path+'shp/tl_2017_36_bg/tl_2017_36_bg.shp')
 time.sleep(10)
 
 # Pennsylvania
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/BG/tl_2017_42_bg.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/BG/tl_2021_42_bg.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_42_bg.zip', "wb")
+file = open(path+'shp/tl_2021_42_bg.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_42_bg.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_42_bg')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_42_bg.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_42_bg')
 zip_ref.close()
-pabkgp=gpd.read_file(path+'shp/tl_2017_42_bg/tl_2017_42_bg.shp')
 time.sleep(10)
 
 # Merge Quadstate Census Block Groups
-bkgp=gpd.GeoDataFrame()
-bkgp=bkgp.append(ctbkgp,ignore_index=True)
-bkgp=bkgp.append(njbkgp,ignore_index=True)
-bkgp=bkgp.append(nybkgp,ignore_index=True)
-bkgp=bkgp.append(pabkgp,ignore_index=True)
-bkgp['blockgroupid']=bkgp['GEOID']
+ctbkgp=gpd.read_file(path+'shp/tl_2021_09_bg/tl_2021_09_bg.shp')
+ctbkgp.crs=4269
+ctbkgp=ctbkgp.to_crs(4326)
+njbkgp=gpd.read_file(path+'shp/tl_2021_34_bg/tl_2021_34_bg.shp')
+njbkgp.crs=4269
+njbkgp=njbkgp.to_crs(4326)
+nybkgp=gpd.read_file(path+'shp/tl_2021_36_bg/tl_2021_36_bg.shp')
+nybkgp.crs=4269
+nybkgp=nybkgp.to_crs(4326)
+pabkgp=gpd.read_file(path+'shp/tl_2021_42_bg/tl_2021_42_bg.shp')
+pabkgp.crs=4269
+pabkgp=pabkgp.to_crs(4326)
+bkgp=pd.concat([ctbkgp,njbkgp,nybkgp,pabkgp],axis=0,ignore_index=True)
+bkgp['bkgpid20']=bkgp['GEOID']
 bkgp['lat']=pd.to_numeric(bkgp['INTPTLAT'])
 bkgp['long']=pd.to_numeric(bkgp['INTPTLON'])
-bkgp=bkgp[['blockgroupid','lat','long','geometry']]
-bkgp=bkgp.to_crs({'init': 'epsg:4326'})
-bkgp.to_file(filename=path+'shp/quadstatebkgp.shp',driver='ESRI Shapefile')
+bkgp=bkgp[['bkgpid20','lat','long','geometry']].reset_index(drop=True)
+bkgp.to_file(filename=path+'shp/quadstatebkgp20.shp',driver='ESRI Shapefile')
 
 # Convert polygons to centroids
-bkgppt=bkgp[['blockgroupid','lat','long']]
-bkgppt=gpd.GeoDataFrame(bkgppt,crs={'init': 'epsg:4326'},geometry=[shapely.geometry.Point(xy) for xy in zip(bkgppt.long, bkgppt.lat)])
-bkgppt.to_file(filename=path+'shp/quadstatebkgppt.shp',driver='ESRI Shapefile')
+bkgp=gpd.read_file(path+'shp/quadstatebkgp20.shp')
+bkgp.crs=4326
+bkgppt=bkgp[['bkgpid20','lat','long']].reset_index(drop=True)
+bkgppt=gpd.GeoDataFrame(bkgppt,crs=4326,geometry=[shapely.geometry.Point(xy) for xy in zip(bkgppt.long, bkgppt.lat)])
+bkgppt.to_file(filename=path+'shp/quadstatebkgppt20.shp',driver='ESRI Shapefile')
 
 # Clip water
-bkgp=gpd.read_file(path+'shp/quadstatebkgp.shp')
-bkgp.crs={'init': 'epsg:4326'}
-water=gpd.read_file(path+'water/water.shp')
-water.crs={'init': 'epsg:4326'}
+bkgp=gpd.read_file(path+'shp/quadstatebkgp20.shp')
+bkgp.crs=4326
+water=gpd.read_file(path+'water/water20.shp')
+water.crs=4326
 bkgpclip=gpd.overlay(bkgp,water,how='difference')
-bkgpclip.crs={'init': 'epsg:4326'}
-bkgpclip.to_file(filename=path+'shp/quadstatebkgpclipped.shp',driver='ESRI Shapefile')
+bkgpclip.to_file(filename=path+'shp/quadstatebkgpclipped20.shp',driver='ESRI Shapefile')
 
 # Remove downloaded files
-os.remove(path+'shp/tl_2017_09_bg.zip')
-shutil.rmtree(path+'shp/tl_2017_09_bg')
-os.remove(path+'shp/tl_2017_34_bg.zip')
-shutil.rmtree(path+'shp/tl_2017_34_bg')
-os.remove(path+'shp/tl_2017_36_bg.zip')
-shutil.rmtree(path+'shp/tl_2017_36_bg')
-os.remove(path+'shp/tl_2017_42_bg.zip')
-shutil.rmtree(path+'shp/tl_2017_42_bg')
+os.remove(path+'shp/tl_2021_09_bg.zip')
+shutil.rmtree(path+'shp/tl_2021_09_bg')
+os.remove(path+'shp/tl_2021_34_bg.zip')
+shutil.rmtree(path+'shp/tl_2021_34_bg')
+os.remove(path+'shp/tl_2021_36_bg.zip')
+shutil.rmtree(path+'shp/tl_2021_36_bg')
+os.remove(path+'shp/tl_2021_42_bg.zip')
+shutil.rmtree(path+'shp/tl_2021_42_bg')
 
 
 
 # Census Tract
 # Download Census Tract shapefiles
 # Connecticut
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/TRACT/tl_2017_09_tract.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/TRACT/tl_2021_09_tract.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_09_tract.zip', "wb")
+file = open(path+'shp/tl_2021_09_tract.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_09_tract.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_09_tract')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_09_tract.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_09_tract')
 zip_ref.close()
-ctct=gpd.read_file(path+'shp/tl_2017_09_tract/tl_2017_09_tract.shp')
 time.sleep(10)
 
 # New Jersey
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/TRACT/tl_2017_34_tract.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/TRACT/tl_2021_34_tract.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_34_tract.zip', "wb")
+file=open(path+'shp/tl_2021_34_tract.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_34_tract.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_34_tract')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_34_tract.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_34_tract')
 zip_ref.close()
-njct=gpd.read_file(path+'shp/tl_2017_34_tract/tl_2017_34_tract.shp')
 time.sleep(10)
 
 # New York
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/TRACT/tl_2017_36_tract.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/TRACT/tl_2021_36_tract.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_36_tract.zip', "wb")
+file=open(path+'shp/tl_2021_36_tract.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_36_tract.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_36_tract')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_36_tract.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_36_tract')
 zip_ref.close()
-nyct=gpd.read_file(path+'shp/tl_2017_36_tract/tl_2017_36_tract.shp')
 time.sleep(10)
 
 # Pennsylvania
-url='ftp://ftp2.census.gov/geo/tiger/TIGER2017/TRACT/tl_2017_42_tract.zip'
+url='https://www2.census.gov/geo/tiger/TIGER2021/TRACT/tl_2021_42_tract.zip'
 req=urllib.request.urlopen(url)
-file = open(path+'shp/tl_2017_42_tract.zip', "wb")
+file=open(path+'shp/tl_2021_42_tract.zip', "wb")
 shutil.copyfileobj(req,file)
 file.close()
-zip_ref=zipfile.ZipFile(path+'shp/tl_2017_42_tract.zip','r')
-zip_ref.extractall(path+'shp/tl_2017_42_tract')
+zip_ref=zipfile.ZipFile(path+'shp/tl_2021_42_tract.zip','r')
+zip_ref.extractall(path+'shp/tl_2021_42_tract')
 zip_ref.close()
-pact=gpd.read_file(path+'shp/tl_2017_42_tract/tl_2017_42_tract.shp')
 time.sleep(10)
 
 # Merge Quadstate Census Tracts
-ct=gpd.GeoDataFrame()
-ct=ct.append(ctct,ignore_index=True)
-ct=ct.append(njct,ignore_index=True)
-ct=ct.append(nyct,ignore_index=True)
-ct=ct.append(pact,ignore_index=True)
-ct['tractid']=ct['GEOID']
+ctct=gpd.read_file(path+'shp/tl_2021_09_tract/tl_2021_09_tract.shp')
+ctct.crs=4269
+ctct=ctct.to_crs(4326)
+njct=gpd.read_file(path+'shp/tl_2021_34_tract/tl_2021_34_tract.shp')
+njct.crs=4269
+njct=njct.to_crs(4326)
+nyct=gpd.read_file(path+'shp/tl_2021_36_tract/tl_2021_36_tract.shp')
+nyct.crs=4269
+nyct=nyct.to_crs(4326)
+pact=gpd.read_file(path+'shp/tl_2021_42_tract/tl_2021_42_tract.shp')
+pact.crs=4269
+pact=pact.to_crs(4326)
+ct=pd.concat([ctct,njct,nyct,pact],axis=0,ignore_index=True)
+ct['tractid20']=ct['GEOID']
 ct['lat']=pd.to_numeric(ct['INTPTLAT'])
 ct['long']=pd.to_numeric(ct['INTPTLON'])
-ct=ct[['tractid','lat','long','geometry']]
-ct=ct.to_crs({'init': 'epsg:4326'})
-ct.to_file(filename=path+'shp/quadstatect.shp',driver='ESRI Shapefile')
+ct=ct[['tractid20','lat','long','geometry']].reset_index(drop=True)
+ct.to_file(filename=path+'shp/quadstatect20.shp',driver='ESRI Shapefile')
 
 # Convert polygons to centroids
-ctpt=ct[['tractid','lat','long']]
-ctpt=gpd.GeoDataFrame(ctpt,crs={'init': 'epsg:4326'},geometry=[shapely.geometry.Point(xy) for xy in zip(ctpt.long, ctpt.lat)])
-ctpt.to_file(filename=path+'shp/quadstatectpt.shp',driver='ESRI Shapefile')
+ct=gpd.read_file(path+'shp/quadstatect20.shp')
+ct.crs=4326
+ctpt=ct[['tractid20','lat','long']].reset_index(drop=True)
+ctpt=gpd.GeoDataFrame(ctpt,crs=4326,geometry=[shapely.geometry.Point(xy) for xy in zip(ctpt.long, ctpt.lat)])
+ctpt.to_file(filename=path+'shp/quadstatectpt20.shp',driver='ESRI Shapefile')
 
 # Clip water
-ct=gpd.read_file(path+'shp/quadstatect.shp')
-ct.crs={'init': 'epsg:4326'}
-water=gpd.read_file(path+'water/water.shp')
-water.crs={'init': 'epsg:4326'}
+ct=gpd.read_file(path+'shp/quadstatect20.shp')
+ct.crs=4326
+water=gpd.read_file(path+'water/water20.shp')
+water.crs=4326
 ctclip=gpd.overlay(ct,water,how='difference')
-ctclip.crs={'init': 'epsg:4326'}
-ctclip.to_file(filename=path+'shp/quadstatectclipped.shp',driver='ESRI Shapefile')
+ctclip.to_file(filename=path+'shp/quadstatectclipped20.shp',driver='ESRI Shapefile')
 
 # Remove downloaded files
 os.remove(path+'shp/tl_2017_09_tract.zip')
