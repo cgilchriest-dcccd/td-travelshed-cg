@@ -286,8 +286,6 @@
         // Add layers
         map.on('load', function () {
 
-            var layerContentList = []; // store all the layer contents
-
             // Add geocoder control
             map.addControl(new MapboxGeocoder({
                 accessToken: mapboxgl.accessToken,
@@ -316,43 +314,6 @@
 
             var sl = '';
             var bm = '';
-
-   
-   
-            // Add Subway
-            // Set layer contents
-            var layerContent = {
-                'sourceid': 'subway', // source id
-                'sourcetype': 'geojson', // source type
-                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/tti.geojson', // data source
-                'layerid': 'nycct', // layer id
-                'layertype': 'fill', // symbology type
-                'layername': 'NYC Tract', // layer name for the legend
-                'layervisibility': 'visible', // visibility of the layer
-                'layercolor': 'rgba(217, 107, 39, 0)', // color for each category; use rgba
-            };
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
-            // Add data source
-            map.addSource(layerContent['sourceid'], {
-                'type': layerContent['sourcetype'],
-                'data': layerContent['sourcedata'],
-            });
-
-            // Add fill layer
-            map.addLayer({
-                'id': layerContent['layerid'],
-                'type': layerContent['layertype'],
-                'source': layerContent['sourceid'],
-                'layout': {
-                    'visibility': layerContent['layervisibility'],
-                },
-                'paint': {
-                    'fill-color': layerContent['layercolor'],
-                },
-            });
 
 
 
@@ -386,9 +347,6 @@
                 layerColor.push(layerContent.layercolor[i]);
             };
             layerColor.push('#000000');
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
 
             // Add data source
             map.addSource(layerContent['sourceid'], {
@@ -428,9 +386,6 @@
                 'layercolor': 'rgba(217, 107, 39, 0)', // color for each category; use rgba
             };
 
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
             // Add data source
             map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
@@ -464,8 +419,43 @@
                 'layerwidth': 1, // outline width
             };
 
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add Subway Line
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'subwayline', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/subwayline.geojson', // data source
+                'layerid': 'subwayline', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Subway Line', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': 'rgba(150, 150, 150, 1)', // color for each category; use rgba
+                'layerwidth': 1.5, // line width
+            };
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
 
             // Add fill layer
             map.addLayer({
@@ -473,6 +463,8 @@
                 'type': layerContent['layertype'],
                 'source': layerContent['sourceid'],
                 'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
                     'visibility': layerContent['layervisibility'],
                 },
                 'paint': {
@@ -494,9 +486,6 @@
                 'layercolor': 'rgba(0, 0, 0, 1)', // color for each category; use rgba
                 'layerwidth': 2, // outline width
             };
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
 
             // Add fill layer
             map.addLayer({

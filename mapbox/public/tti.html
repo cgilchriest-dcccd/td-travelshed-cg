@@ -203,8 +203,6 @@
         // Add layers
         map.on('load', function () {
 
-            var layerContentList = []; // store all the layer contents
-
             // Add full screen control
             map.addControl(new mapboxgl.FullscreenControl({
                 container: document.querySelector('body'),
@@ -248,9 +246,6 @@
                 layerColor.push(layerContent.layercolor[i]);
             };
             layerColor.push('#000000');
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
 
             // Add data source
             map.addSource(layerContent['sourceid'], {
@@ -298,9 +293,6 @@
             };
             layerColor.push('#000000');
 
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
             // Add data source
             map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
@@ -346,9 +338,6 @@
                 layerColor.push(layerContent.layercolor[i]);
             };
             layerColor.push('#000000');
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
 
             // Add data source
             map.addSource(layerContent['sourceid'], {
@@ -396,9 +385,6 @@
             };
             layerColor.push('#000000');
 
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
             // Add data source
             map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
@@ -421,11 +407,97 @@
 
 
 
+            // Add Subway Line
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'subwayline', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/subwayline.geojson', // data source
+                'layerid': 'subwayline', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Subway Line', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': 'rgba(150, 150, 150, 1)', // color for each category; use rgba
+                'layerwidth': 1, // line width
+            };
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add NYC Tract Label
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT * FROM dcptransportation.nycct";
+            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            var layerContent = {
+                'sourceid': 'nycct', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'nycct-label', // layer id
+                'layertype': 'symbol', // symbology type
+                'layername': 'NYC Tract Label', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layerfield': ['get', 'label'], // categories
+                'layeroverlap': false,
+                'layeranchor': 'center',
+                'layersize': 12,
+                'layercolor': 'rgba(0, 0, 0, 0.8)', // color for each category; use rgba
+            };
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add label layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'minzoom': 12,
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                    'text-field': layerContent['layerfield'],
+                    'text-size': layerContent['layersize'],
+                    'text-allow-overlap': layerContent['layeroverlap'],
+                    'text-anchor': layerContent['layeranchor'],
+                },
+                'paint': {
+                    'text-color': layerContent['layercolor'],
+                },
+            });
+
+
+
 
 
             // Add popup
             var popup = new mapboxgl.Popup({
-                closeButton: false, // close button
+                closeButton: true, // close button
                 closeOnClick: false, // close if click on map
                 closeOnMove: false, // close if move the map
                 anchor: 'bottom', // anchor of the popup
@@ -434,67 +506,75 @@
             });
 
             // Add transit mobility popup
-            // Add hover events
-            map.on('mousemove', 'mob', function (e) {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            // Add click event
+            map.on('click', 'mob', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Transit Mobility Index: </b><span>" + e.features[0].properties.mobindex.toFixed(0) + "</span><br>";
                 description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.mobstd.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.mobpct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
+            // Add hover events
+            map.on('mouseenter', 'mob', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
             map.on('mouseleave', 'mob', function () {
                 map.getCanvas().style.cursor = '';
-                popup.remove()
             });
 
             // Add access to population popup
-            // Add hover event
-            map.on('mousemove', 'pop', function (e) {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            // Add click event
+            map.on('click', 'pop', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Access to Population Index: </b><span>" + e.features[0].properties.popindex.toFixed(0) + "</span><br>";
                 description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.popstd.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.poppct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
+            // Add hover events
+            map.on('mouseenter', 'pop', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
             map.on('mouseleave', 'pop', function () {
                 map.getCanvas().style.cursor = '';
-                popup.remove()
             });
 
             // Add access to jobs popup
-            // Add hover event
-            map.on('mousemove', 'job', function (e) {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            // Add click event
+            map.on('click', 'job', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Access to Jobs Index: </b><span>" + e.features[0].properties.jobindex.toFixed(0) + "</span><br>";
                 description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.jobstd.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.jobpct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
+            // Add hover events
+            map.on('mouseenter', 'job', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
             map.on('mouseleave', 'job', function () {
                 map.getCanvas().style.cursor = '';
-                popup.remove()
             });
 
             // Add access to labor force popup
-            // Add hover events
-            map.on('mousemove', 'lab', function (e) {
-                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            // Add click event
+            map.on('click', 'lab', function (e) {
                 var coordinates = e.lngLat; // get pointer coordinates
-                var description = "<b>Cesnsu Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
+                var description = "<b>Census Tract: </b><span>" + e.features[0].properties.tractid + "</span><br>"; // description in the popup
                 description += "<b>Access to Labor Force Index: </b><span>" + e.features[0].properties.labindex.toFixed(0) + "</span><br>";
                 description += "<b>Standard Deviation from Average: </b><span>" + e.features[0].properties.labstd.toFixed(2) + "</span><br>";
                 description += "<b>Percentile: </b><span>" + e.features[0].properties.labpct + "%</span><br>";
                 popup.setLngLat(coordinates).setHTML(description).addTo(map); //add popup
             });
+            // Add hover events
+            map.on('mouseenter', 'lab', function () {
+                map.getCanvas().style.cursor = 'pointer'; // mouse becoming pointer
+            });
             map.on('mouseleave', 'lab', function () {
                 map.getCanvas().style.cursor = '';
-                popup.remove()
             });
 
 

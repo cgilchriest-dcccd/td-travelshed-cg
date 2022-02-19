@@ -211,8 +211,6 @@
         // Add layers
         map.on('load', function () {
 
-            var layerContentList = []; // store all the layer contents
-
             // Add geocoder control
             map.addControl(new MapboxGeocoder({
                 accessToken: mapboxgl.accessToken,
@@ -265,9 +263,6 @@
             };
             layerColor.push('#000000');
 
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
             // Add data source
             map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
@@ -313,9 +308,6 @@
                 layerColor.push(layerContent.layercolor[i]);
             };
             layerColor.push('#000000');
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
 
             // Add data source
             map.addSource(layerContent['sourceid'], {
@@ -363,9 +355,6 @@
             };
             layerColor.push('#000000');
 
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
             // Add data source
             map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
@@ -412,9 +401,6 @@
             };
             layerColor.push('#000000');
 
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
-
             // Add data source
             map.addSource(layerContent['sourceid'], {
                 'type': layerContent['sourcetype'],
@@ -432,6 +418,92 @@
                 'paint': {
                     'fill-color': layerColor,
                     'fill-outline-color': layerContent['layeroutlinecolor'],
+                },
+            });
+
+
+
+            // Add Subway Line
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'subwayline', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/subwayline.geojson', // data source
+                'layerid': 'subwayline', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Subway Line', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': 'rgba(150, 150, 150, 1)', // color for each category; use rgba
+                'layerwidth': 1, // line width
+            };
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
+
+
+
+            // Add NYC Tract Label
+            // Set layer contents
+            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
+            q += "SELECT * FROM dcptransportation.nycct";
+            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            var layerContent = {
+                'sourceid': 'nycct', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': q, // data source
+                'layerid': 'nycct-label', // layer id
+                'layertype': 'symbol', // symbology type
+                'layername': 'NYC Tract Label', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layerfield': ['get', 'label'], // categories
+                'layeroverlap': false,
+                'layeranchor': 'center',
+                'layersize': 12,
+                'layercolor': 'rgba(0, 0, 0, 0.8)', // color for each category; use rgba
+            };
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add label layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'minzoom': 12,
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                    'text-field': layerContent['layerfield'],
+                    'text-size': layerContent['layersize'],
+                    'text-allow-overlap': layerContent['layeroverlap'],
+                    'text-anchor': layerContent['layeranchor'],
+                },
+                'paint': {
+                    'text-color': layerContent['layercolor'],
                 },
             });
 
