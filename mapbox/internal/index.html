@@ -317,6 +317,45 @@
             var sl = '';
             var bm = '';
 
+   
+   
+            // Add Subway
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'subway', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/tti.geojson', // data source
+                'layerid': 'nycct', // layer id
+                'layertype': 'fill', // symbology type
+                'layername': 'NYC Tract', // layer name for the legend
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': 'rgba(217, 107, 39, 0)', // color for each category; use rgba
+            };
+
+            // Add layer content to the overall layer content list
+            layerContentList.push(layerContent);
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'fill-color': layerContent['layercolor'],
+                },
+            });
+
+
+
             // Add Travelshed
             // Set layer contents
             var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
@@ -339,7 +378,6 @@
                 'layercolor': ['rgba(162, 68, 42, 0.8)', 'rgba(194, 86, 43, 0.8)', 'rgba(226, 104, 41, 0.8)', 'rgba(243, 135, 50, 0.8)', 'rgba(245, 171, 78, 0.8)', 'rgba(255, 200, 138, 0.8)'], // fill color; use rgba
                 'layeroutlinecolor': 'rgba(0, 0, 0, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
-
 
             // Generate layer colors
             var layerColor = ['match', ['get', layerContent['layercolname']]];
