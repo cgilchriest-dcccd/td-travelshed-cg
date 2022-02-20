@@ -7,14 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NYC DCP Transit Travelshed</title>
 
-    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
         crossorigin="anonymous"></script>
-
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css"
+        type="text/css">
 
 
     <style>
@@ -186,8 +190,8 @@
                     </div>
                     <div class="col-auto">
                         <input type="range" class="form-range" min="0" max="60" step="5" value="30"
-                            oninput="this.nextElementSibling.value = this.value" id="maxtt">
-                        <output>30</output>
+                            oninput="this.nextElementSibling.value = this.value" id="maxttinput">
+                        <output id="maxttoutput">30</output>
                     </div>
                 </div>
                 <div class="row g-0 justify-content-between">
@@ -255,8 +259,9 @@
         });
 
 
-        // Add marker to the map
-        var marker = new mapboxgl.Marker({
+
+        // Add pin to the map
+        var pin = new mapboxgl.Marker({
             draggable: true,
             color: 'rgba(13, 110, 253, 1)',
             scale: 0.9,
@@ -264,10 +269,34 @@
             .setLngLat([-74.01051404065525, 40.70821675967404])
             .addTo(map);
 
+        // Add geocoder
+        var geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+            marker: {
+                draggable: true,
+                color: 'rgba(13, 110, 253, 1)',
+                scale: 0.9
+            },
+        })
+
+
 
         // Add layers
         map.on('load', function () {
 
+            // Add geocoder control
+            map.addControl(geocoder,
+                'top-left', // control position
+            );
+
+            geocoder.on('result', function () {
+                pin.remove();
+            })
+
+            geocoder.on('clear', function () {
+                pin.setLngLat([-74.01051404065525, 40.70821675967404]).addTo(map);
+            })
 
             // Add full screen control
             map.addControl(new mapboxgl.FullscreenControl({
@@ -284,17 +313,62 @@
             }),
                 'bottom-left', // control position
             );
+
+
+
+            // Add Subway Line
+            // Set layer contents
+            var layerContent = {
+                'sourceid': 'subwayline', // source id
+                'sourcetype': 'geojson', // source type
+                'sourcedata': 'https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/mapbox/subwayline.geojson', // data source
+                'layerid': 'subwayline', // layer id
+                'layertype': 'line', // symbology type
+                'layername': 'Subway Line', // layer name for the legend
+                'layerlinecap': 'round', // line endings; butt/round/square
+                'layerlinejoin': 'round', // line joining; bevel/round/miter
+                'layervisibility': 'visible', // visibility of the layer
+                'layercolor': 'rgba(150, 150, 150, 1)', // color for each category; use rgba
+                'layerwidth': 1, // line width
+            };
+
+            // Add data source
+            map.addSource(layerContent['sourceid'], {
+                'type': layerContent['sourcetype'],
+                'data': layerContent['sourcedata'],
+            });
+
+            // Add fill layer
+            map.addLayer({
+                'id': layerContent['layerid'],
+                'type': layerContent['layertype'],
+                'source': layerContent['sourceid'],
+                'layout': {
+                    'line-cap': layerContent['layerlinecap'],
+                    'line-join': layerContent['layerlinejoin'],
+                    'visibility': layerContent['layervisibility'],
+                },
+                'paint': {
+                    'line-color': layerContent['layercolor'],
+                    'line-width': layerContent['layerwidth'],
+                },
+            });
         });
 
-        var layerContentList = []; // store all the layer contents
+
 
         // Add click events
         sbm.addEventListener('click', function () {
             document.getElementById('sbm').innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
             // From point
-            var fromLat = marker.getLngLat().lat;
-            var fromLong = marker.getLngLat().lng;
+            if (pin._map !== undefined) {
+                var fromLat = pin.getLngLat().lat;
+                var fromLong = pin.getLngLat().lng;
+            } else {
+                var fromLat = geocoder.mapMarker.getLngLat().lat;
+                var fromLong = geocoder.mapMarker.getLngLat().lng;
+            };
 
             // Mode
             var modes = ['walk', 'bus', 'subway', 'rail', 'ferry', 'citibike'];
@@ -313,7 +387,7 @@
             var selectedTime = document.getElementById('dptt').value;
 
             // Max travel time
-            var maxTravelTime = document.getElementById('maxtt').value;
+            var maxTravelTime = document.getElementById('maxttoutput').value;
             var cutOffs = [];
             for (var i = 0; i < maxTravelTime / 5; ++i) {
                 cutOffs.push('&cutoffSec=' + 300 * (i + 1));
@@ -347,9 +421,6 @@
                 'layercolor': 'rgba(217, 107, 39, 0.2)', // color for each category; use rgba
                 'layeroutlinecolor': 'rgba(255, 255, 255, 0.1)', // outline color; can only be set to 1px width; to change the outline width, add another line layer
             };
-
-            // Add layer content to the overall layer content list
-            layerContentList.push(layerContent);
 
             // Add data source
             map.addSource(layerContent['sourceid'], {
@@ -417,7 +488,16 @@
 
         // Add reset event
         rst.addEventListener('click', function () {
-            document.getElementsByTagName('output')[0].textContent = 30;
+            pin.setLngLat([-74.01051404065525, 40.70821675967404]).addTo(map);
+            geocoder.clear();
+            document.getElementById('bus').checked = true;
+            document.getElementById('subway').checked = true;
+            document.getElementById('rail').checked = true;
+            document.getElementById('ferry').checked = true;
+            document.getElementById('citibike').checked = false;
+            document.getElementById('dptt').value = "08:00";
+            document.getElementById('maxttinput').value = 30;
+            document.getElementById('maxttoutput').value = 30;
             document.getElementById('exp').className = "btn btn-primary btn-sm disabled";
             // Remove previous isochrones
             if (map.getLayer('isochrone')) {
