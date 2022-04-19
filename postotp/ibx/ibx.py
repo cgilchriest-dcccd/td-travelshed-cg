@@ -57,7 +57,7 @@ maxWalkDistance=805 # in meters
 # Set cut off points between 0-120 mins
 cutoffinterval=2 # in minutes
 cutoffstart=0
-cutoffend=90
+cutoffend=60
 cutoffincrement=cutoffstart
 cutoff=''
 while cutoffincrement<cutoffend:
@@ -137,7 +137,7 @@ if __name__=='__main__':
     location['direction']='from'
     destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong']].reset_index(drop=True)
     # Create travel time table for each site
-    for i in destination.index[0:10]:
+    for i in destination.index:
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
