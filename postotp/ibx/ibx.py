@@ -31,13 +31,15 @@ start=datetime.datetime.now()
 # Load quadstate block point shapefile
 bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
 bkpt.crs=4326
-bkpt=bkpt.drop(['lat','long'],axis=1).reset_index(drop=True)
+bkpt['state']=[str(x)[0:2] for x in bkpt['tractid']]
+bkpt=bkpt[np.isin(bkpt['state'],['36','34'])].reset_index(drop=True)
+bkpt=bkpt.drop(['state','lat','long'],axis=1).reset_index(drop=True)
 
 # Set typical day
 typicaldate='2018/06/06'
 
 # Create arrival time list
-arrivaltimeinterval=30 # in minutes
+arrivaltimeinterval=60 # in minutes
 arrivaltimestart='07:00:00'
 arrivaltimeend='10:00:00'
 arrivaltimestart=datetime.datetime.strptime(arrivaltimestart,'%H:%M:%S')
