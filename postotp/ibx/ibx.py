@@ -31,7 +31,7 @@ start=datetime.datetime.now()
 # Load quadstate block point shapefile
 bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
 bkpt.crs=4326
-bkpt['state']=[str(x)[0:2] for x in bkpt['tractid']]
+bkpt['state']=[str(x)[0:2] for x in bkpt['blockid']]
 bkpt=bkpt[np.isin(bkpt['state'],['36','34'])].reset_index(drop=True)
 bkpt=bkpt.drop(['state','lat','long'],axis=1).reset_index(drop=True)
 
