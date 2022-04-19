@@ -20,8 +20,8 @@ import json
 pd.set_option('display.max_columns', None)
 pio.renderers.default='browser'
 path='/home/mayijun/TRAVELSHED/'
-path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
-doserver='http://159.65.64.166:8801/'
+# path='C:/Users/mayij/Desktop/DOC/DCP2018/TRAVELSHEDREVAMP/'
+# doserver='http://159.65.64.166:8801/'
 doserver='http://localhost:8801/'
 
 
