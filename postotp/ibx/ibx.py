@@ -139,7 +139,7 @@ if __name__=='__main__':
     location['direction']='from'
     destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong']].reset_index(drop=True)
     # Create travel time table for each site
-    for i in destination.index[150:]:
+    for i in destination.index[220:]:
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
