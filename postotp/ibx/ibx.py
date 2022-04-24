@@ -139,41 +139,41 @@ if __name__=='__main__':
     location['direction']='from'
     destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong']].reset_index(drop=True)
     # Create travel time table for each site
-    for i in destination.index:
-        df=parallelize(arrivaltime,travelshedwt)
-        df['TTMEDIAN']=df.median(skipna=True,axis=1)
-        df=df['TTMEDIAN'].sort_index()
-        df.name=destination.loc[i,'tractid']
-        df.to_csv(path+'ibx/frompre/'+destination.loc[i,'tractid']+'wt.csv',index=True,header=True,na_rep=999)
-    
-    # # Join site travelsheds to block shapefile
-    # wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
-    # wtbk.crs=4326
-    # wtbk['state']=[str(x)[0:2] for x in wtbk['blockid']]
-    # wtbk=wtbk[np.isin(wtbk['state'],['36','34'])].reset_index(drop=True)
-    # wtbk=wtbk.drop(['state','lat','long'],axis=1).reset_index(drop=True)
     # for i in destination.index:
-    #     tp=pd.read_csv(path+'ibx/frompost/'+destination.loc[i,'id']+'wt.csv',dtype=float,converters={'blockid':str})
-    #     wtbk=wtbk.merge(tp,on='blockid')
-    # wtbk.to_file(path+'ibx/frompost/wtbk.shp')
-    # wtbk=wtbk.drop('geometry',axis=1)
-    # wtbk.to_csv(path+'ibx/frompost/wtbk.csv',index=False)
-    # # Join site travelsheds to tract shapefile
-    # wtbk=wtbk.replace(999,np.nan)
-    # loclist=wtbk.columns[1:]
-    # wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
-    # wtbk=wtbk.groupby(['tractid'],as_index=False)[loclist].median()
-    # wtbk=wtbk.replace(np.nan,999)
-    # wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-    # wtct.crs=4326
-    # wtct['state']=[str(x)[0:2] for x in wtct['blockid']]
-    # wtct=wtct[np.isin(wtct['state'],['36','34'])].reset_index(drop=True)
-    # wtct=wtct.drop(['state','lat','long'],axis=1).reset_index(drop=True)
-    # wtct=wtct.merge(wtbk,on='tractid')
-    # wtct.to_file(path+'ibx/frompost/wtct.shp')
-    # wtct=wtct.drop('geometry',axis=1)
-    # wtct.to_csv(path+'ibx/frompost/wtct.csv',index=False)
-    # print(datetime.datetime.now()-start)
+    #     df=parallelize(arrivaltime,travelshedwt)
+    #     df['TTMEDIAN']=df.median(skipna=True,axis=1)
+    #     df=df['TTMEDIAN'].sort_index()
+    #     df.name=destination.loc[i,'tractid']
+    #     df.to_csv(path+'ibx/frompre/'+destination.loc[i,'tractid']+'wt.csv',index=True,header=True,na_rep=999)
+    
+    # Join site travelsheds to block shapefile
+    wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
+    wtbk.crs=4326
+    wtbk['state']=[str(x)[0:2] for x in wtbk['blockid']]
+    wtbk=wtbk[np.isin(wtbk['state'],['36','34'])].reset_index(drop=True)
+    wtbk=wtbk.drop(['state','lat','long'],axis=1).reset_index(drop=True)
+    for i in destination.index:
+        tp=pd.read_csv(path+'ibx/frompost/'+destination.loc[i,'id']+'wt.csv',dtype=float,converters={'blockid':str})
+        wtbk=wtbk.merge(tp,on='blockid')
+    wtbk.to_file(path+'ibx/frompost/wtbk.shp')
+    wtbk=wtbk.drop('geometry',axis=1)
+    wtbk.to_csv(path+'ibx/frompost/wtbk.csv',index=False)
+    # Join site travelsheds to tract shapefile
+    wtbk=wtbk.replace(999,np.nan)
+    loclist=wtbk.columns[1:]
+    wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
+    wtbk=wtbk.groupby(['tractid'],as_index=False)[loclist].median()
+    wtbk=wtbk.replace(np.nan,999)
+    wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+    wtct.crs=4326
+    wtct['state']=[str(x)[0:2] for x in wtct['blockid']]
+    wtct=wtct[np.isin(wtct['state'],['36','34'])].reset_index(drop=True)
+    wtct=wtct.drop(['state','lat','long'],axis=1).reset_index(drop=True)
+    wtct=wtct.merge(wtbk,on='tractid')
+    wtct.to_file(path+'ibx/frompost/wtct.shp')
+    wtct=wtct.drop('geometry',axis=1)
+    wtct.to_csv(path+'ibx/frompost/wtct.csv',index=False)
+    print(datetime.datetime.now()-start)
         
         
         
