@@ -35,6 +35,7 @@
             width: 100%;
             height: auto;
             background-color: rgba(217, 107, 39, 1);
+            z-index: 1000;
         }
 
         #dcplogo {
@@ -55,19 +56,15 @@
         }
 
         .navbar-nav {
-            margin-left: 1rem;
+            margin-left: 0.5rem;
         }
 
         .nav-link {
             font-size: 1rem;
             font-weight: bold;
             padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-            border-style: solid;
-            border-right-width: 0.2rem;
-            border-right-color: rgba(255, 255, 255, 0.5);
-            border-left-width: 0rem;
-            border-top-width: 0rem;
-            border-bottom-width: 0rem;
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
         }
 
         #mainmap {
@@ -76,6 +73,7 @@
             bottom: 0;
             width: 100%;
             height: auto;
+            z-index: -1000;
         }
 
         #legend {
@@ -123,6 +121,31 @@
 
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark g-0 p-0 m-0" id="banner">
+        <a class="navbar-brand p-0" href="http://www1.nyc.gov/site/planning/index.page">
+            <img src="https://raw.githubusercontent.com/NYCPlanning/dcp-logo/master/dcp_logo_white_772.png"
+                id="dcplogo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bannertoggle">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse p-0 justify-content-start" id="bannertoggle">
+            <ul class="navbar-nav p-0">
+                <a class="nav-link" href="index.html">
+                    Home </a>
+                <a class="nav-link" href="from.html">
+                    Transit Travelshed FROM a Census Tract </a>
+                <a class="nav-link" href="to.html">
+                    Transit Travelshed TO a Census Tract </a>
+                <a class="nav-link active" href="tti.html">
+                    Transit Travelshed Index </a>
+                <a class="nav-link" href="iso.html">
+                    Isochrone Generator (DCP Only) </a>
+            </ul>
+        </div>
+    </nav>
+
+
     <div class="container-fluid p-0" id="mainmap"> </div> <!-- placeholder for main map -->
 
     <div id="legend">
@@ -160,30 +183,6 @@
 
         </div>
     </div>
-
-    <nav class="navbar navbar-expand-lg navbar-dark g-0 p-0 m-0" id="banner">
-        <a class="navbar-brand p-0" href="http://www1.nyc.gov/site/planning/index.page">
-            <img src="https://raw.githubusercontent.com/NYCPlanning/dcp-logo/master/dcp_logo_white_772.png"
-                id="dcplogo">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bannertoggle">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse p-0 justify-content-start" id="bannertoggle">
-            <ul class="navbar-nav p-0">
-                <a class="nav-link"></a>
-                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/index.html">
-                    Transit Travelshed FROM a Census Tract </a>
-                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/to.html"> Transit
-                    Travelshed TO a Census Tract </a>
-                <a class="nav-link active" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/tti.html">
-                    Transit Travelshed Index </a>
-                <a class="nav-link" href="https://nycplanning.github.io/td-travelshed/mapbox/internal/iso.html?">
-                    Isochrone
-                    Generator (DCP Only) </a>
-            </ul>
-        </div>
-    </nav>
 
 
 
