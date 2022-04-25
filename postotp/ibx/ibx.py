@@ -153,7 +153,7 @@ if __name__=='__main__':
     wtbk=wtbk[np.isin(wtbk['state'],['36','34'])].reset_index(drop=True)
     wtbk=wtbk.drop(['state','lat','long'],axis=1).reset_index(drop=True)
     for i in destination.index:
-        tp=pd.read_csv(path+'ibx/frompost/'+destination.loc[i,'id']+'wt.csv',dtype=float,converters={'blockid':str})
+        tp=pd.read_csv(path+'ibx/frompost/'+destination.loc[i,'tractid']+'wt.csv',dtype=float,converters={'blockid':str})
         wtbk=wtbk.merge(tp,on='blockid')
     wtbk.to_file(path+'ibx/frompost/wtbk.shp')
     wtbk=wtbk.drop('geometry',axis=1)
