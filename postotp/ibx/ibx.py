@@ -181,34 +181,22 @@ if __name__=='__main__':
     # resbk.to_csv(path+'ibx/frompost5.csv',index=True)
     
 
-    # Join site travelsheds to block shapefile
-    wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
-    wtbk.crs=4326
-    wtbk['state']=[str(x)[0:2] for x in wtbk['blockid']]
-    wtbk=wtbk[np.isin(wtbk['state'],['36','34'])].reset_index(drop=True)
-    wtbk=wtbk.drop(['state','lat','long'],axis=1).reset_index(drop=True)
     for i in range(1,6):
-        tp=pd.read_csv(path+'ibx/frompost'+str(i)+'.csv',dtype=float,converters={'blockid':str})
-        wtbk=wtbk.merge(tp,on='blockid')
-    wtbk.to_file(path+'ibx/frompostwtbk.shp')
-    wtbk=wtbk.drop('geometry',axis=1)
-    wtbk.to_csv(path+'ibx/frompostwtbk.csv',index=False)
-    # Join site travelsheds to tract shapefile
-    wtbk=wtbk.replace(999,np.nan)
-    loclist=wtbk.columns[1:]
-    wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
-    wtbk=wtbk.groupby(['tractid'],as_index=False)[loclist].median()
-    wtbk=wtbk.replace(np.nan,999)
-    wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-    wtct.crs=4326
-    wtct['state']=[str(x)[0:2] for x in wtct['blockid']]
-    wtct=wtct[np.isin(wtct['state'],['36','34'])].reset_index(drop=True)
-    wtct=wtct.drop(['state','lat','long'],axis=1).reset_index(drop=True)
-    wtct=wtct.merge(wtbk,on='tractid')
-    wtct.to_file(path+'ibx/frompostwtct.shp')
-    wtct=wtct.drop('geometry',axis=1)
-    wtct.to_csv(path+'ibx/frompostwtct.csv',index=False)
-    print(datetime.datetime.now()-start)
+        resct=pd.read_csv(path+'ibx/frompost'+str(i)+'.csv',dtype=float,converters={'blockid':str})
+        resct=resct.set_index('blockid')
+        resloclist=sorted(resct.columns)
+        resct=resct.replace(999,np.nan)
+        resct['tractid']=[str(x)[0:11] for x in resct.index]
+        resct=resct.groupby(['tractid'])[resloclist].median()
+        resct.to_csv(path+'ibx/frompostct'+str(i)+'.csv',index=True,na_rep='999')
+        
+    resct=pd.DataFrame()
+    for i in range(1,6):
+        tp=pd.read_csv(path+'ibx/frompostct'+str(i)+'.csv',dtype=str)
+        tp=tp.set_index('tractid')
+        resct=pd.concat([resct,tp],axis=1)
+    resct.to_csv(path+'ibx/frompostct.csv',index=True)
+
         
         
         
