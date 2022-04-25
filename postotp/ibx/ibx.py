@@ -148,67 +148,67 @@ if __name__=='__main__':
     #     df.to_csv(path+'ibx/frompre/'+destination.loc[i,'tractid']+'wt.csv',index=True,header=True,na_rep=999)
         
     # Summarize travelshed outputs
-    # NYC Res Censust Tracts
-    resbk=pd.DataFrame()
-    for i in sorted(os.listdir(path+'ibx/frompost/'))[0:500]:
-        tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-        tp=tp.set_index('blockid')
-        resbk=pd.concat([resbk,tp],axis=1)
-    resbk.to_csv(path+'ibx/frompost1.csv',index=True)
-    resbk=pd.DataFrame()
-    for i in sorted(os.listdir(path+'ibx/frompost/'))[500:1000]:
-        tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-        tp=tp.set_index('blockid')
-        resbk=pd.concat([resbk,tp],axis=1)
-    resbk.to_csv(path+'ibx/frompost2.csv',index=True)
-    resbk=pd.DataFrame()
-    for i in sorted(os.listdir(path+'ibx/frompost/'))[1000:1500]:
-        tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-        tp=tp.set_index('blockid')
-        resbk=pd.concat([resbk,tp],axis=1)
-    resbk.to_csv(path+'ibx/frompost3.csv',index=True)
-    resbk=pd.DataFrame()
-    for i in sorted(os.listdir(path+'ibx/frompost/'))[1500:2000]:
-        tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-        tp=tp.set_index('blockid')
-        resbk=pd.concat([resbk,tp],axis=1)
-    resbk.to_csv(path+'ibx/frompost4.csv',index=True)
-    resbk=pd.DataFrame()
-    for i in sorted(os.listdir(path+'ibx/frompost/'))[2000:]:
-        tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-        tp=tp.set_index('blockid')
-        resbk=pd.concat([resbk,tp],axis=1)
-    resbk.to_csv(path+'ibx/frompost5.csv',index=True)
+    # # NYC Res Censust Tracts
+    # resbk=pd.DataFrame()
+    # for i in sorted(os.listdir(path+'ibx/frompost/'))[0:500]:
+    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
+    #     tp=tp.set_index('blockid')
+    #     resbk=pd.concat([resbk,tp],axis=1)
+    # resbk.to_csv(path+'ibx/frompost1.csv',index=True)
+    # resbk=pd.DataFrame()
+    # for i in sorted(os.listdir(path+'ibx/frompost/'))[500:1000]:
+    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
+    #     tp=tp.set_index('blockid')
+    #     resbk=pd.concat([resbk,tp],axis=1)
+    # resbk.to_csv(path+'ibx/frompost2.csv',index=True)
+    # resbk=pd.DataFrame()
+    # for i in sorted(os.listdir(path+'ibx/frompost/'))[1000:1500]:
+    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
+    #     tp=tp.set_index('blockid')
+    #     resbk=pd.concat([resbk,tp],axis=1)
+    # resbk.to_csv(path+'ibx/frompost3.csv',index=True)
+    # resbk=pd.DataFrame()
+    # for i in sorted(os.listdir(path+'ibx/frompost/'))[1500:2000]:
+    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
+    #     tp=tp.set_index('blockid')
+    #     resbk=pd.concat([resbk,tp],axis=1)
+    # resbk.to_csv(path+'ibx/frompost4.csv',index=True)
+    # resbk=pd.DataFrame()
+    # for i in sorted(os.listdir(path+'ibx/frompost/'))[2000:]:
+    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
+    #     tp=tp.set_index('blockid')
+    #     resbk=pd.concat([resbk,tp],axis=1)
+    # resbk.to_csv(path+'ibx/frompost5.csv',index=True)
     
 
-    # # Join site travelsheds to block shapefile
-    # wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
-    # wtbk.crs=4326
-    # wtbk['state']=[str(x)[0:2] for x in wtbk['blockid']]
-    # wtbk=wtbk[np.isin(wtbk['state'],['36','34'])].reset_index(drop=True)
-    # wtbk=wtbk.drop(['state','lat','long'],axis=1).reset_index(drop=True)
-    # for i in destination.index:
-    #     tp=pd.read_csv(path+'ibx/frompost/'+destination.loc[i,'tractid']+'wt.csv',dtype=float,converters={'blockid':str})
-    #     wtbk=wtbk.merge(tp,on='blockid')
-    # wtbk.to_file(path+'ibx/frompost/wtbk.shp')
-    # wtbk=wtbk.drop('geometry',axis=1)
-    # wtbk.to_csv(path+'ibx/frompost/wtbk.csv',index=False)
-    # # Join site travelsheds to tract shapefile
-    # wtbk=wtbk.replace(999,np.nan)
-    # loclist=wtbk.columns[1:]
-    # wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
-    # wtbk=wtbk.groupby(['tractid'],as_index=False)[loclist].median()
-    # wtbk=wtbk.replace(np.nan,999)
-    # wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
-    # wtct.crs=4326
-    # wtct['state']=[str(x)[0:2] for x in wtct['blockid']]
-    # wtct=wtct[np.isin(wtct['state'],['36','34'])].reset_index(drop=True)
-    # wtct=wtct.drop(['state','lat','long'],axis=1).reset_index(drop=True)
-    # wtct=wtct.merge(wtbk,on='tractid')
-    # wtct.to_file(path+'ibx/frompost/wtct.shp')
-    # wtct=wtct.drop('geometry',axis=1)
-    # wtct.to_csv(path+'ibx/frompost/wtct.csv',index=False)
-    # print(datetime.datetime.now()-start)
+    # Join site travelsheds to block shapefile
+    wtbk=gpd.read_file(path+'shp/quadstatebkclipped.shp')
+    wtbk.crs=4326
+    wtbk['state']=[str(x)[0:2] for x in wtbk['blockid']]
+    wtbk=wtbk[np.isin(wtbk['state'],['36','34'])].reset_index(drop=True)
+    wtbk=wtbk.drop(['state','lat','long'],axis=1).reset_index(drop=True)
+    for i in range(1,6):
+        tp=pd.read_csv(path+'ibx/frompost'+str(i)+'.csv',dtype=float,converters={'blockid':str})
+        wtbk=wtbk.merge(tp,on='blockid')
+    wtbk.to_file(path+'ibx/frompostwtbk.shp')
+    wtbk=wtbk.drop('geometry',axis=1)
+    wtbk.to_csv(path+'ibx/frompostwtbk.csv',index=False)
+    # Join site travelsheds to tract shapefile
+    wtbk=wtbk.replace(999,np.nan)
+    loclist=wtbk.columns[1:]
+    wtbk['tractid']=[str(x)[0:11] for x in wtbk['blockid']]
+    wtbk=wtbk.groupby(['tractid'],as_index=False)[loclist].median()
+    wtbk=wtbk.replace(np.nan,999)
+    wtct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+    wtct.crs=4326
+    wtct['state']=[str(x)[0:2] for x in wtct['blockid']]
+    wtct=wtct[np.isin(wtct['state'],['36','34'])].reset_index(drop=True)
+    wtct=wtct.drop(['state','lat','long'],axis=1).reset_index(drop=True)
+    wtct=wtct.merge(wtbk,on='tractid')
+    wtct.to_file(path+'ibx/frompostwtct.shp')
+    wtct=wtct.drop('geometry',axis=1)
+    wtct.to_csv(path+'ibx/frompostwtct.csv',index=False)
+    print(datetime.datetime.now()-start)
         
         
         
