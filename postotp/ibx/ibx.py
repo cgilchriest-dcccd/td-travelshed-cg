@@ -137,7 +137,7 @@ if __name__=='__main__':
     location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycrestractptadjfinal',dtype=str)
     location['tractid']=location['censustract'].copy()
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
-    location['direction']='to'
+    location['direction']='from'
     destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong']].reset_index(drop=True)
     # Create travel time table for each site
     for i in destination.index:
@@ -145,7 +145,7 @@ if __name__=='__main__':
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
         df.name=destination.loc[i,'tractid']
-        df.to_csv(path+'ibx/topost/'+destination.loc[i,'tractid']+'wt.csv',index=True,header=True,na_rep=999)
+        df.to_csv(path+'ibx/frompost/'+destination.loc[i,'tractid']+'wt.csv',index=True,header=True,na_rep=999)
         
     # # Summarize travelshed outputs
     # # NYC Res Censust Tracts
@@ -196,6 +196,94 @@ if __name__=='__main__':
     #     tp=tp.set_index('tractid')
     #     resct=pd.concat([resct,tp],axis=1)
     # resct.to_csv(path+'ibx/fromprect.csv',index=True)
+        
+    
+        
+    # # Block Level Gravity Model
+    # # Res Gravity
+    # wac=pd.DataFrame()
+    # for i in ['nj','ny']:
+    #     tp=pd.read_csv(path+'lehd/'+str(i)+'_wac_S000_JT00_2019.csv',dtype=float,converters={'w_geocode':str})
+    #     tp=tp[['w_geocode','C000']]
+    #     wac=pd.concat([wac,tp],axis=0)
+    # wac.columns=['blockid','wac']
+    # wac=wac.set_index('blockid')
+    
+    # df=pd.DataFrame()
+    # for k in range(1,6):
+    #     resbkwac=pd.read_csv(path+'ibx/frompost'+str(k)+'.csv',dtype=float,converters={'blockid':str})
+    #     resbkwac=resbkwac.set_index('blockid')
+    #     resloclist=sorted(resbkwac.columns)
+    #     resbkwac=pd.merge(resbkwac,wac,how='left',left_index=True,right_index=True)
+    #     resbkwac['wac']=resbkwac['wac'].replace(np.nan,0)
+    #     for i in resloclist:
+    #         resbkwac[i]=np.where(resbkwac[i]<=5,2.5,
+    #                     np.where(resbkwac[i]<=10,7.5,
+    #                     np.where(resbkwac[i]<=15,12.5,
+    #                     np.where(resbkwac[i]<=20,17.5,
+    #                     np.where(resbkwac[i]<=25,22.5,
+    #                     np.where(resbkwac[i]<=30,27.5,
+    #                     np.where(resbkwac[i]<=35,32.5,
+    #                     np.where(resbkwac[i]<=40,37.5,
+    #                     np.where(resbkwac[i]<=45,42.5,
+    #                     np.where(resbkwac[i]<=50,47.5,
+    #                     np.where(resbkwac[i]<=55,52.5,
+    #                     np.where(resbkwac[i]<=60,57.5,
+    #                     np.where(resbkwac[i]<=65,62.5,
+    #                     np.where(resbkwac[i]<=70,67.5,
+    #                     np.where(resbkwac[i]<=75,72.5,
+    #                     np.where(resbkwac[i]<=80,77.5,
+    #                     np.where(resbkwac[i]<=85,82.5,
+    #                     np.where(resbkwac[i]<=90,87.5,
+    #                     np.where(resbkwac[i]<=95,92.5,
+    #                     np.where(resbkwac[i]<=100,97.5,
+    #                     np.where(resbkwac[i]<=105,102.5,
+    #                     np.where(resbkwac[i]<=110,107.5,
+    #                     np.where(resbkwac[i]<=115,112.5,
+    #                     np.where(resbkwac[i]<=120,117.5,
+    #                     np.nan))))))))))))))))))))))))
+    #     resbkgravity=pd.DataFrame(index=resloclist,columns=['WAC1-5','WAC6-10','WAC11-15','WAC16-20','WAC21-25','WAC26-30',
+    #                                                         'WAC31-35','WAC36-40','WAC41-45','WAC46-50','WAC51-55','WAC56-60',
+    #                                                         'WAC61-65','WAC66-70','WAC71-75','WAC76-80','WAC81-85','WAC86-90',
+    #                                                         'WAC91-95','WAC96-100','WAC101-105','WAC106-110','WAC111-115','WAC116-120',
+    #                                                         'GWAC1-10','GWAC11-20','GWAC21-30','GWAC31-40','GWAC41-50','GWAC51-60',
+    #                                                         'GRAVITYWAC'])
+    #     for i in resloclist:
+    #         resbkgravity.loc[i,'WAC1-5']=sum(resbkwac.loc[resbkwac[i]==2.5,'wac'])
+    #         resbkgravity.loc[i,'WAC6-10']=sum(resbkwac.loc[resbkwac[i]==7.5,'wac'])
+    #         resbkgravity.loc[i,'WAC11-15']=sum(resbkwac.loc[resbkwac[i]==12.5,'wac'])
+    #         resbkgravity.loc[i,'WAC16-20']=sum(resbkwac.loc[resbkwac[i]==17.5,'wac'])
+    #         resbkgravity.loc[i,'WAC21-25']=sum(resbkwac.loc[resbkwac[i]==22.5,'wac'])
+    #         resbkgravity.loc[i,'WAC26-30']=sum(resbkwac.loc[resbkwac[i]==27.5,'wac'])
+    #         resbkgravity.loc[i,'WAC31-35']=sum(resbkwac.loc[resbkwac[i]==32.5,'wac'])
+    #         resbkgravity.loc[i,'WAC36-40']=sum(resbkwac.loc[resbkwac[i]==37.5,'wac'])
+    #         resbkgravity.loc[i,'WAC41-45']=sum(resbkwac.loc[resbkwac[i]==42.5,'wac'])
+    #         resbkgravity.loc[i,'WAC46-50']=sum(resbkwac.loc[resbkwac[i]==47.5,'wac'])
+    #         resbkgravity.loc[i,'WAC51-55']=sum(resbkwac.loc[resbkwac[i]==52.5,'wac'])
+    #         resbkgravity.loc[i,'WAC56-60']=sum(resbkwac.loc[resbkwac[i]==57.5,'wac'])
+    #         resbkgravity.loc[i,'WAC61-65']=sum(resbkwac.loc[resbkwac[i]==62.5,'wac'])
+    #         resbkgravity.loc[i,'WAC66-70']=sum(resbkwac.loc[resbkwac[i]==67.5,'wac'])
+    #         resbkgravity.loc[i,'WAC71-75']=sum(resbkwac.loc[resbkwac[i]==72.5,'wac'])
+    #         resbkgravity.loc[i,'WAC76-80']=sum(resbkwac.loc[resbkwac[i]==77.5,'wac'])
+    #         resbkgravity.loc[i,'WAC81-85']=sum(resbkwac.loc[resbkwac[i]==82.5,'wac'])
+    #         resbkgravity.loc[i,'WAC86-90']=sum(resbkwac.loc[resbkwac[i]==87.5,'wac'])
+    #         resbkgravity.loc[i,'WAC91-95']=sum(resbkwac.loc[resbkwac[i]==92.5,'wac'])
+    #         resbkgravity.loc[i,'WAC96-100']=sum(resbkwac.loc[resbkwac[i]==97.5,'wac'])
+    #         resbkgravity.loc[i,'WAC101-105']=sum(resbkwac.loc[resbkwac[i]==102.5,'wac'])
+    #         resbkgravity.loc[i,'WAC106-110']=sum(resbkwac.loc[resbkwac[i]==107.5,'wac'])
+    #         resbkgravity.loc[i,'WAC111-115']=sum(resbkwac.loc[resbkwac[i]==112.5,'wac'])
+    #         resbkgravity.loc[i,'WAC116-120']=sum(resbkwac.loc[resbkwac[i]==117.5,'wac'])
+    #         resbkgravity.loc[i,'GWAC1-10']=(resbkgravity.loc[i,'WAC1-5']+resbkgravity.loc[i,'WAC6-10'])/(5**2)
+    #         resbkgravity.loc[i,'GWAC11-20']=(resbkgravity.loc[i,'WAC11-15']+resbkgravity.loc[i,'WAC16-20'])/(15**2)
+    #         resbkgravity.loc[i,'GWAC21-30']=(resbkgravity.loc[i,'WAC21-25']+resbkgravity.loc[i,'WAC26-30'])/(25**2)
+    #         resbkgravity.loc[i,'GWAC31-40']=(resbkgravity.loc[i,'WAC31-35']+resbkgravity.loc[i,'WAC36-40'])/(35**2)
+    #         resbkgravity.loc[i,'GWAC41-50']=(resbkgravity.loc[i,'WAC41-45']+resbkgravity.loc[i,'WAC46-50'])/(45**2)
+    #         resbkgravity.loc[i,'GWAC51-60']=(resbkgravity.loc[i,'WAC51-55']+resbkgravity.loc[i,'WAC56-60'])/(55**2)
+    #         resbkgravity.loc[i,'GRAVITYWAC']=resbkgravity.loc[i,'GWAC1-10']+resbkgravity.loc[i,'GWAC11-20']+resbkgravity.loc[i,'GWAC21-30']+resbkgravity.loc[i,'GWAC31-40']+resbkgravity.loc[i,'GWAC41-50']+resbkgravity.loc[i,'GWAC51-60']
+    #     df=pd.concat([df,resbkgravity],axis=0)
+    # df.to_csv(path+'ibx/frompostgravity.csv',index=True)
+
+
 
         
         
