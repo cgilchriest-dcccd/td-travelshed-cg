@@ -75,11 +75,13 @@ def travelshedwt(arrt):
         url+='&fromPlace='+destination.loc[i,'latlong']+'&toPlace='+destination.loc[i,'latlong']
         url+='&arriveBy=true&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
         url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=-1'+cutoff
+        url+='&bannedRoutes=IBX'
     elif destination.loc[i,'direction']=='from':
         url=doserver+'otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
         url+='&fromPlace='+destination.loc[i,'latlong']
         url+='&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
         url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=0'+cutoff
+        url+='&bannedRoutes=IBX'
     else:
         print(destination.loc[i,'tractid']+' has no direction!')
     headers={'Accept':'application/json'}
@@ -140,12 +142,12 @@ if __name__=='__main__':
     location['direction']='from'
     destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong']].reset_index(drop=True)
     # Create travel time table for each site
-    for i in destination.index[1050:]:
+    for i in destination.index:
         df=parallelize(arrivaltime,travelshedwt)
         df['TTMEDIAN']=df.median(skipna=True,axis=1)
         df=df['TTMEDIAN'].sort_index()
         df.name=destination.loc[i,'tractid']
-        df.to_csv(path+'ibx/frompost/'+destination.loc[i,'tractid']+'wt.csv',index=True,header=True,na_rep=999)
+        df.to_csv(path+'ibx/frompre/'+destination.loc[i,'tractid']+'wt.csv',index=True,header=True,na_rep=999)
         
     # # Summarize travelshed outputs
     # # NYC Res Censust Tracts
