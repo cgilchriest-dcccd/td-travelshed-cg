@@ -75,13 +75,13 @@ def travelshedwt(arrt):
         url+='&fromPlace='+destination.loc[i,'latlong']+'&toPlace='+destination.loc[i,'latlong']
         url+='&arriveBy=true&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
         url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=-1'+cutoff
-        url+='&bannedRoutes=IBX'
+        url+='&bannedAgencies=IBX'
     elif destination.loc[i,'direction']=='from':
         url=doserver+'otp/routers/default/isochrone?batch=true&mode=WALK,TRANSIT'
         url+='&fromPlace='+destination.loc[i,'latlong']
         url+='&date='+typicaldate+'&time='+arrt+'&maxTransfers='+str(maxTransfers)
         url+='&maxWalkDistance='+str(maxWalkDistance)+'&clampInitialWait=0'+cutoff
-        url+='&bannedRoutes=IBX'
+        url+='&bannedAgencies=IBX'
     else:
         print(destination.loc[i,'tractid']+' has no direction!')
     headers={'Accept':'application/json'}
