@@ -289,6 +289,14 @@
 
             var layerContentList = []; // store all the layer contents
 
+            // Add scale control
+            map.addControl(new mapboxgl.ScaleControl({
+                maxWidth: 80,
+                unit: 'metrics'
+            }),
+                'top-left', // control position
+            );
+
             // Add full screen control
             map.addControl(new mapboxgl.FullscreenControl({
                 container: document.querySelector('body'),
@@ -304,6 +312,7 @@
             }),
                 'bottom-left', // control position
             );
+
 
 
 
