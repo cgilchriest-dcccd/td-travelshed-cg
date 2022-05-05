@@ -213,7 +213,7 @@ if __name__=='__main__':
     
     df=pd.DataFrame()
     for k in range(1,6):
-        resbkwac=pd.read_csv(path+'ibx/frompost'+str(k)+'.csv',dtype=float,converters={'blockid':str})
+        resbkwac=pd.read_csv(path+'ibx/frompre'+str(k)+'.csv',dtype=float,converters={'blockid':str})
         resbkwac=resbkwac.set_index('blockid')
         resloclist=sorted(resbkwac.columns)
         resbkwac=pd.merge(resbkwac,wac,how='left',left_index=True,right_index=True)
@@ -283,7 +283,7 @@ if __name__=='__main__':
             resbkgravity.loc[i,'GWAC51-60']=(resbkgravity.loc[i,'WAC51-55']+resbkgravity.loc[i,'WAC56-60'])/(55**2)
             resbkgravity.loc[i,'GRAVITYWAC']=resbkgravity.loc[i,'GWAC1-10']+resbkgravity.loc[i,'GWAC11-20']+resbkgravity.loc[i,'GWAC21-30']+resbkgravity.loc[i,'GWAC31-40']+resbkgravity.loc[i,'GWAC41-50']+resbkgravity.loc[i,'GWAC51-60']
         df=pd.concat([df,resbkgravity],axis=0)
-    df.to_csv(path+'ibx/frompostgravity.csv',index=True)
+    df.to_csv(path+'ibx/frompregravity.csv',index=True)
 
 
 
