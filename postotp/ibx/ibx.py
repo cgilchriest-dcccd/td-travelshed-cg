@@ -289,6 +289,18 @@ if __name__=='__main__':
     #         resbkgravity.loc[i,'GRAVITYWAC']=resbkgravity.loc[i,'GWAC1-10']+resbkgravity.loc[i,'GWAC11-20']+resbkgravity.loc[i,'GWAC21-30']+resbkgravity.loc[i,'GWAC31-40']+resbkgravity.loc[i,'GWAC41-50']+resbkgravity.loc[i,'GWAC51-60']
     #     df=pd.concat([df,resbkgravity],axis=0)
     # df.to_csv(path+'ibx/frompregravity.csv',index=True)
+    
+    # pre=pd.read_csv(path+'ibx/fromprect.csv',dtype=float,converters={'tractid':str})
+    # pre=pd.melt(pre,id_vars='tractid',var_name='resct',value_name='time')
+    # pre.columns=['workct','resct','pre']
+    # post=pd.read_csv(path+'ibx/frompostct.csv',dtype=float,converters={'tractid':str})
+    # post=pd.melt(post,id_vars='tractid',var_name='resct',value_name='time')
+    # post.columns=['workct','resct','post']   
+    # df=pd.merge(pre,post,how='inner',on=['resct','workct'])
+    # df=df[~((df['pre']==999)&(df['post']==999))].reset_index(drop=True)
+    # df.to_csv(path+'ibx/ibxresct.csv',index=False)
+    
+    
 
 
 
