@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYC DCP Transit Travelshed</title>
+    <title>IBX Travelshed</title>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
@@ -152,6 +152,24 @@
             display: inline-block;
         }
 
+        .key-circle {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+            border-radius: 100%;
+            display: inline-block;
+            vertical-align: -0.1rem;
+        }
+
+        .key-line {
+            width: 0.8rem;
+            height: 0.3rem;
+            margin-right: 0.5rem;
+            border-radius: 0%;
+            display: inline-block;
+            vertical-align: 0.15rem;
+        }
+
         .key-fill {
             width: 1rem;
             height: 1rem;
@@ -290,6 +308,21 @@
                     <span> 51 - 60 </span>
                 </div>
             </div>
+            <div class="row g-0 justify-content-start">
+                <hr>
+                <div class="col-12">
+                    <span class='key-circle'
+                        style='background-color: rgba(44, 160, 44, 1); border-color: rgba(255, 255, 255, 0); border-style: solid; border-width: thin;'>
+                    </span>
+                    <span> IBX Station </span>
+                </div>
+                <div class="col-12">
+                    <span class='key-line'
+                        style='background-color: rgba(44, 160, 44, 1); border-color: rgba(255, 255, 255, 0); border-style: solid; border-width: thin;'>
+                    </span>
+                    <span> IBX Route </span>
+                </div>
+            </div>
             <div class="row g-0 justify-content-center">
                 <hr>
                 <div class="col-auto">
@@ -352,10 +385,11 @@
             // Add Travelshed
             // Set layer contents
             var q1 = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
+            q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
             q1 += sl;
-            q1 += "') SELECT quadstatectclipped.*, frompre.pre, "
-            q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat "
+            q1 += "') SELECT quadstatectclipped.*, frompre.pre, frompre.post, "
+            q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+            q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
             q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
             q1 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
             var layerContent = {
@@ -584,7 +618,8 @@
                     q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
                     q1 += sl;
                     q1 += "') SELECT quadstatectclipped.*, frompre.pre, frompre.post, "
-                    q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat "
+                    q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+                    q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
                     q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
                     q1 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map1.getSource('resct').setData(q1);
@@ -601,7 +636,8 @@
                     q2 += "WITH frompost AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE post<=60 AND resct='";
                     q2 += sl;
                     q2 += "') SELECT quadstatectclipped.*, frompost.pre, frompost.post, "
-                    q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat "
+                    q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+                    q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
                     q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
                     q2 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map2.getSource('resct').setData(q2);
@@ -614,10 +650,11 @@
                     map1.setFilter('nycct-selected', null);
                     map1.setFilter('nycct-label', null);
                     q1 = "https://dcptransportation.carto.com/api/v2/sql?q=";
-                    q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre,post FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
+                    q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
                     q1 += sl;
-                    q1 += "') SELECT quadstatectclipped.*, frompre.pre,frompre.post, "
-                    q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat "
+                    q1 += "') SELECT quadstatectclipped.*, frompre.pre, frompre.post, "
+                    q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+                    q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
                     q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
                     q1 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map1.getSource('resct').setData(q1);
@@ -633,7 +670,8 @@
                     q2 += "WITH frompost AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE post<=60 AND resct='";
                     q2 += sl;
                     q2 += "') SELECT quadstatectclipped.*, frompost.pre, frompost.post, "
-                    q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat "
+                    q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+                    q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
                     q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
                     q2 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map2.getSource('resct').setData(q2);
@@ -744,7 +782,8 @@
             q2 += "WITH frompost AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE post<=60 AND resct='";
             q2 += sl;
             q2 += "') SELECT quadstatectclipped.*, frompost.pre, frompost.post, "
-            q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat "
+            q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+            q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
             q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
             q2 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
             var layerContent = {
@@ -1060,7 +1099,8 @@
                     q2 += "WITH frompost AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE post<=60 AND resct='";
                     q2 += sl;
                     q2 += "') SELECT quadstatectclipped.*, frompost.pre, frompost.post, "
-                    q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat "
+                    q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+                    q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
                     q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
                     q2 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map2.getSource('resct').setData(q2);
@@ -1077,7 +1117,8 @@
                     q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
                     q1 += sl;
                     q1 += "') SELECT quadstatectclipped.*, frompre.pre, frompre.post, "
-                    q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat "
+                    q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+                    q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
                     q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
                     q1 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map1.getSource('resct').setData(q1);
@@ -1093,7 +1134,8 @@
                     q2 += "WITH frompost AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE post<=60 AND resct='";
                     q2 += sl;
                     q2 += "') SELECT quadstatectclipped.*, frompost.pre, frompost.post, "
-                    q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat "
+                    q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+                    q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
                     q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
                     q2 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map2.getSource('resct').setData(q2);
@@ -1106,10 +1148,11 @@
                     map1.setFilter('nycct-selected', null);
                     map1.setFilter('nycct-label', null);
                     q1 = "https://dcptransportation.carto.com/api/v2/sql?q=";
-                    q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre,post FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
+                    q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
                     q1 += sl;
-                    q1 += "') SELECT quadstatectclipped.*, frompre.pre,frompre.post, "
-                    q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat "
+                    q1 += "') SELECT quadstatectclipped.*, frompre.pre, frompre.post, "
+                    q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+                    q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
                     q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
                     q1 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map1.getSource('resct').setData(q1);
@@ -1182,10 +1225,11 @@
             map1.setFilter('nycct-selected', null);
             map1.setFilter('nycct-label', null);
             var q1 = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre,post FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
+            q1 += "WITH frompre AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE pre<=60 AND resct='";
             q1 += sl;
-            q1 += "') SELECT quadstatectclipped.*, frompre.pre,frompre.post, "
-            q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat "
+            q1 += "') SELECT quadstatectclipped.*, frompre.pre, frompre.post, "
+            q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+            q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
             q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
             q1 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
             map1.getSource('resct').setData(q1);
@@ -1201,7 +1245,8 @@
             q2 += "WITH frompost AS (SELECT cartodb_id, workct, pre, post FROM dcptransportation.ibxresct WHERE post<=60 AND resct='";
             q2 += sl;
             q2 += "') SELECT quadstatectclipped.*, frompost.pre, frompost.post, "
-            q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat "
+            q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
+            q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
             q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
             q2 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
             map2.getSource('resct').setData(q2);
