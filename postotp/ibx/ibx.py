@@ -141,68 +141,68 @@ if __name__=='__main__':
     # location['latlong']=[str(x)+','+str(y) for x,y in zip(location['resintlatfinal'],location['resintlongfinal'])]
     # location['direction']='from'
     # destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong']].reset_index(drop=True)
-    location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycworktractptadjfinal',dtype=str)
-    location['tractid']=location['censustract'].copy()
-    location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlatfinal'],location['workintlongfinal'])]
-    location['direction']='to'
-    destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong']].reset_index(drop=True)
-     # Create travel time table for each site
-    for i in destination.index[1800:]:
-        df=parallelize(arrivaltime,travelshedwt)
-        df['TTMEDIAN']=df.median(skipna=True,axis=1)
-        df=df['TTMEDIAN'].sort_index()
-        df.name=destination.loc[i,'tractid']
-        df.to_csv(path+'ibx/topost/'+destination.loc[i,'tractid']+'wt.csv',index=True,header=True,na_rep=999)
+    # location=pd.read_excel(path+'nyctract/centroid/centroid.xlsx',sheet_name='nycworktractptadjfinal',dtype=str)
+    # location['tractid']=location['censustract'].copy()
+    # location['latlong']=[str(x)+','+str(y) for x,y in zip(location['workintlatfinal'],location['workintlongfinal'])]
+    # location['direction']='to'
+    # destination=location.loc[0:max(location.count())-1,['tractid','direction','latlong']].reset_index(drop=True)
+    # Create travel time table for each site
+    # for i in destination.index:
+    #     df=parallelize(arrivaltime,travelshedwt)
+    #     df['TTMEDIAN']=df.median(skipna=True,axis=1)
+    #     df=df['TTMEDIAN'].sort_index()
+    #     df.name=destination.loc[i,'tractid']
+    #     df.to_csv(path+'ibx/topost/'+destination.loc[i,'tractid']+'wt.csv',index=True,header=True,na_rep=999)
         
-    # # Summarize travelshed outputs
-    # # NYC Res Censust Tracts
-    # resbk=pd.DataFrame()
-    # for i in sorted(os.listdir(path+'ibx/frompost/'))[0:500]:
-    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-    #     tp=tp.set_index('blockid')
-    #     resbk=pd.concat([resbk,tp],axis=1)
-    # resbk.to_csv(path+'ibx/frompost1.csv',index=True)
-    # resbk=pd.DataFrame()
-    # for i in sorted(os.listdir(path+'ibx/frompost/'))[500:1000]:
-    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-    #     tp=tp.set_index('blockid')
-    #     resbk=pd.concat([resbk,tp],axis=1)
-    # resbk.to_csv(path+'ibx/frompost2.csv',index=True)
-    # resbk=pd.DataFrame()
-    # for i in sorted(os.listdir(path+'ibx/frompost/'))[1000:1500]:
-    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-    #     tp=tp.set_index('blockid')
-    #     resbk=pd.concat([resbk,tp],axis=1)
-    # resbk.to_csv(path+'ibx/frompost3.csv',index=True)
-    # resbk=pd.DataFrame()
-    # for i in sorted(os.listdir(path+'ibx/frompost/'))[1500:2000]:
-    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-    #     tp=tp.set_index('blockid')
-    #     resbk=pd.concat([resbk,tp],axis=1)
-    # resbk.to_csv(path+'ibx/frompost4.csv',index=True)
-    # resbk=pd.DataFrame()
-    # for i in sorted(os.listdir(path+'ibx/frompost/'))[2000:]:
-    #     tp=pd.read_csv(path+'ibx/frompost/'+i,dtype=str)
-    #     tp=tp.set_index('blockid')
-    #     resbk=pd.concat([resbk,tp],axis=1)
-    # resbk.to_csv(path+'ibx/frompost5.csv',index=True)
+    # Summarize travelshed outputs
+    # NYC Res Censust Tracts
+    resbk=pd.DataFrame()
+    for i in sorted(os.listdir(path+'ibx/topost/'))[0:500]:
+        tp=pd.read_csv(path+'ibx/topost/'+i,dtype=str)
+        tp=tp.set_index('blockid')
+        resbk=pd.concat([resbk,tp],axis=1)
+    resbk.to_csv(path+'ibx/topost1.csv',index=True)
+    resbk=pd.DataFrame()
+    for i in sorted(os.listdir(path+'ibx/topost/'))[500:1000]:
+        tp=pd.read_csv(path+'ibx/topost/'+i,dtype=str)
+        tp=tp.set_index('blockid')
+        resbk=pd.concat([resbk,tp],axis=1)
+    resbk.to_csv(path+'ibx/topost2.csv',index=True)
+    resbk=pd.DataFrame()
+    for i in sorted(os.listdir(path+'ibx/topost/'))[1000:1500]:
+        tp=pd.read_csv(path+'ibx/topost/'+i,dtype=str)
+        tp=tp.set_index('blockid')
+        resbk=pd.concat([resbk,tp],axis=1)
+    resbk.to_csv(path+'ibx/topost3.csv',index=True)
+    resbk=pd.DataFrame()
+    for i in sorted(os.listdir(path+'ibx/topost/'))[1500:2000]:
+        tp=pd.read_csv(path+'ibx/topost/'+i,dtype=str)
+        tp=tp.set_index('blockid')
+        resbk=pd.concat([resbk,tp],axis=1)
+    resbk.to_csv(path+'ibx/topost4.csv',index=True)
+    resbk=pd.DataFrame()
+    for i in sorted(os.listdir(path+'ibx/topost/'))[2000:]:
+        tp=pd.read_csv(path+'ibx/topost/'+i,dtype=str)
+        tp=tp.set_index('blockid')
+        resbk=pd.concat([resbk,tp],axis=1)
+    resbk.to_csv(path+'ibx/topost5.csv',index=True)
     
 
-    # for i in range(1,6):
-    #     resct=pd.read_csv(path+'ibx/frompost'+str(i)+'.csv',dtype=float,converters={'blockid':str})
-    #     resct=resct.set_index('blockid')
-    #     resloclist=sorted(resct.columns)
-    #     resct=resct.replace(999,np.nan)
-    #     resct['tractid']=[str(x)[0:11] for x in resct.index]
-    #     resct=resct.groupby(['tractid'])[resloclist].median()
-    #     resct.to_csv(path+'ibx/frompostct'+str(i)+'.csv',index=True,na_rep='999')
+    for i in range(1,6):
+        resct=pd.read_csv(path+'ibx/topost'+str(i)+'.csv',dtype=float,converters={'blockid':str})
+        resct=resct.set_index('blockid')
+        resloclist=sorted(resct.columns)
+        resct=resct.replace(999,np.nan)
+        resct['tractid']=[str(x)[0:11] for x in resct.index]
+        resct=resct.groupby(['tractid'])[resloclist].median()
+        resct.to_csv(path+'ibx/topostct'+str(i)+'.csv',index=True,na_rep='999')
         
-    # resct=pd.DataFrame()
-    # for i in range(1,6):
-    #     tp=pd.read_csv(path+'ibx/frompostct'+str(i)+'.csv',dtype=str)
-    #     tp=tp.set_index('tractid')
-    #     resct=pd.concat([resct,tp],axis=1)
-    # resct.to_csv(path+'ibx/frompostct.csv',index=True)
+    resct=pd.DataFrame()
+    for i in range(1,6):
+        tp=pd.read_csv(path+'ibx/topostct'+str(i)+'.csv',dtype=str)
+        tp=tp.set_index('tractid')
+        resct=pd.concat([resct,tp],axis=1)
+    resct.to_csv(path+'ibx/topostct.csv',index=True)
         
     
         
