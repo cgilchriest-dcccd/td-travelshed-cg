@@ -167,7 +167,7 @@ if __name__=='__main__':
         tp=pd.read_csv(path+'ibx/topre/'+i,dtype=str)
         tp=tp.set_index('blockid')
         resbk=pd.concat([resbk,tp],axis=1)
-    resbk.to_csv(path+'ibx/topre1.csv',index=True)
+    resbk.to_csv(path+'ibx/topre2.csv',index=True)
     resbk=pd.DataFrame()
     for i in sorted(os.listdir(path+'ibx/topre/'))[1000:1500]:
         tp=pd.read_csv(path+'ibx/topre/'+i,dtype=str)
