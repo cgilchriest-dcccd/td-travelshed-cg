@@ -225,6 +225,10 @@
                 <a class="nav-link active" href="from.html">
                     Transit Travelshed FROM a Census Tract </a>
             </ul>
+            <ul class="navbar-nav p-0">
+                <a class="nav-link active" href="to.html">
+                    Transit Travelshed TO a Census Tract </a>
+            </ul>
         </div>
     </nav>
 
@@ -677,16 +681,14 @@
                     q2 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map2.getSource('resct').setData(q2);
                     map2.setLayoutProperty('resct', 'visibility', 'visible');
-                    var p = "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxgravity.geojson"; // Carto API
-                    Plotly.d3.geojson(p, function (data) {
-                        var x = [], y = [];
-                        for (var i = 0; i < data['rows'].length; i++) {
-                            x.push(data['rows'][i]['tractid']);
-                            y.push(Plotly.d3.format('.3s')(data['rows'][i]['frompost60']));
+                    var p = "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxgravity.csv"; // Carto API
+                    Plotly.d3.csv(p, function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i]['tractid'] === sl) {
+                                document.getElementById('woibxjob').textContent = Math.round(data[i]['frompre60']).toLocaleString() + ';';
+                                document.getElementById('withibxjob').textContent = Math.round(data[i]['frompost60']).toLocaleString();
+                            };
                         };
-                        console.log(x);
-                        console.log(y);
-                        // document.getElementById('totaljob').textContent = Plotly.d3.format(',')(Plotly.d3.sum(y));
                     });
                 } else {
                     sl = '';
@@ -722,6 +724,15 @@
                     q2 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map2.getSource('resct').setData(q2);
                     map2.setLayoutProperty('resct', 'visibility', 'none');
+                    var p = "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxgravity.csv"; // Carto API
+                    Plotly.d3.csv(p, function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i]['tractid'] === sl) {
+                                document.getElementById('woibxjob').textContent = Math.round(data[i]['frompre60']).toLocaleString() + ';';
+                                document.getElementById('withibxjob').textContent = Math.round(data[i]['frompost60']).toLocaleString();
+                            };
+                        };
+                    });
                 };
             });
 
@@ -1163,6 +1174,15 @@
                     q1 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map1.getSource('resct').setData(q1);
                     map1.setLayoutProperty('resct', 'visibility', 'visible');
+                    var p = "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxgravity.csv"; // Carto API
+                    Plotly.d3.csv(p, function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i]['tractid'] === sl) {
+                                document.getElementById('woibxjob').textContent = Math.round(data[i]['frompre60']).toLocaleString() + ';';
+                                document.getElementById('withibxjob').textContent = Math.round(data[i]['frompost60']).toLocaleString();
+                            };
+                        };
+                    });
                 } else {
                     sl = '';
                     map2.setPaintProperty('nycct', 'fill-color', 'rgba(217, 107, 39, 0)');
@@ -1197,6 +1217,15 @@
                     q1 += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"; // Carto API
                     map1.getSource('resct').setData(q1);
                     map1.setLayoutProperty('resct', 'visibility', 'none');
+                    var p = "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxgravity.csv"; // Carto API
+                    Plotly.d3.csv(p, function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i]['tractid'] === sl) {
+                                document.getElementById('woibxjob').textContent = Math.round(data[i]['frompre60']).toLocaleString() + ';';
+                                document.getElementById('withibxjob').textContent = Math.round(data[i]['frompost60']).toLocaleString();
+                            };
+                        };
+                    });
                 };
             });
 
