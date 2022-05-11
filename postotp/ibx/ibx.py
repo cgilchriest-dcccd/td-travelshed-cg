@@ -418,7 +418,8 @@ if __name__=='__main__':
     topost.columns=['tractid','topost60','topostgravity']
     df=pd.merge(df,topost,how='inner',on='tractid')
     df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/postotp/ibx/ibxgravity.geojson',driver='GeoJSON')
-    
+    df=df.drop('geometry',axis=1)
+    df.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/postotp/ibx/ibxgravity.csv',index=False)
     
     
 
