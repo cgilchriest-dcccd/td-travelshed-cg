@@ -417,7 +417,7 @@ if __name__=='__main__':
     topost=topost[['Unnamed: 0','topost60','topostgravity']].reset_index(drop=True)
     topost.columns=['tractid','topost60','topostgravity']
     df=pd.merge(df,topost,how='inner',on='tractid')
-    df.to_file(path+'ibx/ibxgravity.geojson',driver='GeoJSON')
+    df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/postotp/ibx/ibxgravity.geojson',driver='GeoJSON')
     
     
     
