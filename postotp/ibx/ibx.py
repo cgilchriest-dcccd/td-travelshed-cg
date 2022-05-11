@@ -381,7 +381,7 @@ if __name__=='__main__':
     pre.columns=['resct','workct','pre']
     post=pd.read_csv(path+'ibx/topostct.csv',dtype=float,converters={'tractid':str})
     post=pd.melt(post,id_vars='tractid',var_name='workct',value_name='time')
-    post.columns=['resct','workct','pre']  
+    post.columns=['resct','workct','post']  
     df=pd.merge(pre,post,how='inner',on=['workct','resct'])
     df=df[~((df['pre']==999)&(df['post']==999))].reset_index(drop=True)
     df.to_csv(path+'ibx/ibxworkct.csv',index=False)
