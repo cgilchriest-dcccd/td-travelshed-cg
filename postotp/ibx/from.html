@@ -258,6 +258,21 @@
                     <b> NYC Census Tract for Selection </b>
                 </div>
             </div>
+            <div class="row g-0 justify-content-between">
+                <hr>
+                <div class="col-5">
+                    <span class='key-circle'
+                        style='background-color: rgba(44, 160, 44, 1); border-color: rgba(255, 255, 255, 0); border-style: solid; border-width: thin;'>
+                    </span>
+                    <span> IBX Station </span>
+                </div>
+                <div class="col-5">
+                    <span class='key-line'
+                        style='background-color: rgba(44, 160, 44, 1); border-color: rgba(255, 255, 255, 0); border-style: solid; border-width: thin;'>
+                    </span>
+                    <span> IBX Route </span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -306,6 +321,18 @@
                         style='background-color: rgba(255, 200, 138, 0.8); border-color: rgba(0, 0, 0, 0); border-style: solid; border-width: thin;'>
                     </span>
                     <span> 51 - 60 </span>
+                </div>
+            </div>
+            <div class="row g-0 justify-content-center">
+                <hr>
+                <div class="col-auto" id="plotlyjob">
+                </div>
+                <div class="col-auto">
+                    <span>Total jobs within 60 minutes: </span>
+                    <span id="totaljob"></span>
+                </div>
+                <div class="col-auto datasource">
+                    <span> (Data Source: Census Bureau LEHD 2017) </span>
                 </div>
             </div>
             <div class="row g-0 justify-content-between">
@@ -937,13 +964,10 @@
 
             // Add IBX Line
             // Set layer contents
-            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT * FROM dcptransportation.nyc_rail_1";
-            q += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"
             var layerContent = {
                 'sourceid': 'ibxline', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': q, // data source
+                'sourcedata': "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxroute.geojson", // data source
                 'layerid': 'ibxline', // layer id
                 'layertype': 'line', // symbology type
                 'layername': 'IBX Line', // layer name for the legend
@@ -980,13 +1004,10 @@
 
             // Add IBX Station
             // Set layer contents
-            var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
-            q += "SELECT * FROM dcptransportation.ibxstations_v1";
-            q += "&format=GeoJSON&api_key=gRUvM0h2dNxkjiBLXMpwPQ"
             var layerContent = {
                 'sourceid': 'ibxstation', // source id
                 'sourcetype': 'geojson', // source type
-                'sourcedata': q, // data source
+                'sourcedata': "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxstation.geojson", // data source
                 'layerid': 'ibxstation', // layer id
                 'layertype': 'circle', // symbology type
                 'layername': 'IBX Station', // layer name for the legend
