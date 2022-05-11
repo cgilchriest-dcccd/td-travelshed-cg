@@ -302,7 +302,7 @@ if __name__=='__main__':
     
     df=pd.DataFrame()
     for k in range(1,6):
-        workbkrac=pd.read_csv(path+'ibx/topre'+str(k)+'.csv',dtype=float,converters={'blockid':str})
+        workbkrac=pd.read_csv(path+'ibx/topost'+str(k)+'.csv',dtype=float,converters={'blockid':str})
         workbkrac=workbkrac.set_index('blockid')
         workloclist=sorted(workbkrac.columns)
         workbkrac=pd.merge(workbkrac,rac,how='left',left_index=True,right_index=True)
@@ -372,7 +372,7 @@ if __name__=='__main__':
             workbkgravity.loc[i,'GRAC51-60']=(workbkgravity.loc[i,'RAC51-55']+workbkgravity.loc[i,'RAC56-60'])/(55**2)
             workbkgravity.loc[i,'GRAVITYRAC']=workbkgravity.loc[i,'GRAC1-10']+workbkgravity.loc[i,'GRAC11-20']+workbkgravity.loc[i,'GRAC21-30']+workbkgravity.loc[i,'GRAC31-40']+workbkgravity.loc[i,'GRAC41-50']+workbkgravity.loc[i,'GRAC51-60']
         df=pd.concat([df,workbkgravity],axis=0)
-    df.to_csv(path+'ibx/topregravity.csv',index=True)
+    df.to_csv(path+'ibx/topostgravity.csv',index=True)
         
 
 
