@@ -128,7 +128,7 @@
             position: absolute;
             bottom: 2rem;
             right: 1rem;
-            width: 17rem;
+            width: 18rem;
             height: auto;
             max-height: 80%;
             padding-top: 0rem;
@@ -181,6 +181,7 @@
 
         .datasource {
             font-size: 0.8rem;
+            margin-top: 0.5rem;
         }
 
         .btn {
@@ -264,13 +265,13 @@
                     <span class='key-circle'
                         style='background-color: rgba(44, 160, 44, 1); border-color: rgba(255, 255, 255, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> IBX Station </span>
+                    <b> IBX Station </b>
                 </div>
                 <div class="col-5">
                     <span class='key-line'
                         style='background-color: rgba(44, 160, 44, 1); border-color: rgba(255, 255, 255, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> IBX Route </span>
+                    <b> IBX Route </b>
                 </div>
             </div>
         </div>
@@ -283,7 +284,7 @@
                     <strong>
                         <span> AM Peak Transit Travel Time from Census Tract </span>
                         <span id="selectedtract"></span>
-                        <span> (mins) with IBX</span>
+                        <span> (mins) </span>
                     </strong>
                 </div>
                 <div class="col-5">
@@ -325,14 +326,21 @@
             </div>
             <div class="row g-0 justify-content-center">
                 <hr>
-                <div class="col-auto" id="plotlyjob">
+                <div class="col-auto">
+                    <strong>
+                        <span> Total Jobs within 60 Mins: </span>
+                    </strong>
                 </div>
                 <div class="col-auto">
-                    <span>Total jobs within 60 minutes: </span>
-                    <span id="totaljob"></span>
+                    <span> Without IBX: </span>
+                    <span id="woibxjob"></span>
+                </div>
+                <div class="col-auto">
+                    <span> With IBX: </span>
+                    <span id="withibxjob"></span>
                 </div>
                 <div class="col-auto datasource">
-                    <span> (Data Source: Census Bureau LEHD 2017) </span>
+                    <span> (Data Source: Census Bureau LEHD 2019) </span>
                 </div>
             </div>
             <div class="row g-0 justify-content-between">
@@ -341,13 +349,13 @@
                     <span class='key-circle'
                         style='background-color: rgba(44, 160, 44, 1); border-color: rgba(255, 255, 255, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> IBX Station </span>
+                    <b> IBX Station </b>
                 </div>
                 <div class="col-5">
                     <span class='key-line'
                         style='background-color: rgba(44, 160, 44, 1); border-color: rgba(255, 255, 255, 0); border-style: solid; border-width: thin;'>
                     </span>
-                    <span> IBX Route </span>
+                    <b> IBX Route </b>
                 </div>
             </div>
             <div class="row g-0 justify-content-center">

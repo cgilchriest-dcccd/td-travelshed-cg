@@ -376,15 +376,49 @@ if __name__=='__main__':
         
 
 
-    pre=pd.read_csv(path+'ibx/toprect.csv',dtype=float,converters={'tractid':str})
-    pre=pd.melt(pre,id_vars='tractid',var_name='workct',value_name='time')
-    pre.columns=['resct','workct','pre']
-    post=pd.read_csv(path+'ibx/topostct.csv',dtype=float,converters={'tractid':str})
-    post=pd.melt(post,id_vars='tractid',var_name='workct',value_name='time')
-    post.columns=['resct','workct','post']  
-    df=pd.merge(pre,post,how='inner',on=['workct','resct'])
-    df=df[~((df['pre']==999)&(df['post']==999))].reset_index(drop=True)
-    df.to_csv(path+'ibx/ibxworkct.csv',index=False)
+    # pre=pd.read_csv(path+'ibx/toprect.csv',dtype=float,converters={'tractid':str})
+    # pre=pd.melt(pre,id_vars='tractid',var_name='workct',value_name='time')
+    # pre.columns=['resct','workct','pre']
+    # post=pd.read_csv(path+'ibx/topostct.csv',dtype=float,converters={'tractid':str})
+    # post=pd.melt(post,id_vars='tractid',var_name='workct',value_name='time')
+    # post.columns=['resct','workct','post']  
+    # df=pd.merge(pre,post,how='inner',on=['workct','resct'])
+    # df=df[~((df['pre']==999)&(df['post']==999))].reset_index(drop=True)
+    # df.to_csv(path+'ibx/ibxworkct.csv',index=False)
+    
+    
+    
+    ct=gpd.read_file(path+'shp/quadstatectclipped.shp')
+    ct.crs=4326
+    ct['county']=[str(x)[0:5] for x in ct['tractid']]
+    ct=ct[np.isin(ct['county'],['36005','36047','36061','36081','36085'])].reset_index(drop=True)
+    ct=ct[['tractid','geometry']].reset_index(drop=True)
+    frompre=pd.read_csv(path+'ibx/frompregravity.csv',dtype=float,converters={'Unnamed: 0':str})
+    frompre['frompre60']=frompre['WAC1-5']+frompre['WAC6-10']+frompre['WAC11-15']+frompre['WAC16-20']+frompre['WAC21-25']+frompre['WAC26-30']+frompre['WAC31-35']+frompre['WAC36-40']+frompre['WAC41-45']+frompre['WAC46-50']+frompre['WAC51-55']+frompre['WAC56-60']
+    frompre['frompregravity']=frompre['GRAVITYWAC'].copy()
+    frompre=frompre[['Unnamed: 0','frompre60','frompregravity']].reset_index(drop=True)
+    frompre.columns=['tractid','frompre60','frompregravity']
+    df=pd.merge(ct,frompre,how='inner',on='tractid')
+    frompost=pd.read_csv(path+'ibx/frompostgravity.csv',dtype=float,converters={'Unnamed: 0':str})
+    frompost['frompost60']=frompost['WAC1-5']+frompost['WAC6-10']+frompost['WAC11-15']+frompost['WAC16-20']+frompost['WAC21-25']+frompost['WAC26-30']+frompost['WAC31-35']+frompost['WAC36-40']+frompost['WAC41-45']+frompost['WAC46-50']+frompost['WAC51-55']+frompost['WAC56-60']
+    frompost['frompostgravity']=frompost['GRAVITYWAC'].copy()
+    frompost=frompost[['Unnamed: 0','frompost60','frompostgravity']].reset_index(drop=True)
+    frompost.columns=['tractid','frompost60','frompostgravity']
+    df=pd.merge(df,frompost,how='inner',on='tractid')
+    topre=pd.read_csv(path+'ibx/topregravity.csv',dtype=float,converters={'Unnamed: 0':str})
+    topre['topre60']=topre['RAC1-5']+topre['RAC6-10']+topre['RAC11-15']+topre['RAC16-20']+topre['RAC21-25']+topre['RAC26-30']+topre['RAC31-35']+topre['RAC36-40']+topre['RAC41-45']+topre['RAC46-50']+topre['RAC51-55']+topre['RAC56-60']
+    topre['topregravity']=topre['GRAVITYRAC'].copy()
+    topre=topre[['Unnamed: 0','topre60','topregravity']].reset_index(drop=True)
+    topre.columns=['tractid','topre60','topregravity']
+    df=pd.merge(df,topre,how='inner',on='tractid')
+    topost=pd.read_csv(path+'ibx/topostgravity.csv',dtype=float,converters={'Unnamed: 0':str})
+    topost['topost60']=topost['RAC1-5']+topost['RAC6-10']+topost['RAC11-15']+topost['RAC16-20']+topost['RAC21-25']+topost['RAC26-30']+topost['RAC31-35']+topost['RAC36-40']+topost['RAC41-45']+topost['RAC46-50']+topost['RAC51-55']+topost['RAC56-60']
+    topost['topostgravity']=topost['GRAVITYRAC'].copy()
+    topost=topost[['Unnamed: 0','topost60','topostgravity']].reset_index(drop=True)
+    topost.columns=['tractid','topost60','topostgravity']
+    df=pd.merge(df,topost,how='inner',on='tractid')
+    df.to_file(path+'ibx/ibxgravity.geojson',driver='GeoJSON')
+    
     
     
 
