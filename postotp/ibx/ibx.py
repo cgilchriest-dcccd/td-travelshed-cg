@@ -417,6 +417,22 @@ if __name__=='__main__':
     topost=topost[['Unnamed: 0','topost60','topostgravity']].reset_index(drop=True)
     topost.columns=['tractid','topost60','topostgravity']
     df=pd.merge(df,topost,how='inner',on='tractid')
+    df['fromdiff60']=df['frompost60']-df['frompre60']
+    df['fromdiff60'].describe(percentiles=np.arange(0.2,1,0.2))
+    df['fromdiff60cat']=np.where(df['fromdiff60']<=100,'<=100',
+                        np.where(df['fromdiff60']<=1000,'101~1,000',
+                        np.where(df['fromdiff60']<=10000,'1,001~10,000',
+                        np.where(df['fromdiff60']<=100000,'10,001~100,000',
+                        np.where(df['fromdiff60']<=200000,'100,001~200,000','>200,000')))))
+    df['fromdiff60cat'].value_counts()
+    df['todiff60']=df['topost60']-df['topre60']
+    df['todiff60'].describe(percentiles=np.arange(0.2,1,0.2))
+    df['todiff60cat']=np.where(df['todiff60']<=100,'<=100',
+                      np.where(df['todiff60']<=1000,'101~1,000',
+                      np.where(df['todiff60']<=10000,'1,001~10,000',
+                      np.where(df['todiff60']<=100000,'10,001~100,000',
+                      np.where(df['todiff60']<=200000,'100,001~200,000','>200,000')))))
+    df['todiff60cat'].value_counts()
     df.to_file('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/postotp/ibx/ibxgravity.geojson',driver='GeoJSON')
     df=df.drop('geometry',axis=1)
     df.to_csv('C:/Users/mayij/Desktop/DOC/GITHUB/td-travelshed/postotp/ibx/ibxgravity.csv',index=False)
