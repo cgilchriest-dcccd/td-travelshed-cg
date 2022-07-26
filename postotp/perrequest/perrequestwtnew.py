@@ -42,8 +42,7 @@ nr=[shapely.ops.nearest_points(x,node)[1] for x in sitegeom]
 for i in site.index:
     site.loc[i,'intlat']=nr[i].y
     site.loc[i,'intlong']=nr[i].x
-site=site[['siteid','parkid','direction','name','type','borough','lat','long','intlat','intlong','distance',
-            'walktime']].reset_index(drop=True)
+site=site[['siteid','direction','lat','long','intlat','intlong','distance','walktime']].reset_index(drop=True)
 
 # Distance from site to nearest intersection
 frompt=site.copy()
