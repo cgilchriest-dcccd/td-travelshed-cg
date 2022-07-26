@@ -29,7 +29,7 @@ doserver='http://159.65.64.166:8801/'
 start=datetime.datetime.now()
 
 # Site location
-site=pd.read_excel(path+'waterfront2/input.xlsx',sheet_name='input',dtype=str)
+site=pd.read_excel(path+'input.xlsx',sheet_name='input',dtype=str)
 site=gpd.GeoDataFrame(site,geometry=[shapely.geometry.Point(xy) for xy in zip(pd.to_numeric(site['long']), pd.to_numeric(site['lat']))],crs=4326)
 sitegeom=site['geometry']
 
@@ -70,7 +70,7 @@ for i in site.index:
     else:
         site.loc[i,'walktime']=js['plan']['itineraries'][0]['legs'][0]['duration']
     time.sleep(0.1)
-site.to_excel(path+'waterfront2/input.xlsx',sheet_name='input',index=False)
+site.to_excel(path+'/input.xlsx',sheet_name='input',index=False)
 
 
 
@@ -176,7 +176,7 @@ def parallelize(data, func):
 
 # Multiprocessing travelshed function for sites
 if __name__=='__main__':
-    location=pd.read_excel(path+'waterfront2/input.xlsx',sheet_name='input',dtype=str)
+    location=pd.read_excel(path+'input.xlsx',sheet_name='input',dtype=str)
     location['id']=['SITE'+str(x).zfill(4) for x in location['siteid']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['lat'],location['long'])]
     destination=location.loc[0:max(location.count())-1,['id','direction','latlong']].reset_index(drop=True)

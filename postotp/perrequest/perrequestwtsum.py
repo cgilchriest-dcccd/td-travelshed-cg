@@ -30,7 +30,7 @@ start=datetime.datetime.now()
 
 # Summarize all sites and create images
 if __name__=='__main__':
-    location=pd.read_excel(path+'waterfront2/input.xlsx',sheet_name='input',dtype=str)
+    location=pd.read_excel(path+'input.xlsx',sheet_name='input',dtype=str)
     location['id']=['SITE'+str(x).zfill(4) for x in location['siteid']]
     location['latlong']=[str(x)+','+str(y) for x,y in zip(location['lat'],location['long'])]
     destination=location.loc[0:max(location.count())-1,['id','direction','latlong']].reset_index(drop=True)
