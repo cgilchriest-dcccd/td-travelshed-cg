@@ -77,6 +77,7 @@ site.to_excel(path+'waterfront2/input.xlsx',sheet_name='input',index=False)
 # Load quadstate block point shapefile
 bkpt=gpd.read_file(path+'shp/quadstatebkpt.shp')
 bkpt.crs=4326
+bkpt=bkpt.drop(['lat','long'],axis=1)
 
 # Set typical day
 typicaldate='2018/06/06'
