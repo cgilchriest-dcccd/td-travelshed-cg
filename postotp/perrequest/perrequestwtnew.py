@@ -238,7 +238,7 @@ if __name__=='__main__':
                                                   'ypad':20,
                                                   'len':0.5,
                                                   'outlinewidth':0,
-                                                  'tickvals':list(range(0,100,10)),
+                                                  'tickvals':list(range(0,130,10)),
                                                   'tickfont_size':12,
                                                   'bgcolor':'rgba(255,255,255,0.5)'},
                                         marker={'line_color':'rgba(255,255,255,0)',
