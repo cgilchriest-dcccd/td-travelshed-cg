@@ -343,7 +343,7 @@
             q += "') SELECT quadstatectclipped.*, workct.time, "
             q += "CASE WHEN time <=10 THEN '1-10' WHEN time>10 AND time<=20 THEN '11-20' WHEN time>20 AND time<=30 THEN '21-30' WHEN time>30 AND time<=40 THEN '31-40' WHEN time>40 AND time<=50 THEN '41-50' ELSE '51-60' END AS cat "
             q += "FROM dcptransportation.quadstatectclipped INNER JOIN workct ON tractid=restractid";
-            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            q += "&format=GeoJSON&api_key=W0RW6ZjV-MZRBA1RJdxqqw"; // Carto API
             var layerContent = {
                 'sourceid': 'workct', // source id
                 'sourcetype': 'geojson', // source type
@@ -392,7 +392,7 @@
             // Set layer contents
             var q = "https://dcptransportation.carto.com/api/v2/sql?q=";
             q += "SELECT * FROM dcptransportation.nycct";
-            q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+            q += "&format=GeoJSON&api_key=W0RW6ZjV-MZRBA1RJdxqqw"; // Carto API
             var layerContent = {
                 'sourceid': 'nycct', // source id
                 'sourcetype': 'geojson', // source type
@@ -572,7 +572,7 @@
                     q += "') SELECT quadstatectclipped.*, workct.time, "
                     q += "CASE WHEN time <=10 THEN '1-10' WHEN time>10 AND time<=20 THEN '11-20' WHEN time>20 AND time<=30 THEN '21-30' WHEN time>30 AND time<=40 THEN '31-40' WHEN time>40 AND time<=50 THEN '41-50' ELSE '51-60' END AS cat "
                     q += "FROM dcptransportation.quadstatectclipped INNER JOIN workct ON tractid=restractid";
-                    q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+                    q += "&format=GeoJSON&api_key=W0RW6ZjV-MZRBA1RJdxqqw"; // Carto API
                     map.getSource('workct').setData(q);
                     map.setLayoutProperty('workct', 'visibility', 'visible');
                     document.getElementById('legend1').style.display = 'none';
@@ -583,7 +583,7 @@
                     p += "SELECT * FROM dcptransportation.workctgravitypop WHERE worktractid=";
                     p += sl;
                     p += ' ORDER BY cat ASC'
-                    p += "&format=JSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+                    p += "&format=JSON&api_key=W0RW6ZjV-MZRBA1RJdxqqw"; // Carto API
                     Plotly.d3.json(p, function (data) {
                         var x = [], y = [], ht = [];
                         for (var i = 0; i < data['rows'].length; i++) {
@@ -644,7 +644,7 @@
                     p += "SELECT * FROM dcptransportation.workbkgravity WHERE worktractid=";
                     p += sl;
                     p += ' ORDER BY cat ASC'
-                    p += "&format=JSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+                    p += "&format=JSON&api_key=W0RW6ZjV-MZRBA1RJdxqqw"; // Carto API
                     Plotly.d3.json(p, function (data) {
                         var x = [], y = [], ht = [];
                         for (var i = 0; i < data['rows'].length; i++) {
@@ -714,7 +714,7 @@
                     q += "') SELECT quadstatectclipped.*, workct.time, "
                     q += "CASE WHEN time <=10 THEN '1-10' WHEN time>10 AND time<=20 THEN '11-20' WHEN time>20 AND time<=30 THEN '21-30' WHEN time>30 AND time<=40 THEN '31-40' WHEN time>40 AND time<=50 THEN '41-50' ELSE '51-60' END AS cat "
                     q += "FROM dcptransportation.quadstatectclipped INNER JOIN workct ON tractid=restractid";
-                    q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+                    q += "&format=GeoJSON&api_key=W0RW6ZjV-MZRBA1RJdxqqw"; // Carto API
                     map.getSource('workct').setData(q);
                     map.setLayoutProperty('workct', 'visibility', 'none');
                     document.getElementById('legend1').style.display = 'flex';
@@ -789,7 +789,7 @@
                 q += "') SELECT quadstatectclipped.*, workct.time, "
                 q += "CASE WHEN time <=10 THEN '1-10' WHEN time>10 AND time<=20 THEN '11-20' WHEN time>20 AND time<=30 THEN '21-30' WHEN time>30 AND time<=40 THEN '31-40' WHEN time>40 AND time<=50 THEN '41-50' ELSE '51-60' END AS cat "
                 q += "FROM dcptransportation.quadstatectclipped INNER JOIN workct ON tractid=restractid";
-                q += "&format=GeoJSON&api_key=Y5Q1NYmy7pzw1nftSAwFlA"; // Carto API
+                q += "&format=GeoJSON&api_key=W0RW6ZjV-MZRBA1RJdxqqw"; // Carto API
                 map.getSource('workct').setData(q);
                 map.setLayoutProperty('workct', 'visibility', 'none');
                 document.getElementById('legend1').style.display = 'flex';
