@@ -435,7 +435,7 @@
             q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
             q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
             q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
-            q1 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+            q1 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
             var layerContent = {
                 'sourceid': 'resct', // source id
                 'sourcetype': 'geojson', // source type
@@ -665,7 +665,7 @@
                     q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
                     q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
                     q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
-                    q1 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+                    q1 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
                     map1.getSource('resct').setData(q1);
                     map1.setLayoutProperty('resct', 'visibility', 'visible');
                     document.getElementById('legend1').style.display = 'none';
@@ -683,7 +683,7 @@
                     q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
                     q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
                     q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
-                    q2 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+                    q2 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
                     map2.getSource('resct').setData(q2);
                     map2.setLayoutProperty('resct', 'visibility', 'visible');
                     var p = "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxgravity.csv"; // Carto API
@@ -709,7 +709,7 @@
                     q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
                     q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
                     q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
-                    q1 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+                    q1 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
                     map1.getSource('resct').setData(q1);
                     map1.setLayoutProperty('resct', 'visibility', 'none');
                     document.getElementById('legend1').style.display = 'flex';
@@ -726,7 +726,7 @@
                     q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
                     q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
                     q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
-                    q2 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+                    q2 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
                     map2.getSource('resct').setData(q2);
                     map2.setLayoutProperty('resct', 'visibility', 'none');
                     var p = "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxgravity.csv"; // Carto API
@@ -847,7 +847,7 @@
             q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
             q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
             q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
-            q2 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+            q2 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
             var layerContent = {
                 'sourceid': 'resct', // source id
                 'sourcetype': 'geojson', // source type
@@ -1158,7 +1158,7 @@
                     q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
                     q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
                     q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
-                    q2 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+                    q2 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
                     map2.getSource('resct').setData(q2);
                     map2.setLayoutProperty('resct', 'visibility', 'visible');
                     document.getElementById('legend1').style.display = 'none';
@@ -1176,7 +1176,7 @@
                     q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
                     q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
                     q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
-                    q1 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+                    q1 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
                     map1.getSource('resct').setData(q1);
                     map1.setLayoutProperty('resct', 'visibility', 'visible');
                     var p = "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxgravity.csv"; // Carto API
@@ -1202,7 +1202,7 @@
                     q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
                     q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
                     q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
-                    q2 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+                    q2 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
                     map2.getSource('resct').setData(q2);
                     map2.setLayoutProperty('resct', 'visibility', 'none');
                     document.getElementById('legend1').style.display = 'flex';
@@ -1219,7 +1219,7 @@
                     q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
                     q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
                     q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
-                    q1 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+                    q1 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
                     map1.getSource('resct').setData(q1);
                     map1.setLayoutProperty('resct', 'visibility', 'none');
                     var p = "https://raw.githubusercontent.com/NYCPlanning/td-travelshed/master/postotp/ibx/ibxgravity.csv"; // Carto API
@@ -1305,7 +1305,7 @@
             q1 += "CASE WHEN pre <=10 THEN '1-10' WHEN pre>10 AND pre<=20 THEN '11-20' WHEN pre>20 AND pre<=30 THEN '21-30' WHEN pre>30 AND pre<=40 THEN '31-40' WHEN pre>40 AND pre<=50 THEN '41-50' ELSE '51-60' END AS cat, "
             q1 += "CASE WHEN post>60 THEN '>60' ELSE CAST(post AS VARCHAR(5)) END as post "
             q1 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompre ON tractid=workct";
-            q1 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+            q1 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
             map1.getSource('resct').setData(q1);
             map1.setLayoutProperty('resct', 'visibility', 'none');
             document.getElementById('legend1').style.display = 'flex';
@@ -1322,7 +1322,7 @@
             q2 += "CASE WHEN post <=10 THEN '1-10' WHEN post>10 AND post<=20 THEN '11-20' WHEN post>20 AND post<=30 THEN '21-30' WHEN post>30 AND post<=40 THEN '31-40' WHEN post>40 AND post<=50 THEN '41-50' ELSE '51-60' END AS cat, "
             q2 += "CASE WHEN pre>60 THEN '>60' ELSE CAST(pre AS VARCHAR(5)) END as pre "
             q2 += "FROM dcptransportation.quadstatectclipped INNER JOIN frompost ON tractid=workct";
-            q2 += "&format=GeoJSON&api_key=juVXowM1BVucm-L1WFLR4w"; // Carto API
+            q2 += "&format=GeoJSON&api_key=RHmIM7Szc5gxhZbQs3jnPg"; // Carto API
             map2.getSource('resct').setData(q2);
             map2.setLayoutProperty('resct', 'visibility', 'none');
         });
