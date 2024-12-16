@@ -1,4 +1,4 @@
-,GEOID,Category,Category Type,Openings_2024_zscore,Jobs_2024_zscore,Openings_2024_zscore_color
+princid,GEOID,Category,Category Type,Openings_2024_zscore,Jobs_2024_zscore,Openings_2024_zscore_color
 1295,48085030304,Living Wage,Living Wage Occupations,-0.4273888483,-0.4549225483,-0.5SD ~ +0.5SD
 2593,48085030542,Living Wage,Living Wage Occupations,-0.0327076122,-0.08691191050000001,-0.5SD ~ +0.5SD
 3891,48085031717,Living Wage,Living Wage Occupations,1.3648986875,1.2393576036,+0.5SD ~ +1.5SD
